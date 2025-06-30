@@ -337,6 +337,12 @@ export default function Index() {
                 >
                   Политика конфиденциальности
                 </a>
+                <a
+                  href="/personal-data"
+                  className="hover:text-white transition-colors"
+                >
+                  Обработка персональных данных
+                </a>
                 <a href="#" className="hover:text-white transition-colors">
                   Пользовательское соглашение
                 </a>
