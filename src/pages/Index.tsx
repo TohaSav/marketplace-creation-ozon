@@ -256,7 +256,7 @@ export default function Index() {
           <div className="border-t border-gray-700 mt-8 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="text-sm text-gray-400 mb-4 md:mb-0">
-                © 2024 Calibre Store. Все права защищены.
+                © 2025 Calibre Store. Все права защищены.
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">
                 <a
