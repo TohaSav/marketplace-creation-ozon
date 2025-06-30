@@ -14,6 +14,7 @@ import {
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
 import CreateStoryModal from "@/components/CreateStoryModal";
+import SellerWallet from "@/components/SellerWallet";
 
 const mockProducts = [
   {
@@ -195,9 +196,10 @@ export default function SellerDashboard() {
         </div>
 
         <Tabs defaultValue="products" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="products">Мои товары</TabsTrigger>
             <TabsTrigger value="orders">Заказы</TabsTrigger>
+            <TabsTrigger value="wallet">Кошелёк</TabsTrigger>
             <TabsTrigger value="finances">Финансы</TabsTrigger>
             <TabsTrigger value="stories">Stories</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
@@ -316,42 +318,88 @@ export default function SellerDashboard() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="wallet" className="mt-6">
+            <SellerWallet />
+          </TabsContent>
+
           <TabsContent value="finances" className="mt-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Баланс магазина</CardTitle>
+                  <CardTitle>Доход за месяц</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="text-3xl font-bold text-green-600">
-                      ₽{mockStats.balance.toLocaleString()}
+                      ₽{(mockStats.totalSales * 0.3).toLocaleString()}
                     </div>
-                    <p className="text-sm text-gray-600">Доступно для вывода</p>
-                    <Button className="w-full">
-                      <Icon name="Download" size={16} className="mr-2" />
-                      Вывести средства
-                    </Button>
+                    <p className="text-sm text-gray-600">
+                      +12% к прошлому месяцу
+                    </p>
+                    <div className="flex items-center text-green-600">
+                      <Icon name="TrendingUp" size={16} className="mr-1" />
+                      <span className="text-sm">Рост продаж</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Ожидает подтверждения</CardTitle>
+                  <CardTitle>Конверсия</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="text-3xl font-bold text-orange-600">
-                      ₽125,000
-                    </div>
+                    <div className="text-3xl font-bold text-blue-600">3.2%</div>
                     <p className="text-sm text-gray-600">
-                      Средства от продаж в обработке
+                      Покупки от просмотров
                     </p>
+                    <div className="flex items-center text-blue-600">
+                      <Icon name="Users" size={16} className="mr-1" />
+                      <span className="text-sm">15,420 просмотров</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Средний чек</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-3xl font-bold text-purple-600">
+                      ₽
+                      {Math.round(
+                        mockStats.totalSales / mockStats.ordersCount,
+                      ).toLocaleString()}
+                    </div>
+                    <p className="text-sm text-gray-600">На один заказ</p>
+                    <div className="flex items-center text-purple-600">
+                      <Icon name="ShoppingCart" size={16} className="mr-1" />
+                      <span className="text-sm">
+                        {mockStats.ordersCount} заказов
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* График продаж */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Динамика продаж</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <div className="text-center text-gray-500">
+                    <Icon name="BarChart3" size={48} className="mx-auto mb-4" />
+                    <p>График продаж будет доступен в следующем обновлении</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="stories" className="mt-6">
