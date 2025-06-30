@@ -12,6 +12,7 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +75,9 @@ const App = () => (
               </AdminProtectedRoute>
             }
           />
+
+          {/* Общие страницы */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

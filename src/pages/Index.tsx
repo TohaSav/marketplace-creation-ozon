@@ -202,6 +202,152 @@ export default function Index() {
           </div>
         )}
       </div>
+
+      {/* Футер */}
+      <footer className="bg-gray-900 text-white py-12 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* О компании */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">О МаркетМастер</h3>
+              <p className="text-gray-300 text-sm mb-4">
+                Ведущий маркетплейс с миллионами товаров от проверенных
+                продавцов по всей России.
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-xs">
+                  VK
+                </div>
+                <div className="w-8 h-8 bg-pink-600 rounded flex items-center justify-center text-xs">
+                  IG
+                </div>
+                <div className="w-8 h-8 bg-blue-400 rounded flex items-center justify-center text-xs">
+                  TG
+                </div>
+              </div>
+            </div>
+
+            {/* Покупателям */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Покупателям</h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Как сделать заказ
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Способы оплаты
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Доставка
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Возврат товара
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Гарантия
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Продавцам */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Продавцам</h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Как начать продавать
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Правила торговли
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Комиссии
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Аналитика
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Поддержка продавцов
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Поддержка */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Поддержка</h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Служба поддержки
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Контакты
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Безопасность
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Пользовательское соглашение
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Нижняя часть футера */}
+          <div className="border-t border-gray-700 mt-8 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="text-sm text-gray-400 mb-4 md:mb-0">
+                © 2024 МаркетМастер. Все права защищены.
+              </div>
+              <div className="flex flex-wrap gap-6 text-sm text-gray-400">
+                <a
+                  href="/privacy"
+                  className="hover:text-white transition-colors"
+                >
+                  Политика конфиденциальности
+                </a>
+                <a href="#" className="hover:text-white transition-colors">
+                  Пользовательское соглашение
+                </a>
+                <a href="#" className="hover:text-white transition-colors">
+                  Публичная оферта
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
