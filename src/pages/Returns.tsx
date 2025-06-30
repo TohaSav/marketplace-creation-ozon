@@ -444,7 +444,6 @@ export default function Returns() {
             <Button className="bg-blue-600 hover:bg-blue-700">
               Написать в поддержку
             </Button>
-            <Button variant="outline">Позвонить: 8 800 555-35-35</Button>
           </div>
         </div>
       </div>
