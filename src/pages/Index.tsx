@@ -3,101 +3,18 @@ import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import StoriesCarousel from "@/components/StoriesCarousel";
 
-const mockProducts = [
-  {
-    id: 1,
-    title: "iPhone 15 Pro Max 256GB Титановый",
-    price: 119999,
-    originalPrice: 129999,
-    discount: 8,
-    image: "/placeholder.svg",
-    rating: 4.8,
-    reviews: 1247,
-    seller: "Apple Store",
-    isVerified: true,
-    bonusPercent: 5,
-  },
-  {
-    id: 2,
-    title: "Samsung Galaxy S24 Ultra 512GB Черный",
-    price: 94999,
-    originalPrice: 109999,
-    discount: 14,
-    image: "/placeholder.svg",
-    rating: 4.7,
-    reviews: 892,
-    seller: "Samsung Official",
-    isVerified: true,
-    bonusPercent: 3,
-  },
-  {
-    id: 3,
-    title: 'MacBook Air M3 13" 256GB Space Gray',
-    price: 109999,
-    image: "/placeholder.svg",
-    rating: 4.9,
-    reviews: 1543,
-    seller: "Apple Store",
-    isVerified: true,
-    bonusPercent: 7,
-  },
-  {
-    id: 4,
-    title: "AirPods Pro 2-го поколения с чехлом MagSafe",
-    price: 24999,
-    originalPrice: 27999,
-    discount: 11,
-    image: "/placeholder.svg",
-    rating: 4.6,
-    reviews: 2156,
-    seller: "Apple Store",
-    isVerified: true,
-    bonusPercent: 4,
-  },
-  {
-    id: 5,
-    title: "Sony PlayStation 5 Slim 1TB",
-    price: 54999,
-    image: "/placeholder.svg",
-    rating: 4.8,
-    reviews: 987,
-    seller: "Sony Official",
-    isVerified: true,
-    bonusPercent: 2,
-  },
-  {
-    id: 6,
-    title: "Nike Air Max 270 Black/White",
-    price: 12999,
-    originalPrice: 15999,
-    discount: 19,
-    image: "/placeholder.svg",
-    rating: 4.5,
-    reviews: 654,
-    seller: "Nike Store",
-    isVerified: true,
-    bonusPercent: 8,
-  },
-];
+// Товары будут загружаться от продавцов
+const mockProducts: any[] = [];
 
 export default function Index() {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  // Функция для генерации дополнительных товаров
-  const generateMoreProducts = (startId: number, count: number) => {
-    const additionalProducts = [];
-    for (let i = 0; i < count; i++) {
-      const baseProduct = mockProducts[i % mockProducts.length];
-      additionalProducts.push({
-        ...baseProduct,
-        id: startId + i,
-        title: `${baseProduct.title} - Вариант ${startId + i}`,
-        price: baseProduct.price + Math.floor(Math.random() * 10000) - 5000,
-      });
-    }
-    return additionalProducts;
+  // Функция для загрузки товаров от продавцов
+  const loadProductsFromSellers = () => {
+    // Здесь будет запрос к API для получения товаров от продавцов
+    return [];
   };
 
   // Функция загрузки дополнительных товаров
@@ -106,14 +23,14 @@ export default function Index() {
 
     setLoading(true);
 
-    // Имитация загрузки с сервера
+    // Загрузка товаров от продавцов
     setTimeout(() => {
-      const newProducts = generateMoreProducts(products.length + 1, 6);
+      const newProducts = loadProductsFromSellers();
       setProducts((prev) => [...prev, ...newProducts]);
       setLoading(false);
 
-      // Останавливаем загрузку после 30 товаров
-      if (products.length >= 24) {
+      // Если товаров больше нет, останавливаем загрузку
+      if (newProducts.length === 0) {
         setHasMore(false);
       }
     }, 1000);
@@ -179,11 +96,22 @@ export default function Index() {
         <h2 className="text-3xl font-bold text-gray-900 mb-6">
           Рекомендуем для вас
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">
+              Пока нет товаров от продавцов
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Товары появятся здесь после добавления продавцами
+            </p>
+          </div>
+        )}
 
         {/* Индикатор загрузки */}
         {loading && (

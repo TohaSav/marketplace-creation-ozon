@@ -1,29 +1,15 @@
 import AdminLayout from "@/components/AdminLayout";
 import Icon from "@/components/ui/icon";
 
-const salesData = [
-  { period: "Январь", sales: 1200000, orders: 150, users: 45 },
-  { period: "Февраль", sales: 1450000, orders: 180, users: 52 },
-  { period: "Март", sales: 1680000, orders: 210, users: 68 },
-  { period: "Апрель", sales: 1890000, orders: 245, users: 78 },
-  { period: "Май", sales: 2100000, orders: 280, users: 85 },
-  { period: "Июнь", sales: 2340000, orders: 315, users: 92 },
-];
-
-const topProducts = [
-  { name: "iPhone 15 Pro Max", sales: 45, revenue: 5399550 },
-  { name: "Samsung Galaxy S24", sales: 38, revenue: 3419620 },
-  { name: "MacBook Air M3", sales: 22, revenue: 3299780 },
-  { name: "AirPods Pro", sales: 67, revenue: 1674330 },
-  { name: "Клавиатура Magic", sales: 25, revenue: 324750 },
-];
-
-const topCategories = [
-  { name: "Смартфоны", percentage: 45, sales: 8819170 },
-  { name: "Ноутбуки", percentage: 28, sales: 5484692 },
-  { name: "Аудио", percentage: 15, sales: 2939475 },
-  { name: "Аксессуары", percentage: 12, sales: 2351856 },
-];
+// Пустые массивы для аналитики - данные будут загружаться с сервера
+const salesData: {
+  period: string;
+  sales: number;
+  orders: number;
+  users: number;
+}[] = [];
+const topProducts: { name: string; sales: number; revenue: number }[] = [];
+const topCategories: { name: string; percentage: number; sales: number }[] = [];
 
 export default function AdminAnalytics() {
   const totalRevenue = salesData.reduce((sum, item) => sum + item.sales, 0);
@@ -161,38 +147,49 @@ export default function AdminAnalytics() {
               <Icon name="BarChart3" size={20} className="text-gray-400" />
             </div>
             <div className="space-y-3">
-              {salesData.map((item, index) => {
-                const maxSales = Math.max(...salesData.map((d) => d.sales));
-                const percentage = (item.sales / maxSales) * 100;
-                return (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className="text-sm font-medium text-gray-900 w-16">
-                        {item.period}
-                      </span>
-                      <div className="flex-1">
-                        <div className="bg-gray-200 rounded-full h-2 w-32">
-                          <div
-                            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${percentage}%` }}
-                          />
+              {salesData.length === 0 ? (
+                <div className="text-center py-8">
+                  <Icon
+                    name="BarChart3"
+                    size={48}
+                    className="text-gray-400 mx-auto mb-4"
+                  />
+                  <p className="text-gray-500">Нет данных по продажам</p>
+                </div>
+              ) : (
+                salesData.map((item, index) => {
+                  const maxSales = Math.max(...salesData.map((d) => d.sales));
+                  const percentage = (item.sales / maxSales) * 100;
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="text-sm font-medium text-gray-900 w-16">
+                          {item.period}
+                        </span>
+                        <div className="flex-1">
+                          <div className="bg-gray-200 rounded-full h-2 w-32">
+                            <div
+                              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.sales.toLocaleString()} ₽
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item.orders} заказов
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
-                        {item.sales.toLocaleString()} ₽
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {item.orders} заказов
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
 
@@ -203,35 +200,46 @@ export default function AdminAnalytics() {
               <Icon name="Package" size={20} className="text-gray-400" />
             </div>
             <div className="space-y-3">
-              {topProducts.map((product, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-purple-600">
-                          {index + 1}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {product.name}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {product.sales} продаж
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-medium text-gray-900">
-                      {product.revenue.toLocaleString()} ₽
-                    </div>
-                  </div>
+              {topProducts.length === 0 ? (
+                <div className="text-center py-8">
+                  <Icon
+                    name="Package"
+                    size={48}
+                    className="text-gray-400 mx-auto mb-4"
+                  />
+                  <p className="text-gray-500">Нет данных по товарам</p>
                 </div>
-              ))}
+              ) : (
+                topProducts.map((product, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-medium text-purple-600">
+                            {index + 1}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {product.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {product.sales} продаж
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-gray-900">
+                        {product.revenue.toLocaleString()} ₽
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -244,47 +252,55 @@ export default function AdminAnalytics() {
             </h3>
             <Icon name="PieChart" size={20} className="text-gray-400" />
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {topCategories.map((category, index) => (
-              <div key={index} className="text-center">
-                <div className="mx-auto w-20 h-20 relative mb-2">
-                  <svg
-                    className="w-20 h-20 transform -rotate-90"
-                    viewBox="0 0 100 100"
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      stroke="#e5e7eb"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      stroke="#8b5cf6"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={`${category.percentage * 2.51} 251.2`}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-sm font-medium text-gray-900">
-                      {category.percentage}%
-                    </span>
+          {topCategories.length === 0 ? (
+            <div className="text-center py-8 col-span-full">
+              <Icon name="PieChart" size={48} className="text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">Нет данных по категориям</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {topCategories.map((category, index) => (
+                <div key={index} className="text-center">
+                  <div className="mx-auto w-20 h-20 relative mb-2">
+                    <svg
+                      className="w-20 h-20 transform -rotate-90"
+                      viewBox="0 0 100 100"
+                    >
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke="#e5e7eb"
+                        strokeWidth="8"
+                        fill="none"
+                      />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke="#8b5cf6"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${category.percentage * 2.51} 251.2`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-sm font-medium text-gray-900">
+                        {category.percentage}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-sm font-medium text-gray-900 mb-1">
+                    {category.name}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {category.sales.toLocaleString()} ₽
                   </div>
                 </div>
-                <div className="text-sm font-medium text-gray-900 mb-1">
-                  {category.name}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {category.sales.toLocaleString()} ₽
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
           </div>
         </div>
 

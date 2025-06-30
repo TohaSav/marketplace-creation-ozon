@@ -14,51 +14,11 @@ interface Product {
   description: string;
 }
 
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    title: "iPhone 15 Pro Max",
-    price: 119990,
-    category: "Смартфоны",
-    stock: 15,
-    status: "active",
-    image: "/api/placeholder/300/300",
-    description: "Новейший iPhone с профессиональными возможностями",
-  },
-  {
-    id: 2,
-    title: "Samsung Galaxy S24 Ultra",
-    price: 89990,
-    category: "Смартфоны",
-    stock: 8,
-    status: "active",
-    image: "/api/placeholder/300/300",
-    description: "Мощный смартфон от Samsung",
-  },
-  {
-    id: 3,
-    title: "MacBook Air M3",
-    price: 149990,
-    category: "Ноутбуки",
-    stock: 3,
-    status: "active",
-    image: "/api/placeholder/300/300",
-    description: "Легкий и мощный ноутбук",
-  },
-  {
-    id: 4,
-    title: "AirPods Pro",
-    price: 24990,
-    category: "Аудио",
-    stock: 0,
-    status: "inactive",
-    image: "/api/placeholder/300/300",
-    description: "Беспроводные наушники с шумоподавлением",
-  },
-];
+// Пустой массив товаров - данные будут загружаться с сервера
+const initialProducts: Product[] = [];
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -218,80 +178,107 @@ export default function AdminProducts() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <img
-                            className="h-10 w-10 rounded-lg object-cover"
-                            src={product.image}
-                            alt={product.title}
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {product.title}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {product.description.substring(0, 50)}...
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.price.toLocaleString()} ₽
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span
-                        className={`font-medium ${getStockColor(product.stock)}`}
-                      >
-                        {product.stock} шт.
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          product.status,
-                        )}`}
-                      >
-                        {product.status === "active"
-                          ? "Активный"
-                          : "Неактивный"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex space-x-2">
+                {filteredProducts.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center">
+                        <Icon
+                          name="Package"
+                          size={48}
+                          className="text-gray-400 mb-4"
+                        />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          Пока нет товаров
+                        </h3>
+                        <p className="text-gray-500 mb-4">
+                          Добавьте первый товар в каталог
+                        </p>
                         <button
-                          onClick={() => handleEditProduct(product)}
-                          className="text-purple-600 hover:text-purple-900"
+                          onClick={handleAddProduct}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700"
                         >
-                          <Icon name="Edit" size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(product.id)}
-                          className={`${product.status === "active" ? "text-red-600 hover:text-red-900" : "text-green-600 hover:text-green-900"}`}
-                        >
-                          <Icon
-                            name={
-                              product.status === "active" ? "EyeOff" : "Eye"
-                            }
-                            size={16}
-                          />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(product.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <Icon name="Trash2" size={16} />
+                          <Icon name="Plus" size={16} className="mr-2" />
+                          Добавить товар
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredProducts.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <img
+                              className="h-10 w-10 rounded-lg object-cover"
+                              src={product.image}
+                              alt={product.title}
+                            />
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {product.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {product.description.substring(0, 50)}...
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {product.category}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {product.price.toLocaleString()} ₽
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span
+                          className={`font-medium ${getStockColor(product.stock)}`}
+                        >
+                          {product.stock} шт.
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                            product.status,
+                          )}`}
+                        >
+                          {product.status === "active"
+                            ? "Активный"
+                            : "Неактивный"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEditProduct(product)}
+                            className="text-purple-600 hover:text-purple-900"
+                          >
+                            <Icon name="Edit" size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleToggleStatus(product.id)}
+                            className={`${product.status === "active" ? "text-red-600 hover:text-red-900" : "text-green-600 hover:text-green-900"}`}
+                          >
+                            <Icon
+                              name={
+                                product.status === "active" ? "EyeOff" : "Eye"
+                              }
+                              size={16}
+                            />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

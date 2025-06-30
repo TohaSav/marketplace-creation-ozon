@@ -15,99 +15,56 @@ interface Story {
   discount?: number;
 }
 
-const mockStories: Story[] = [
-  {
-    id: 1,
-    sellerName: "Apple Store",
-    sellerAvatar: "/placeholder.svg",
-    isVerified: true,
-    image: "/placeholder.svg",
-    productName: "iPhone 15 Pro Max",
-    price: 119999,
-    discount: 10,
-  },
-  {
-    id: 2,
-    sellerName: "Samsung Official",
-    sellerAvatar: "/placeholder.svg",
-    isVerified: true,
-    image: "/placeholder.svg",
-    productName: "Galaxy S24 Ultra",
-    price: 94999,
-    discount: 15,
-  },
-  {
-    id: 3,
-    sellerName: "Nike Store",
-    sellerAvatar: "/placeholder.svg",
-    isVerified: true,
-    image: "/placeholder.svg",
-    productName: "Air Max 270",
-    price: 12999,
-    discount: 20,
-  },
-  {
-    id: 4,
-    sellerName: "Sony Official",
-    sellerAvatar: "/placeholder.svg",
-    isVerified: true,
-    image: "/placeholder.svg",
-    productName: "PlayStation 5",
-    price: 54999,
-  },
-  {
-    id: 5,
-    sellerName: "Dyson Store",
-    sellerAvatar: "/placeholder.svg",
-    isVerified: true,
-    image: "/placeholder.svg",
-    productName: "V15 Detect",
-    price: 49999,
-    discount: 8,
-  },
-];
+// Stories будут загружаться от продавцов
+const mockStories: Story[] = [];
 
 export default function StoriesCarousel() {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
 
   return (
     <>
-      <div className="w-full overflow-x-auto pb-2">
-        <div className="flex space-x-3 px-1">
-          {mockStories.map((story) => (
-            <div
-              key={story.id}
-              className="flex-shrink-0 cursor-pointer"
-              onClick={() => setSelectedStory(story)}
-            >
-              <div className="relative">
-                {/* Story Ring */}
-                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-pink-600 p-0.5 hover:scale-105 transition-transform">
-                  <div className="w-full h-full rounded-full bg-white p-0.5">
-                    <img
-                      src={story.sellerAvatar}
-                      alt={story.sellerName}
-                      className="w-full h-full rounded-full object-cover"
-                    />
+      {mockStories.length > 0 ? (
+        <div className="w-full overflow-x-auto pb-2">
+          <div className="flex space-x-3 px-1">
+            {mockStories.map((story) => (
+              <div
+                key={story.id}
+                className="flex-shrink-0 cursor-pointer"
+                onClick={() => setSelectedStory(story)}
+              >
+                <div className="relative">
+                  {/* Story Ring */}
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-pink-600 p-0.5 hover:scale-105 transition-transform">
+                    <div className="w-full h-full rounded-full bg-white p-0.5">
+                      <img
+                        src={story.sellerAvatar}
+                        alt={story.sellerName}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    </div>
                   </div>
+
+                  {/* Verified Badge */}
+                  {story.isVerified && (
+                    <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full w-5 h-5 flex items-center justify-center">
+                      <Icon name="Check" size={12} className="text-white" />
+                    </div>
+                  )}
                 </div>
 
-                {/* Verified Badge */}
-                {story.isVerified && (
-                  <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full w-5 h-5 flex items-center justify-center">
-                    <Icon name="Check" size={12} className="text-white" />
-                  </div>
-                )}
+                {/* Seller Name */}
+                <p className="text-xs text-center mt-1 truncate w-16 text-gray-700">
+                  {story.sellerName.split(" ")[0]}
+                </p>
               </div>
-
-              {/* Seller Name */}
-              <p className="text-xs text-center mt-1 truncate w-16 text-gray-700">
-                {story.sellerName.split(" ")[0]}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-500">Пока нет stories от продавцов</p>
+        </div>
+      )}
 
       {/* Story Modal */}
       {selectedStory && (

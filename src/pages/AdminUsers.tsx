@@ -16,71 +16,11 @@ interface User {
   avatar: string;
 }
 
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: "Иван Петров",
-    email: "ivan@example.com",
-    phone: "+7 (999) 123-45-67",
-    registrationDate: "2023-10-15T10:30:00Z",
-    lastActivity: "2024-01-15T14:20:00Z",
-    totalOrders: 5,
-    totalSpent: 245000,
-    status: "active",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 2,
-    name: "Мария Сидорова",
-    email: "maria@example.com",
-    phone: "+7 (999) 765-43-21",
-    registrationDate: "2023-11-22T16:45:00Z",
-    lastActivity: "2024-01-14T11:15:00Z",
-    totalOrders: 3,
-    totalSpent: 178000,
-    status: "active",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 3,
-    name: "Алексей Козлов",
-    email: "alex@example.com",
-    phone: "+7 (999) 111-22-33",
-    registrationDate: "2023-09-05T09:15:00Z",
-    lastActivity: "2024-01-13T16:30:00Z",
-    totalOrders: 8,
-    totalSpent: 435000,
-    status: "active",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 4,
-    name: "Ольга Новикова",
-    email: "olga@example.com",
-    phone: "+7 (999) 888-77-66",
-    registrationDate: "2023-12-01T12:00:00Z",
-    lastActivity: "2024-01-12T18:45:00Z",
-    totalOrders: 2,
-    totalSpent: 89990,
-    status: "active",
-    avatar: "/api/placeholder/40/40",
-  },
-  {
-    id: 5,
-    name: "Дмитрий Волков",
-    email: "dmitry@example.com",
-    phone: "+7 (999) 555-44-33",
-    registrationDate: "2023-08-18T14:30:00Z",
-    lastActivity: "2023-12-25T10:15:00Z",
-    totalOrders: 1,
-    totalSpent: 12990,
-    status: "blocked",
-    avatar: "/api/placeholder/40/40",
-  },
-];
+// Пустой массив пользователей - данные будут загружаться с сервера
+const initialUsers: User[] = [];
 
 export default function AdminUsers() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -303,78 +243,105 @@ export default function AdminUsers() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <img
-                            className="h-10 w-10 rounded-full"
-                            src={user.avatar}
-                            alt={user.name}
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            ID: {user.id}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{user.email}</div>
-                      <div className="text-sm text-gray-500">{user.phone}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {user.totalOrders} заказ(ов)
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {user.totalSpent.toLocaleString()} ₽
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(user.registrationDate)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          user.status,
-                        )}`}
-                      >
-                        {user.status === "active" ? "Активный" : "Заблокирован"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleViewUser(user)}
-                          className="text-purple-600 hover:text-purple-900"
-                        >
-                          <Icon name="Eye" size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleToggleUserStatus(user.id)}
-                          className={`${
-                            user.status === "active"
-                              ? "text-red-600 hover:text-red-900"
-                              : "text-green-600 hover:text-green-900"
-                          }`}
-                        >
-                          <Icon
-                            name={
-                              user.status === "active" ? "UserX" : "UserCheck"
-                            }
-                            size={16}
-                          />
-                        </button>
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center">
+                        <Icon
+                          name="Users"
+                          size={48}
+                          className="text-gray-400 mb-4"
+                        />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          Пока нет пользователей
+                        </h3>
+                        <p className="text-gray-500">
+                          Пользователи будут отображаться здесь, когда они
+                          зарегистрируются
+                        </p>
                       </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <img
+                              className="h-10 w-10 rounded-full"
+                              src={user.avatar}
+                              alt={user.name}
+                            />
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {user.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              ID: {user.id}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {user.email}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {user.phone}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {user.totalOrders} заказ(ов)
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {user.totalSpent.toLocaleString()} ₽
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(user.registrationDate)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                            user.status,
+                          )}`}
+                        >
+                          {user.status === "active"
+                            ? "Активный"
+                            : "Заблокирован"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleViewUser(user)}
+                            className="text-purple-600 hover:text-purple-900"
+                          >
+                            <Icon name="Eye" size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleToggleUserStatus(user.id)}
+                            className={`${
+                              user.status === "active"
+                                ? "text-red-600 hover:text-red-900"
+                                : "text-green-600 hover:text-green-900"
+                            }`}
+                          >
+                            <Icon
+                              name={
+                                user.status === "active" ? "UserX" : "UserCheck"
+                              }
+                              size={16}
+                            />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

@@ -21,75 +21,8 @@ interface Order {
   paymentMethod: string;
 }
 
-const mockOrders: Order[] = [
-  {
-    id: "12847",
-    customerName: "Иван Петров",
-    customerEmail: "ivan@example.com",
-    customerPhone: "+7 (999) 123-45-67",
-    products: [
-      { id: 1, title: "iPhone 15 Pro Max", price: 119990, quantity: 1 },
-    ],
-    totalAmount: 119990,
-    status: "processing",
-    orderDate: "2024-01-15T10:30:00Z",
-    deliveryAddress: "Москва, ул. Ленина, 15, кв. 42",
-    paymentMethod: "Онлайн",
-  },
-  {
-    id: "12846",
-    customerName: "Мария Сидорова",
-    customerEmail: "maria@example.com",
-    customerPhone: "+7 (999) 765-43-21",
-    products: [
-      { id: 2, title: "Samsung Galaxy S24", price: 89990, quantity: 1 },
-    ],
-    totalAmount: 89990,
-    status: "shipped",
-    orderDate: "2024-01-14T14:20:00Z",
-    deliveryAddress: "СПб, Невский пр., 28",
-    paymentMethod: "При получении",
-  },
-  {
-    id: "12845",
-    customerName: "Алексей Козлов",
-    customerEmail: "alex@example.com",
-    customerPhone: "+7 (999) 111-22-33",
-    products: [
-      { id: 3, title: "MacBook Air M3", price: 149990, quantity: 1 },
-      { id: 4, title: "AirPods Pro", price: 24990, quantity: 1 },
-    ],
-    totalAmount: 174980,
-    status: "delivered",
-    orderDate: "2024-01-13T09:15:00Z",
-    deliveryAddress: "Новосибирск, ул. Красный пр., 10",
-    paymentMethod: "Онлайн",
-  },
-  {
-    id: "12844",
-    customerName: "Ольга Новикова",
-    customerEmail: "olga@example.com",
-    customerPhone: "+7 (999) 888-77-66",
-    products: [{ id: 4, title: "AirPods Pro", price: 24990, quantity: 2 }],
-    totalAmount: 49980,
-    status: "pending",
-    orderDate: "2024-01-12T16:45:00Z",
-    deliveryAddress: "Екатеринбург, ул. Мира, 25",
-    paymentMethod: "Онлайн",
-  },
-  {
-    id: "12843",
-    customerName: "Дмитрий Волков",
-    customerEmail: "dmitry@example.com",
-    customerPhone: "+7 (999) 555-44-33",
-    products: [{ id: 5, title: "Клавиатура Magic", price: 12990, quantity: 1 }],
-    totalAmount: 12990,
-    status: "cancelled",
-    orderDate: "2024-01-11T11:30:00Z",
-    deliveryAddress: "Казань, ул. Пушкина, 5",
-    paymentMethod: "При получении",
-  },
-];
+// Пустой массив заказов - данные будут загружаться с сервера
+const initialOrders: Order[] = [];
 
 const statusLabels = {
   pending: "Ожидает",
@@ -117,7 +50,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -246,57 +179,79 @@ export default function AdminOrders() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        #{order.id}
+                {filteredOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center">
+                        <Icon
+                          name="ShoppingCart"
+                          size={48}
+                          className="text-gray-400 mb-4"
+                        />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          Пока нет заказов
+                        </h3>
+                        <p className="text-gray-500">
+                          Заказы будут отображаться здесь, когда они появятся
+                        </p>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {order.products.length} товар(ов)
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {order.customerName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {order.customerEmail}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order.totalAmount.toLocaleString()} ₽
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(order.orderDate)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={order.status}
-                        onChange={(e) =>
-                          handleStatusChange(order.id, e.target.value)
-                        }
-                        className={`text-xs font-medium rounded-full px-2 py-1 border-none focus:ring-2 focus:ring-purple-500 ${getStatusColor(
-                          order.status,
-                        )}`}
-                      >
-                        {Object.entries(statusLabels).map(([value, label]) => (
-                          <option key={value} value={value}>
-                            {label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleViewOrder(order)}
-                        className="text-purple-600 hover:text-purple-900"
-                      >
-                        <Icon name="Eye" size={16} />
-                      </button>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredOrders.map((order) => (
+                    <tr key={order.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          #{order.id}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {order.products.length} товар(ов)
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {order.customerName}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {order.customerEmail}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {order.totalAmount.toLocaleString()} ₽
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(order.orderDate)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <select
+                          value={order.status}
+                          onChange={(e) =>
+                            handleStatusChange(order.id, e.target.value)
+                          }
+                          className={`text-xs font-medium rounded-full px-2 py-1 border-none focus:ring-2 focus:ring-purple-500 ${getStatusColor(
+                            order.status,
+                          )}`}
+                        >
+                          {Object.entries(statusLabels).map(
+                            ([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => handleViewOrder(order)}
+                          className="text-purple-600 hover:text-purple-900"
+                        >
+                          <Icon name="Eye" size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
