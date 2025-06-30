@@ -1,9 +1,36 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Icon from "@/components/ui/icon";
+import AuthModal from "@/components/AuthModal";
 
 export default function Header() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState<{
+    name: string;
+    type: "buyer" | "seller";
+  } | null>(null);
+
+  const handleLogin = (
+    email: string,
+    password: string,
+    userType: "buyer" | "seller",
+  ) => {
+    // Mock login - в реальном приложении здесь будет API запрос
+    setUser({ name: email.split("@")[0], type: userType });
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,13 +76,62 @@ export default function Header() {
               </Badge>
             </Button>
 
-            <Button variant="ghost" className="flex items-center space-x-2">
-              <Icon name="User" size={20} />
-              <span className="hidden sm:inline">Войти</span>
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center space-x-2"
+                  >
+                    <Icon name="User" size={20} />
+                    <span className="hidden sm:inline">{user.name}</span>
+                    <Icon name="ChevronDown" size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem>
+                    <Icon name="User" size={16} className="mr-2" />
+                    {user.type === "buyer"
+                      ? "Личный кабинет"
+                      : "Кабинет продавца"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Icon name="Package" size={16} className="mr-2" />
+                    {user.type === "buyer" ? "Мои заказы" : "Мои товары"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Icon name="CreditCard" size={16} className="mr-2" />
+                    {user.type === "buyer" ? "Бонусная карта" : "Финансы"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Icon name="Settings" size={16} className="mr-2" />
+                    Настройки
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <Icon name="LogOut" size={16} className="mr-2" />
+                    Выйти
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="ghost"
+                className="flex items-center space-x-2"
+                onClick={() => setIsAuthModalOpen(true)}
+              >
+                <Icon name="User" size={20} />
+                <span className="hidden sm:inline">Войти</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
     </header>
+    
+    <AuthModal
+      isOpen={isAuthModalOpen}
+      onClose={() => setIsAuthModalOpen(false)}
+      onLogin={handleLogin}
+    />
   );
 }
