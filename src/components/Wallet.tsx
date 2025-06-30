@@ -138,13 +138,6 @@ export default function Wallet() {
             <Icon name="Plus" size={16} className="mr-2" />
             Пополнить
           </Button>
-          <Button
-            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-            variant="outline"
-          >
-            <Icon name="Send" size={16} className="mr-2" />
-            Перевести
-          </Button>
         </div>
       </div>
 
