@@ -44,7 +44,7 @@ export default function Header() {
             </div>
 
             {/* Search */}
-            <div className="flex-1 max-w-2xl mx-8">
+            <div className="flex-1 max-w-2xl mx-2 md:mx-8">
               <div className="relative">
                 <Input
                   type="text"
@@ -60,18 +60,21 @@ export default function Header() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center space-x-6">
-              <Button variant="ghost" className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 md:space-x-6">
+              <Button
+                variant="ghost"
+                className="flex items-center space-x-2 px-2 md:px-4"
+              >
                 <Icon name="Heart" size={20} />
-                <span className="hidden sm:inline">Избранное</span>
+                <span className="hidden md:inline">Избранное</span>
               </Button>
 
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 relative"
+                className="flex items-center space-x-2 relative px-2 md:px-4"
               >
                 <Icon name="ShoppingCart" size={20} />
-                <span className="hidden sm:inline">Корзина</span>
+                <span className="hidden md:inline">Корзина</span>
                 <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   0
                 </Badge>
@@ -82,10 +85,10 @@ export default function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="flex items-center space-x-2"
+                      className="flex items-center space-x-2 px-2 md:px-4"
                     >
                       <Icon name="User" size={20} />
-                      <span className="hidden sm:inline">{user.name}</span>
+                      <span className="hidden md:inline">{user.name}</span>
                       <Icon name="ChevronDown" size={16} />
                     </Button>
                   </DropdownMenuTrigger>
@@ -117,11 +120,11 @@ export default function Header() {
               ) : (
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 px-2 md:px-4"
                   onClick={() => setIsAuthModalOpen(true)}
                 >
                   <Icon name="User" size={20} />
-                  <span className="hidden sm:inline">Войти</span>
+                  <span className="hidden md:inline">Войти</span>
                 </Button>
               )}
             </div>

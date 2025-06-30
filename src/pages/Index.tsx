@@ -50,7 +50,7 @@ export default function Index() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, products.length]);
+  }, [loading, hasMore]);
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -161,24 +161,36 @@ export default function Index() {
               <h3 className="text-lg font-semibold mb-4">Покупателям</h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/how-to-order"
+                    className="hover:text-white transition-colors"
+                  >
                     Как сделать заказ
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/payment-methods"
+                    className="hover:text-white transition-colors"
+                  >
                     Способы оплаты
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/delivery"
+                    className="hover:text-white transition-colors"
+                  >
                     Доставка
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/returns"
+                    className="hover:text-white transition-colors"
+                  >
                     Возврат товара
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">

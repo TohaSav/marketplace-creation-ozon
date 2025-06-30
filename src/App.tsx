@@ -15,6 +15,10 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import PersonalData from "./pages/PersonalData";
 import HowToSell from "./pages/HowToSell";
+import HowToOrder from "./pages/HowToOrder";
+import PaymentMethods from "./pages/PaymentMethods";
+import Delivery from "./pages/Delivery";
+import Returns from "./pages/Returns";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +86,10 @@ const App = () => (
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/personal-data" element={<PersonalData />} />
           <Route path="/how-to-sell" element={<HowToSell />} />
+          <Route path="/how-to-order" element={<HowToOrder />} />
+          <Route path="/payment-methods" element={<PaymentMethods />} />
+          <Route path="/delivery" element={<Delivery />} />
+          <Route path="/returns" element={<Returns />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

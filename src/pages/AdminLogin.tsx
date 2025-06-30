@@ -13,8 +13,8 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    // Проверка учетных данных
-    if (email === "swi79@bk.ru" && password === "%RAbg*q6") {
+    // Проверка учетных данных (в продакшене заменить на API вызов)
+    if (email === "admin@example.com" && password === "admin123") {
       localStorage.setItem("admin-token", "admin-authenticated");
       toast({
         title: "Успешный вход",
