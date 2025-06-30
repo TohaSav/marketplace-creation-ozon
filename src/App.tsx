@@ -27,6 +27,9 @@ import AddProduct from "./pages/AddProduct";
 import UserLogin from "./pages/UserLogin";
 import UserRegister from "./pages/UserRegister";
 import BonusCard from "./pages/BonusCard";
+import Profile from "./pages/Profile";
+import Orders from "./pages/Orders";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -101,6 +104,9 @@ const App = () => (
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/bonus-card" element={<BonusCard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/settings" element={<Settings />} />
 
           {/* Авторизация покупателей */}
           <Route path="/login" element={<UserLogin />} />
