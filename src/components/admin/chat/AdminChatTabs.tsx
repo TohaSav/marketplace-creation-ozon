@@ -1,13 +1,12 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
-import { AdminChatTab, SupportTicket, ChatUser } from "@/types/adminChat";
 
 interface AdminChatTabsProps {
-  activeTab: AdminChatTab;
-  onTabChange: (tab: AdminChatTab) => void;
-  chatUsers: ChatUser[];
-  tickets: SupportTicket[];
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  chatUsers: Array<{ unreadCount: number }>;
+  tickets: Array<{ status: string }>;
 }
 
 export default function AdminChatTabs({
@@ -24,11 +23,7 @@ export default function AdminChatTabs({
 
   return (
     <TabsList>
-      <TabsTrigger
-        value="chats"
-        className="flex items-center gap-2"
-        onClick={() => onTabChange("chats")}
-      >
+      <TabsTrigger value="chats" className="flex items-center gap-2">
         <Icon name="MessageCircle" size={16} />
         Чаты
         {unreadChatsCount > 0 && (
@@ -36,11 +31,7 @@ export default function AdminChatTabs({
         )}
       </TabsTrigger>
 
-      <TabsTrigger
-        value="tickets"
-        className="flex items-center gap-2"
-        onClick={() => onTabChange("tickets")}
-      >
+      <TabsTrigger value="tickets" className="flex items-center gap-2">
         <Icon name="Ticket" size={16} />
         Тикеты
         {newTicketsCount > 0 && (

@@ -13,7 +13,7 @@ export default function AdminProtectedRoute({
   useEffect(() => {
     const token = localStorage.getItem("admin-token");
     if (!token || token !== "admin-authenticated") {
-      navigate("/admin");
+      navigate("/admin/login");
     }
   }, [navigate]);
 
