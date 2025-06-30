@@ -1,10 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
+
+// Функция генерации уникального номера карты
+const generateCardNumber = () => {
+  // Генерируем 16-значный номер карты
+  const segments = [];
+  for (let i = 0; i < 4; i++) {
+    const segment = Math.floor(1000 + Math.random() * 9000).toString();
+    segments.push(segment);
+  }
+  return segments.join(" ");
+};
+
+// Функция получения или создания номера карты для пользователя
+const getUserCardNumber = () => {
+  const stored = localStorage.getItem("userCardNumber");
+  if (stored) {
+    return stored;
+  }
+  const newCardNumber = generateCardNumber();
+  localStorage.setItem("userCardNumber", newCardNumber);
+  return newCardNumber;
+};
 
 export default function BonusCard() {
   const [userPoints] = useState(0);
   const [cardLevel] = useState("Золотая");
+  const [cardNumber, setCardNumber] = useState("");
+
+  useEffect(() => {
+    setCardNumber(getUserCardNumber());
+  }, []);
 
   const bonusHistory: Array<{
     id: number;
@@ -41,7 +68,7 @@ export default function BonusCard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl font-bold">{cardLevel} карта</h2>
-              <p className="opacity-90">№ 1234 5678 9012 3456</p>
+              <p className="opacity-90">№ {cardNumber}</p>
             </div>
             <Icon name="CreditCard" size={48} className="opacity-80" />
           </div>
