@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import StoriesCarousel from "@/components/StoriesCarousel";
+import Icon from "@/components/ui/icon";
 
 // Товары будут загружаться от продавцов
 const mockProducts: any[] = [];
@@ -11,6 +12,55 @@ export default function Index() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  // Данные для баннеров
+  const banners = [
+    {
+      id: 1,
+      title: "Добро пожаловать в Calibre Store",
+      subtitle: "Миллионы товаров от проверенных продавцов",
+      description: "Найдите всё, что нужно, в одном месте",
+      gradient: "from-purple-600 to-blue-600",
+      image:
+        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop",
+      buttonText: "Начать покупки",
+      buttonLink: "#products",
+    },
+    {
+      id: 2,
+      title: "Скидки до 70% на электронику",
+      subtitle: "Лучшие предложения месяца",
+      description: "Смартфоны, ноутбуки, аксессуары по выгодным ценам",
+      gradient: "from-orange-500 to-red-600",
+      image:
+        "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&h=400&fit=crop",
+      buttonText: "Смотреть скидки",
+      buttonLink: "/category/electronics",
+    },
+    {
+      id: 3,
+      title: "Новая коллекция одежды",
+      subtitle: "Модные тренды 2025",
+      description: "Стильная одежда для всей семьи от ведущих брендов",
+      gradient: "from-pink-500 to-purple-600",
+      image:
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop",
+      buttonText: "Посмотреть коллекцию",
+      buttonLink: "/category/clothing",
+    },
+    {
+      id: 4,
+      title: "Бесплатная доставка",
+      subtitle: "При заказе от 2000 рублей",
+      description: "Быстрая доставка по всей России",
+      gradient: "from-green-500 to-teal-600",
+      image:
+        "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=800&h=400&fit=crop",
+      buttonText: "Узнать больше",
+      buttonLink: "/delivery",
+    },
+  ];
 
   // Функция для загрузки товаров от продавцов
   const loadProductsFromSellers = () => {
@@ -51,43 +101,145 @@ export default function Index() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [loading, hasMore]);
+
+  // Автопереключение баннеров
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  const nextBanner = () => {
+    setCurrentBanner((prev) => (prev + 1) % banners.length);
+  };
+
+  const prevBanner = () => {
+    setCurrentBanner((prev) => (prev - 1 + banners.length) % banners.length);
+  };
+
+  const goToBanner = (index: number) => {
+    setCurrentBanner(index);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Добро пожаловать в Calibre Store
-            </h1>
-            <p className="text-xl opacity-90 mb-6">
-              Миллионы товаров от проверенных продавцов
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {[
-                "Электроника",
-                "Одежда",
-                "Дом и сад",
-                "Спорт",
-                "Красота",
-                "Автотовары",
-              ].map((category) => (
-                <button
-                  key={category}
-                  className="px-6 py-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors text-sm font-medium"
-                >
-                  {category}
-                </button>
-              ))}
+      {/* Banner Carousel */}
+      <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] overflow-hidden">
+        {banners.map((banner, index) => (
+          <div
+            key={banner.id}
+            className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
+              index === currentBanner
+                ? "translate-x-0"
+                : index < currentBanner
+                  ? "-translate-x-full"
+                  : "translate-x-full"
+            }`}
+          >
+            <div
+              className={`bg-gradient-to-r ${banner.gradient} h-full relative overflow-hidden`}
+            >
+              {/* Background Image */}
+              <div className="absolute inset-0 opacity-20">
+                <img
+                  src={banner.image}
+                  alt={banner.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="relative h-full flex items-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    {/* Text Content */}
+                    <div className="text-white text-center lg:text-left">
+                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
+                        {banner.title}
+                      </h1>
+                      <p className="text-lg sm:text-xl opacity-90 mb-2 md:mb-4">
+                        {banner.subtitle}
+                      </p>
+                      <p className="text-sm sm:text-base opacity-75 mb-4 md:mb-6">
+                        {banner.description}
+                      </p>
+                      <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-3 mb-4 md:mb-6">
+                        {[
+                          "Электроника",
+                          "Одежда",
+                          "Дом и сад",
+                          "Спорт",
+                          "Красота",
+                          "Автотовары",
+                        ].map((category) => (
+                          <button
+                            key={category}
+                            className="px-3 md:px-6 py-1 md:py-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors text-xs md:text-sm font-medium"
+                          >
+                            {category}
+                          </button>
+                        ))}
+                      </div>
+                      <a
+                        href={banner.buttonLink}
+                        className="inline-flex items-center px-4 md:px-8 py-2 md:py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-semibold text-sm md:text-base"
+                      >
+                        {banner.buttonText}
+                        <Icon name="ArrowRight" size={16} className="ml-2" />
+                      </a>
+                    </div>
+
+                    {/* Image for larger screens */}
+                    <div className="hidden lg:block">
+                      <img
+                        src={banner.image}
+                        alt={banner.title}
+                        className="w-full h-64 object-cover rounded-lg shadow-2xl"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        ))}
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevBanner}
+          className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 md:p-3 rounded-full transition-colors"
+        >
+          <Icon name="ChevronLeft" size={20} />
+        </button>
+        <button
+          onClick={nextBanner}
+          className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 md:p-3 rounded-full transition-colors"
+        >
+          <Icon name="ChevronRight" size={20} />
+        </button>
+
+        {/* Dots Indicator */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {banners.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToBanner(index)}
+              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors ${
+                index === currentBanner ? "bg-white" : "bg-white/50"
+              }`}
+            />
+          ))}
         </div>
       </div>
 
       {/* Products Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div
+        id="products"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      >
         {/* Stories */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Stories</h3>
