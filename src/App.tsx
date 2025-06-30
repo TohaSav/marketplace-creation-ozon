@@ -21,6 +21,9 @@ import Delivery from "./pages/Delivery";
 import Returns from "./pages/Returns";
 import Favorites from "./pages/Favorites";
 import Cart from "./pages/Cart";
+import SellerLogin from "./pages/SellerLogin";
+import SellerDashboard from "./pages/SellerDashboard";
+import AddProduct from "./pages/AddProduct";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +97,11 @@ const App = () => (
           <Route path="/returns" element={<Returns />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/cart" element={<Cart />} />
+
+          {/* Кабинет продавца */}
+          <Route path="/seller" element={<SellerLogin />} />
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/add-product" element={<AddProduct />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

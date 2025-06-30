@@ -1,0 +1,295 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
+import Icon from "@/components/ui/icon";
+import Header from "@/components/Header";
+
+export default function AddProduct() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [product, setProduct] = useState({
+    title: "",
+    description: "",
+    price: "",
+    category: "",
+    image: null as File | null,
+    stock: "",
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProduct({ ...product, image: e.target.files[0] });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const seller = JSON.parse(localStorage.getItem("seller-token") || "{}");
+      if (!seller.id) {
+        throw new Error("Не авторизован");
+      }
+
+      const newProduct = {
+        id: Date.now(),
+        title: product.title,
+        description: product.description,
+        price: parseFloat(product.price),
+        category: product.category,
+        image: product.image
+          ? URL.createObjectURL(product.image)
+          : "/placeholder.svg",
+        rating: { rate: 0, count: 0 },
+        sellerId: seller.id,
+        sellerName: seller.name,
+        stock: parseInt(product.stock),
+        sold: 0,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Добавляем к глобальным товарам
+      const existingProducts = JSON.parse(
+        localStorage.getItem("products") || "[]",
+      );
+      existingProducts.push(newProduct);
+      localStorage.setItem("products", JSON.stringify(existingProducts));
+
+      // Обновляем данные о продавце
+      const sellers = JSON.parse(localStorage.getItem("sellers") || "[]");
+      const updatedSellers = sellers.map((s: any) =>
+        s.id === seller.id
+          ? { ...s, products: [...(s.products || []), newProduct] }
+          : s,
+      );
+      localStorage.setItem("sellers", JSON.stringify(updatedSellers));
+
+      const updatedSeller = updatedSellers.find((s: any) => s.id === seller.id);
+      localStorage.setItem("seller-token", JSON.stringify(updatedSeller));
+
+      toast({
+        title: "Товар добавлен",
+        description: "Ваш товар успешно добавлен в каталог",
+      });
+
+      navigate("/seller/dashboard");
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось добавить товар",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/seller/dashboard")}
+            className="mb-4"
+          >
+            <Icon name="ArrowLeft" size={16} className="mr-2" />
+            Назад к кабинету
+          </Button>
+          <h1 className="text-3xl font-bold text-gray-900">Добавить товар</h1>
+          <p className="text-gray-600 mt-2">
+            Заполните информацию о вашем товаре
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Информация о товаре</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Название товара *</Label>
+                  <Input
+                    id="title"
+                    type="text"
+                    value={product.title}
+                    onChange={(e) =>
+                      setProduct({ ...product, title: e.target.value })
+                    }
+                    placeholder="Введите название товара"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="price">Цена *</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    value={product.price}
+                    onChange={(e) =>
+                      setProduct({ ...product, price: e.target.value })
+                    }
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="category">Категория *</Label>
+                  <Select
+                    value={product.category}
+                    onValueChange={(value) =>
+                      setProduct({ ...product, category: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите категорию" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="electronics">Электроника</SelectItem>
+                      <SelectItem value="clothing">Одежда</SelectItem>
+                      <SelectItem value="jewelery">Украшения</SelectItem>
+                      <SelectItem value="books">Книги</SelectItem>
+                      <SelectItem value="home">Дом и сад</SelectItem>
+                      <SelectItem value="sports">Спорт</SelectItem>
+                      <SelectItem value="beauty">Красота</SelectItem>
+                      <SelectItem value="toys">Игрушки</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="stock">Количество на складе *</Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    value={product.stock}
+                    onChange={(e) =>
+                      setProduct({ ...product, stock: e.target.value })
+                    }
+                    placeholder="0"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Описание товара *</Label>
+                <Textarea
+                  id="description"
+                  value={product.description}
+                  onChange={(e) =>
+                    setProduct({ ...product, description: e.target.value })
+                  }
+                  placeholder="Опишите ваш товар подробно..."
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="image">Изображение товара</Label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  {product.image ? (
+                    <div className="space-y-4">
+                      <img
+                        src={URL.createObjectURL(product.image)}
+                        alt="Preview"
+                        className="mx-auto h-32 w-32 object-cover rounded-lg"
+                      />
+                      <p className="text-sm text-gray-600">
+                        {product.image.name}
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setProduct({ ...product, image: null })}
+                      >
+                        Удалить изображение
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <Icon
+                        name="Upload"
+                        size={48}
+                        className="mx-auto text-gray-400"
+                      />
+                      <div>
+                        <label htmlFor="image" className="cursor-pointer">
+                          <span className="text-blue-600 hover:text-blue-700 font-medium">
+                            Нажмите для загрузки
+                          </span>
+                          <span className="text-gray-600">
+                            {" "}
+                            или перетащите файл сюда
+                          </span>
+                        </label>
+                        <input
+                          id="image"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG, GIF до 10MB
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/seller/dashboard")}
+                >
+                  Отмена
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Добавление...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Добавить товар
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
