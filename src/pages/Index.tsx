@@ -137,7 +137,7 @@ export default function Index() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* О компании */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">О МаркетМастер</h3>
+              <h3 className="text-lg font-semibold mb-4">О Calibre Store</h3>
               <p className="text-gray-300 text-sm mb-4">
                 Ведущий маркетплейс с миллионами товаров от проверенных
                 продавцов по всей России.
@@ -256,7 +256,7 @@ export default function Index() {
           <div className="border-t border-gray-700 mt-8 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="text-sm text-gray-400 mb-4 md:mb-0">
-                © 2024 МаркетМастер. Все права защищены.
+                © 2024 Calibre Store. Все права защищены.
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">
                 <a

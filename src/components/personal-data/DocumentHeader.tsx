@@ -7,7 +7,7 @@ export default function DocumentHeader() {
         Обработка персональных данных
       </CardTitle>
       <p className="text-muted-foreground text-center">
-        Согласие на обработку персональных данных для маркетплейса МаркетМастер
+        Согласие на обработку персональных данных для маркетплейса Calibre Store
         <br />
         Дата последнего обновления: {new Date().toLocaleDateString("ru-RU")}
       </p>
