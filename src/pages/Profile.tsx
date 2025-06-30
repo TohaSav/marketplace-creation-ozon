@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
+import Wallet from "@/components/Wallet";
 
 export default function Profile() {
   const [user] = useState({
@@ -37,6 +38,11 @@ export default function Profile() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Кошелек */}
+        <div className="mb-8">
+          <Wallet />
+        </div>
+
         {/* Профиль пользователя */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex items-center justify-between mb-6">

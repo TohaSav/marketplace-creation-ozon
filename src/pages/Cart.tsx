@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +9,9 @@ import Header from "@/components/Header";
 export default function Cart() {
   const { cart, removeFromCart, updateCartQuantity, getTotalPrice, clearCart } =
     useStore();
+
+  const [paymentMethod, setPaymentMethod] = useState("wallet");
+  const [walletBalance] = useState(5420.5); // В реальном приложении получать из контекста/API
 
   const handleQuantityChange = (productId: number, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -181,9 +185,145 @@ export default function Cart() {
                   </div>
                 </div>
 
-                <Button className="w-full mb-3" size="lg">
-                  <Icon name="CreditCard" size={20} className="mr-2" />
-                  Оформить заказ
+                {/* Способы оплаты */}
+                <div className="mb-6">
+                  <h4 className="font-semibold mb-3">Способ оплаты</h4>
+                  <div className="space-y-2">
+                    <label
+                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                        paymentMethod === "wallet"
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="wallet"
+                        checked={paymentMethod === "wallet"}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="sr-only"
+                      />
+                      <Icon
+                        name="Wallet"
+                        size={20}
+                        className="mr-3 text-purple-600"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">Кошелек Calibre</div>
+                        <div className="text-sm text-gray-600">
+                          Баланс: {walletBalance.toLocaleString("ru-RU")} ₽
+                        </div>
+                      </div>
+                      {walletBalance < getTotalPrice() * 85 && (
+                        <Icon
+                          name="AlertCircle"
+                          size={16}
+                          className="text-red-500"
+                        />
+                      )}
+                    </label>
+
+                    <label
+                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                        paymentMethod === "card"
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="card"
+                        checked={paymentMethod === "card"}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="sr-only"
+                      />
+                      <Icon
+                        name="CreditCard"
+                        size={20}
+                        className="mr-3 text-blue-600"
+                      />
+                      <div className="font-medium">Банковская карта</div>
+                    </label>
+
+                    <label
+                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                        paymentMethod === "sbp"
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="sbp"
+                        checked={paymentMethod === "sbp"}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="sr-only"
+                      />
+                      <Icon
+                        name="Smartphone"
+                        size={20}
+                        className="mr-3 text-green-600"
+                      />
+                      <div className="font-medium">СБП (Быстрые платежи)</div>
+                    </label>
+                  </div>
+                </div>
+
+                {paymentMethod === "wallet" &&
+                  walletBalance < getTotalPrice() * 85 && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                      <div className="flex items-center">
+                        <Icon
+                          name="AlertCircle"
+                          size={16}
+                          className="text-red-500 mr-2"
+                        />
+                        <div className="text-sm text-red-700">
+                          <div className="font-medium">
+                            Недостаточно средств
+                          </div>
+                          <div>
+                            Нужно пополнить на{" "}
+                            {(
+                              getTotalPrice() * 85 -
+                              walletBalance
+                            ).toLocaleString("ru-RU")}{" "}
+                            ₽
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="mt-2 w-full bg-red-600 hover:bg-red-700"
+                      >
+                        <Icon name="Plus" size={14} className="mr-1" />
+                        Пополнить кошелек
+                      </Button>
+                    </div>
+                  )}
+
+                <Button
+                  className="w-full mb-3"
+                  size="lg"
+                  disabled={
+                    paymentMethod === "wallet" &&
+                    walletBalance < getTotalPrice() * 85
+                  }
+                >
+                  {paymentMethod === "wallet" ? (
+                    <>
+                      <Icon name="Wallet" size={20} className="mr-2" />
+                      Оплатить из кошелька
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="CreditCard" size={20} className="mr-2" />
+                      Оформить заказ
+                    </>
+                  )}
                 </Button>
 
                 <Button variant="outline" className="w-full">
