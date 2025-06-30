@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,13 +11,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Icon from "@/components/ui/icon";
 import AuthModal from "@/components/AuthModal";
+import { useStore } from "@/lib/store";
 
 export default function Header() {
+  const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<{
     name: string;
     type: "buyer" | "seller";
   } | null>(null);
+
+  const { favorites, getTotalItems } = useStore();
 
   const handleLogin = (
     email: string,
@@ -63,21 +68,30 @@ export default function Header() {
             <div className="flex items-center space-x-2 md:space-x-6">
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 px-2 md:px-4"
+                className="flex items-center space-x-2 px-2 md:px-4 relative"
+                onClick={() => navigate("/favorites")}
               >
                 <Icon name="Heart" size={20} />
                 <span className="hidden md:inline">Избранное</span>
+                {favorites.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                    {favorites.length}
+                  </Badge>
+                )}
               </Button>
 
               <Button
                 variant="ghost"
                 className="flex items-center space-x-2 relative px-2 md:px-4"
+                onClick={() => navigate("/cart")}
               >
                 <Icon name="ShoppingCart" size={20} />
                 <span className="hidden md:inline">Корзина</span>
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  0
-                </Badge>
+                {getTotalItems() > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                    {getTotalItems()}
+                  </Badge>
+                )}
               </Button>
 
               {user ? (

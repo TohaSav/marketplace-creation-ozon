@@ -19,6 +19,8 @@ import HowToOrder from "./pages/HowToOrder";
 import PaymentMethods from "./pages/PaymentMethods";
 import Delivery from "./pages/Delivery";
 import Returns from "./pages/Returns";
+import Favorites from "./pages/Favorites";
+import Cart from "./pages/Cart";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +92,8 @@ const App = () => (
           <Route path="/payment-methods" element={<PaymentMethods />} />
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/returns" element={<Returns />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/cart" element={<Cart />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
