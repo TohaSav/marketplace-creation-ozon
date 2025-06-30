@@ -9,6 +9,12 @@ export default function SellerLogin() {
   const [loading, setLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState("");
+  const [inn, setInn] = useState("");
+  const [ogrn, setOgrn] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [corrAccount, setCorrAccount] = useState("");
+  const [bik, setBik] = useState("");
+  const [kpp, setKpp] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,8 +22,8 @@ export default function SellerLogin() {
     setLoading(true);
 
     if (isRegister) {
-      // Регистрация продавца
-      if (name && email && password) {
+      // Регистрация продавца - проверяем обязательные поля
+      if (name && email && password && inn && ogrn && accountNumber && bik) {
         const sellers = JSON.parse(localStorage.getItem("sellers") || "[]");
         const existingSeller = sellers.find((s: any) => s.email === email);
 
@@ -33,6 +39,12 @@ export default function SellerLogin() {
             name,
             email,
             password,
+            inn,
+            ogrn,
+            accountNumber,
+            corrAccount,
+            bik,
+            kpp,
             createdAt: new Date().toISOString(),
             products: [],
             earnings: 0,
@@ -48,6 +60,13 @@ export default function SellerLogin() {
           });
           navigate("/seller/dashboard");
         }
+      } else {
+        toast({
+          title: "Ошибка регистрации",
+          description:
+            "Заполните все обязательные поля: имя, email, пароль, ИНН, ОГРН, расчётный счёт и БИК",
+          variant: "destructive",
+        });
       }
     } else {
       // Вход продавца
@@ -77,7 +96,7 @@ export default function SellerLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
+      <div className="bg-white rounded-xl shadow-xl p-4 sm:p-6 md:p-8 w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-2xl">
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
             <Icon name="Store" size={32} className="text-white" />
@@ -92,69 +111,221 @@ export default function SellerLogin() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {isRegister && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Имя/Название магазина
+                  </label>
+                  <div className="relative">
+                    <Icon
+                      name="User"
+                      size={20}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                      placeholder="Введите имя или название магазина"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ИНН <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Icon
+                      name="FileText"
+                      size={20}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      type="text"
+                      value={inn}
+                      onChange={(e) => setInn(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                      placeholder="10 или 12 цифр"
+                      pattern="[0-9]{10,12}"
+                      maxLength={12}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ОГРН <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Icon
+                      name="Hash"
+                      size={20}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      type="text"
+                      value={ogrn}
+                      onChange={(e) => setOgrn(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                      placeholder="13 или 15 цифр"
+                      pattern="[0-9]{13,15}"
+                      maxLength={15}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    КПП
+                  </label>
+                  <div className="relative">
+                    <Icon
+                      name="Key"
+                      size={20}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      type="text"
+                      value={kpp}
+                      onChange={(e) => setKpp(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                      placeholder="9 цифр"
+                      pattern="[0-9]{9}"
+                      maxLength={9}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Банковские реквизиты
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Расчётный счёт <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Icon
+                        name="CreditCard"
+                        size={20}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="text"
+                        value={accountNumber}
+                        onChange={(e) => setAccountNumber(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono"
+                        placeholder="20 цифр"
+                        pattern="[0-9]{20}"
+                        maxLength={20}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Корреспондентский счёт
+                    </label>
+                    <div className="relative">
+                      <Icon
+                        name="Building"
+                        size={20}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="text"
+                        value={corrAccount}
+                        onChange={(e) => setCorrAccount(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono"
+                        placeholder="20 цифр"
+                        pattern="[0-9]{20}"
+                        maxLength={20}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    БИК <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Icon
+                      name="Banknote"
+                      size={20}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                      type="text"
+                      value={bik}
+                      onChange={(e) => setBik(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono"
+                      placeholder="9 цифр"
+                      pattern="[0-9]{9}"
+                      maxLength={9}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Имя/Название магазина
+                Email
               </label>
               <div className="relative">
                 <Icon
-                  name="User"
+                  name="Mail"
                   size={20}
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  placeholder="Введите имя или название магазина"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                  placeholder="seller@example.com"
                   required
                 />
               </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email
-            </label>
-            <div className="relative">
-              <Icon
-                name="Mail"
-                size={20}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="seller@example.com"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Пароль
-            </label>
-            <div className="relative">
-              <Icon
-                name="Lock"
-                size={20}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="••••••••"
-                required
-              />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Пароль
+              </label>
+              <div className="relative">
+                <Icon
+                  name="Lock"
+                  size={20}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
             </div>
           </div>
 
