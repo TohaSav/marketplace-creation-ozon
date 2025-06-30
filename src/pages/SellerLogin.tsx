@@ -117,7 +117,8 @@ export default function SellerLogin() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Имя/Название магазина
+                    Имя/Название магазина{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <Icon
