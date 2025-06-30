@@ -26,6 +26,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import AddProduct from "./pages/AddProduct";
 import UserLogin from "./pages/UserLogin";
 import UserRegister from "./pages/UserRegister";
+import BonusCard from "./pages/BonusCard";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,7 @@ const App = () => (
           <Route path="/returns" element={<Returns />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/bonus-card" element={<BonusCard />} />
 
           {/* Авторизация покупателей */}
           <Route path="/login" element={<UserLogin />} />
