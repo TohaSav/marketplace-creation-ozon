@@ -3,39 +3,16 @@ import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 export default function BonusCard() {
-  const [userPoints] = useState(1250);
+  const [userPoints] = useState(0);
   const [cardLevel] = useState("Золотая");
 
-  const bonusHistory = [
-    {
-      id: 1,
-      date: "2024-06-28",
-      action: "Покупка",
-      points: "+50",
-      order: "#12345",
-    },
-    {
-      id: 2,
-      date: "2024-06-25",
-      action: "Покупка",
-      points: "+120",
-      order: "#12344",
-    },
-    {
-      id: 3,
-      date: "2024-06-20",
-      action: "Использование",
-      points: "-200",
-      order: "#12343",
-    },
-    {
-      id: 4,
-      date: "2024-06-15",
-      action: "Покупка",
-      points: "+80",
-      order: "#12342",
-    },
-  ];
+  const bonusHistory: Array<{
+    id: number;
+    date: string;
+    action: string;
+    points: string;
+    order: string;
+  }> = [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,50 +99,16 @@ export default function BonusCard() {
             <h3 className="text-lg font-semibold">История бонусов</h3>
           </div>
 
-          <div className="divide-y">
-            {bonusHistory.map((item) => (
-              <div
-                key={item.id}
-                className="px-6 py-4 flex items-center justify-between"
-              >
-                <div className="flex items-center">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${
-                      item.points.startsWith("+")
-                        ? "bg-green-100"
-                        : "bg-red-100"
-                    }`}
-                  >
-                    <Icon
-                      name={item.points.startsWith("+") ? "Plus" : "Minus"}
-                      size={16}
-                      className={
-                        item.points.startsWith("+")
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }
-                    />
-                  </div>
-                  <div>
-                    <p className="font-medium">{item.action}</p>
-                    <p className="text-sm text-gray-600">Заказ {item.order}</p>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <p
-                    className={`font-semibold ${
-                      item.points.startsWith("+")
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {item.points} бонусов
-                  </p>
-                  <p className="text-sm text-gray-600">{item.date}</p>
-                </div>
-              </div>
-            ))}
+          <div className="px-6 py-8 text-center text-gray-500">
+            <Icon
+              name="Receipt"
+              size={48}
+              className="mx-auto mb-4 opacity-50"
+            />
+            <p className="text-lg font-medium mb-2">Пока нет операций</p>
+            <p className="text-sm">
+              Совершите первую покупку, чтобы начать копить бонусы!
+            </p>
           </div>
         </div>
 
