@@ -62,10 +62,14 @@ export default function Header() {
             {/* Logo */}
             <div className="flex items-center">
               <div
-                className="text-2xl font-bold text-purple-600 cursor-pointer hover:text-purple-700 transition-colors"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => navigate("/")}
               >
-                Calibre Store
+                <img
+                  src="https://cdn.poehali.dev/files/1d929307-708e-49a3-831d-3bdf359b605d.png"
+                  alt="Calibre Store"
+                  className="h-8 w-auto sm:h-10 md:h-12 lg:h-14"
+                />
               </div>
             </div>
 
