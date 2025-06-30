@@ -110,21 +110,43 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        navigate(
+                          user.type === "buyer"
+                            ? "/profile"
+                            : "/admin/dashboard",
+                        )
+                      }
+                    >
                       <Icon name="User" size={16} className="mr-2" />
                       {user.type === "buyer"
                         ? "Личный кабинет"
                         : "Кабинет продавца"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        navigate(
+                          user.type === "buyer" ? "/orders" : "/admin/products",
+                        )
+                      }
+                    >
                       <Icon name="Package" size={16} className="mr-2" />
                       {user.type === "buyer" ? "Мои заказы" : "Мои товары"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        navigate(
+                          user.type === "buyer"
+                            ? "/bonus-card"
+                            : "/admin/analytics",
+                        )
+                      }
+                    >
                       <Icon name="CreditCard" size={16} className="mr-2" />
                       {user.type === "buyer" ? "Бонусная карта" : "Финансы"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/settings")}>
                       <Icon name="Settings" size={16} className="mr-2" />
                       Настройки
                     </DropdownMenuItem>
