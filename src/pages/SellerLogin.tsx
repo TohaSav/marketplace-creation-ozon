@@ -23,7 +23,16 @@ export default function SellerLogin() {
 
     if (isRegister) {
       // Регистрация продавца - проверяем обязательные поля
-      if (name && email && password && inn && ogrn && accountNumber && bik) {
+      if (
+        name &&
+        email &&
+        password &&
+        inn &&
+        ogrn &&
+        accountNumber &&
+        corrAccount &&
+        bik
+      ) {
         const sellers = JSON.parse(localStorage.getItem("sellers") || "[]");
         const existingSeller = sellers.find((s: any) => s.email === email);
 
@@ -64,7 +73,7 @@ export default function SellerLogin() {
         toast({
           title: "Ошибка регистрации",
           description:
-            "Заполните все обязательные поля: имя, email, пароль, ИНН, ОГРН, расчётный счёт и БИК",
+            "Заполните все обязательные поля: имя, email, пароль, ИНН, ОГРН, расчётный счёт, корреспондентский счёт и БИК",
           variant: "destructive",
         });
       }
@@ -239,7 +248,8 @@ export default function SellerLogin() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Корреспондентский счёт
+                      Корреспондентский счёт{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <Icon
@@ -255,6 +265,7 @@ export default function SellerLogin() {
                         placeholder="20 цифр"
                         pattern="[0-9]{20}"
                         maxLength={20}
+                        required
                       />
                     </div>
                   </div>
