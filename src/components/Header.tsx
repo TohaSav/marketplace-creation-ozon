@@ -43,7 +43,10 @@ export default function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <div className="text-2xl font-bold text-purple-600">
+              <div
+                className="text-2xl font-bold text-purple-600 cursor-pointer hover:text-purple-700 transition-colors"
+                onClick={() => navigate("/")}
+              >
                 Calibre Store
               </div>
             </div>
