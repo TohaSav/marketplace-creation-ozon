@@ -206,6 +206,17 @@ export default function Profile() {
           </Link>
 
           <Link
+            to="/notifications"
+            className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center mb-3">
+              <Icon name="Bell" size={24} className="text-purple-600 mr-3" />
+              <h3 className="font-semibold">Уведомления</h3>
+            </div>
+            <p className="text-gray-600 text-sm">Управление уведомлениями</p>
+          </Link>
+
+          <Link
             to="/settings"
             className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
           >

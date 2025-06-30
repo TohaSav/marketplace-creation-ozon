@@ -12,6 +12,7 @@ const navigation = [
   { name: "Товары", href: "/admin/products", icon: "Package" },
   { name: "Заказы", href: "/admin/orders", icon: "ShoppingCart" },
   { name: "Пользователи", href: "/admin/users", icon: "Users" },
+  { name: "Чат", href: "/admin/chat", icon: "MessageCircle" },
   { name: "Аналитика", href: "/admin/analytics", icon: "BarChart3" },
   { name: "Настройки", href: "/admin/settings", icon: "Settings" },
 ];

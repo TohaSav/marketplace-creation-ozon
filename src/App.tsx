@@ -11,6 +11,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminChat from "./pages/AdminChat";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import PersonalData from "./pages/PersonalData";
@@ -31,6 +32,8 @@ import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
 import Shorts from "./pages/Shorts";
+import Support from "./pages/Support";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +89,14 @@ const App = () => (
             }
           />
           <Route
+            path="/admin/chat"
+            element={
+              <AdminProtectedRoute>
+                <AdminChat />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
             path="/admin/settings"
             element={
               <AdminProtectedRoute>
@@ -109,6 +120,8 @@ const App = () => (
           <Route path="/orders" element={<Orders />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/shorts" element={<Shorts />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/notifications" element={<Notifications />} />
 
           {/* Авторизация покупателей */}
           <Route path="/login" element={<UserLogin />} />

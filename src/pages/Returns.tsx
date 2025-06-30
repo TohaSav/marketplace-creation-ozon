@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function Returns() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +33,7 @@ export default function Returns() {
     contactPhone: "",
   });
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmitReturn = async () => {
     setIsSubmitting(true);
@@ -441,7 +443,10 @@ export default function Returns() {
             Наша служба поддержки поможет с оформлением возврата
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => navigate("/support")}
+            >
               Написать в поддержку
             </Button>
           </div>
