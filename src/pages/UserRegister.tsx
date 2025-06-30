@@ -216,6 +216,14 @@ export default function UserRegister() {
             </form>
 
             <div className="mt-6 text-center">
+              <Link
+                to="/"
+                className="inline-flex items-center text-gray-500 hover:text-gray-700 text-sm mb-4"
+              >
+                <Icon name="ArrowLeft" size={16} className="mr-1" />
+                Вернуться на главную
+              </Link>
+
               <p className="text-sm text-gray-600">
                 Уже есть аккаунт?{" "}
                 <Link

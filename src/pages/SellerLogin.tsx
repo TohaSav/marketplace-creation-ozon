@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
 
@@ -358,9 +358,17 @@ export default function SellerLogin() {
         </form>
 
         <div className="mt-6 text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center text-gray-500 hover:text-gray-700 text-sm mb-4"
+          >
+            <Icon name="ArrowLeft" size={16} className="mr-1" />
+            Вернуться на главную
+          </Link>
+
           <button
             onClick={() => setIsRegister(!isRegister)}
-            className="text-green-600 hover:text-green-700 text-sm font-medium"
+            className="text-green-600 hover:text-green-700 text-sm font-medium block"
           >
             {isRegister
               ? "Уже есть аккаунт? Войти"
