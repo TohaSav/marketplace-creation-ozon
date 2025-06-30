@@ -254,7 +254,11 @@ export default function AdminAnalytics() {
           </div>
           {topCategories.length === 0 ? (
             <div className="text-center py-8 col-span-full">
-              <Icon name="PieChart" size={48} className="text-gray-400 mx-auto mb-4" />
+              <Icon
+                name="PieChart"
+                size={48}
+                className="text-gray-400 mx-auto mb-4"
+              />
               <p className="text-gray-500">Нет данных по категориям</p>
             </div>
           ) : (
@@ -301,7 +305,6 @@ export default function AdminAnalytics() {
               ))}
             </div>
           )}
-          </div>
         </div>
 
         {/* Отчёты */}
