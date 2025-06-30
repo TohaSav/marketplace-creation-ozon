@@ -142,14 +142,14 @@ export default function Returns() {
                       Подать заявку
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
+                  <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto sm:w-full">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <Icon name="RotateCcw" size={20} />
                         Подача заявки на возврат
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-4 py-2 sm:py-4">
                       <div className="space-y-2">
                         <Label htmlFor="orderNumber">Номер заказа *</Label>
                         <Input
@@ -230,7 +230,7 @@ export default function Returns() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="contactEmail">
                             Email для связи *
@@ -264,18 +264,18 @@ export default function Returns() {
                         </div>
                       </div>
 
-                      <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="bg-blue-50 p-3 sm:p-4 rounded-lg">
                         <div className="flex items-start gap-2">
                           <Icon
                             name="Info"
-                            className="text-blue-600 mt-0.5"
+                            className="text-blue-600 mt-0.5 flex-shrink-0"
                             size={16}
                           />
                           <div className="text-sm text-blue-800">
                             <p className="font-medium mb-1">
                               Что будет дальше:
                             </p>
-                            <ul className="space-y-1 text-xs">
+                            <ul className="space-y-1 text-xs sm:text-sm">
                               <li>• Мы рассмотрим заявку в течение 24 часов</li>
                               <li>• Свяжемся с вами для уточнения деталей</li>
                               <li>• Организуем бесплатный забор товара</li>
@@ -285,11 +285,11 @@ export default function Returns() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 pt-4 sticky bottom-0 bg-white">
                       <Button
                         onClick={handleSubmitReturn}
                         disabled={isSubmitting}
-                        className="flex-1"
+                        className="flex-1 h-11 sm:h-10"
                       >
                         {isSubmitting ? (
                           <>
