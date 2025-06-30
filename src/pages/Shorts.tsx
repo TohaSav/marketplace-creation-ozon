@@ -35,86 +35,7 @@ export default function Shorts() {
   const [newComment, setNewComment] = useState("");
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([
-    {
-      id: "1",
-      videoUrl: "/api/placeholder/400/700",
-      thumbnail: "/api/placeholder/400/700",
-      productId: "1",
-      productName: "iPhone 15 Pro Max",
-      productImage: "/api/placeholder/100/100",
-      userName: "Анна Петрова",
-      userAvatar: "/api/placeholder/40/40",
-      rating: 5,
-      text: "Отличный телефон! Камера просто огонь 🔥",
-      likes: 234,
-      isLiked: false,
-      createdAt: "2024-06-28",
-    },
-    {
-      id: "2",
-      videoUrl: "/api/placeholder/400/700",
-      thumbnail: "/api/placeholder/400/700",
-      productId: "2",
-      productName: "AirPods Pro 2",
-      productImage: "/api/placeholder/100/100",
-      userName: "Михаил Сидоров",
-      userAvatar: "/api/placeholder/40/40",
-      rating: 4,
-      text: "Звук потрясающий, шумоподавление работает идеально",
-      likes: 156,
-      isLiked: true,
-      createdAt: "2024-06-27",
-    },
-    {
-      id: "3",
-      videoUrl: "/api/placeholder/400/700",
-      thumbnail: "/api/placeholder/400/700",
-      productId: "3",
-      productName: "MacBook Air M2",
-      productImage: "/api/placeholder/100/100",
-      userName: "Елена Козлова",
-      userAvatar: "/api/placeholder/40/40",
-      rating: 5,
-      text: "Идеальный ноутбук для работы и учёбы. Тихий и быстрый!",
-      likes: 423,
-      isLiked: false,
-      createdAt: "2024-06-26",
-    },
-  ]);
-
-  // Инициализация комментариев
-  useEffect(() => {
-    const initialComments = {
-      "1": [
-        {
-          id: 1,
-          user: "Максим",
-          avatar: "/api/placeholder/32/32",
-          text: "Согласен, камера супер!",
-          time: "2 мин назад",
-        },
-        {
-          id: 2,
-          user: "Света",
-          avatar: "/api/placeholder/32/32",
-          text: "Стоит своих денег?",
-          time: "5 мин назад",
-        },
-      ],
-      "2": [
-        {
-          id: 1,
-          user: "Игорь",
-          avatar: "/api/placeholder/32/32",
-          text: "Тоже думаю купить",
-          time: "1 мин назад",
-        },
-      ],
-      "3": [],
-    };
-    setComments(initialComments);
-  }, []);
+  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([]);
 
   const handleLike = (videoId: string) => {
     setVideoReviews((prev) =>
@@ -185,6 +106,58 @@ export default function Shorts() {
   }, [currentVideoIndex]);
 
   const currentReview = videoReviews[currentVideoIndex];
+
+  // Если нет видео, показываем пустое состояние
+  if (videoReviews.length === 0) {
+    return (
+      <div className="h-screen bg-gray-50 flex flex-col">
+        {/* Заголовок */}
+        <div className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <Link
+                to="/"
+                className="flex items-center text-gray-600 hover:text-gray-900"
+              >
+                <Icon name="ArrowLeft" size={20} className="mr-2" />
+                Вернуться на главную
+              </Link>
+              <h1 className="text-xl font-semibold text-gray-900">Shorts</h1>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Пустое состояние */}
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="text-center max-w-md">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gray-200 rounded-full flex items-center justify-center">
+              <Icon name="Play" size={40} className="text-gray-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              Пока нет видео отзывов
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Здесь будут появляться короткие видео отзывы о товарах. Покупайте
+              товары и оставляйте видео отзывы!
+            </p>
+            <div className="space-y-3">
+              <Link
+                to="/"
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                <Icon name="ShoppingBag" size={20} className="mr-2" />
+                Посмотреть товары
+              </Link>
+              <div className="text-sm text-gray-500">
+                Купите товар и оставьте видео отзыв — он появится здесь!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-black relative overflow-hidden">
