@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
+import CreateStoryModal from "@/components/CreateStoryModal";
 
 const mockProducts = [
   {
@@ -62,6 +64,18 @@ const mockStats = {
 };
 
 export default function SellerDashboard() {
+  const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
+  const [stories, setStories] = useState<any[]>([]);
+
+  const handleCreateStory = (storyData: any) => {
+    const newStory = {
+      id: stories.length + 1,
+      ...storyData,
+      createdAt: new Date().toISOString(),
+    };
+    setStories([...stories, newStory]);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "new":
@@ -345,24 +359,70 @@ export default function SellerDashboard() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Stories товаров</CardTitle>
-                  <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Button
+                    className="bg-purple-600 hover:bg-purple-700"
+                    onClick={() => setIsCreateStoryOpen(true)}
+                  >
                     <Icon name="Plus" size={16} className="mr-2" />
                     Создать Story
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Icon
-                    name="Camera"
-                    size={48}
-                    className="mx-auto text-gray-300 mb-4"
-                  />
-                  <p className="text-gray-500">Пока нет созданных Stories</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    Создавайте Stories для привлечения покупателей
-                  </p>
-                </div>
+                {stories.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Icon
+                      name="Camera"
+                      size={48}
+                      className="mx-auto text-gray-300 mb-4"
+                    />
+                    <p className="text-gray-500">Пока нет созданных Stories</p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      Создавайте Stories для привлечения покупателей
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {stories.map((story) => (
+                      <Card key={story.id} className="overflow-hidden">
+                        <div className="aspect-[9/16] relative">
+                          <img
+                            src={
+                              story.image
+                                ? URL.createObjectURL(story.image)
+                                : "/placeholder.svg"
+                            }
+                            alt="Story"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-2 right-2">
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() =>
+                                setStories(
+                                  stories.filter((s) => s.id !== story.id),
+                                )
+                              }
+                            >
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <p className="text-xs text-gray-600 truncate">
+                            Товар ID: {story.productId}
+                          </p>
+                          {story.discount && (
+                            <Badge className="text-xs mt-1">
+                              Скидка {story.discount}%
+                            </Badge>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -405,6 +465,12 @@ export default function SellerDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <CreateStoryModal
+        isOpen={isCreateStoryOpen}
+        onClose={() => setIsCreateStoryOpen(false)}
+        onSubmit={handleCreateStory}
+      />
     </div>
   );
 }

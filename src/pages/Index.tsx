@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
+import StoriesCarousel from "@/components/StoriesCarousel";
 
 const mockProducts = [
   {
@@ -79,6 +81,58 @@ const mockProducts = [
 ];
 
 export default function Index() {
+  const [products, setProducts] = useState(mockProducts);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  // Функция для генерации дополнительных товаров
+  const generateMoreProducts = (startId: number, count: number) => {
+    const additionalProducts = [];
+    for (let i = 0; i < count; i++) {
+      const baseProduct = mockProducts[i % mockProducts.length];
+      additionalProducts.push({
+        ...baseProduct,
+        id: startId + i,
+        title: `${baseProduct.title} - Вариант ${startId + i}`,
+        price: baseProduct.price + Math.floor(Math.random() * 10000) - 5000,
+      });
+    }
+    return additionalProducts;
+  };
+
+  // Функция загрузки дополнительных товаров
+  const loadMoreProducts = () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+
+    // Имитация загрузки с сервера
+    setTimeout(() => {
+      const newProducts = generateMoreProducts(products.length + 1, 6);
+      setProducts((prev) => [...prev, ...newProducts]);
+      setLoading(false);
+
+      // Останавливаем загрузку после 30 товаров
+      if (products.length >= 24) {
+        setHasMore(false);
+      }
+    }, 1000);
+  };
+
+  // Обработчик скролла
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 1000
+      ) {
+        loadMoreProducts();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore, products.length]);
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -116,20 +170,37 @@ export default function Index() {
 
       {/* Products Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stories */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Stories</h3>
+          <StoriesCarousel />
+        </div>
+
         <h2 className="text-3xl font-bold text-gray-900 mb-6">
           Рекомендуем для вас
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {mockProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} {...product} />
           ))}
         </div>
 
-        <div className="text-center mt-8">
-          <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-            Показать ещё товары
-          </button>
-        </div>
+        {/* Индикатор загрузки */}
+        {loading && (
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center px-4 py-2 text-purple-600">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
+              Загружаем ещё товары...
+            </div>
+          </div>
+        )}
+
+        {/* Сообщение об окончании товаров */}
+        {!hasMore && !loading && (
+          <div className="text-center mt-8">
+            <p className="text-gray-500">Все товары загружены</p>
+          </div>
+        )}
       </div>
     </div>
   );
