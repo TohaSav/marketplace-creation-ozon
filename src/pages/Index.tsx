@@ -192,9 +192,12 @@ export default function Index() {
               <h3 className="text-lg font-semibold mb-4">Продавцам</h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/how-to-sell"
+                    className="hover:text-white transition-colors"
+                  >
                     Как начать продавать
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">

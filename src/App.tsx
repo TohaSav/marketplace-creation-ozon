@@ -14,6 +14,7 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import PersonalData from "./pages/PersonalData";
+import HowToSell from "./pages/HowToSell";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
           {/* Общие страницы */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/personal-data" element={<PersonalData />} />
+          <Route path="/how-to-sell" element={<HowToSell />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
