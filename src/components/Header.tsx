@@ -89,6 +89,15 @@ export default function Header() {
             <div className="flex items-center space-x-2 md:space-x-6">
               <Button
                 variant="ghost"
+                className="flex items-center space-x-2 px-2 md:px-4"
+                onClick={() => navigate("/shorts")}
+              >
+                <Icon name="Play" size={20} />
+                <span className="hidden md:inline">Shorts</span>
+              </Button>
+
+              <Button
+                variant="ghost"
                 className="flex items-center space-x-2 px-2 md:px-4 relative"
                 onClick={() => navigate("/favorites")}
               >

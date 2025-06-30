@@ -30,6 +30,7 @@ import BonusCard from "./pages/BonusCard";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
+import Shorts from "./pages/Shorts";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/shorts" element={<Shorts />} />
 
           {/* Авторизация покупателей */}
           <Route path="/login" element={<UserLogin />} />
