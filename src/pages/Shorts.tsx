@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 
 interface VideoReview {
   id: string;
@@ -18,12 +19,23 @@ interface VideoReview {
   createdAt: string;
 }
 
+interface Comment {
+  id: number;
+  user: string;
+  avatar: string;
+  text: string;
+  time: string;
+}
+
 export default function Shorts() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<{ [key: string]: Comment[] }>({});
+  const [newComment, setNewComment] = useState("");
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const videoReviews: VideoReview[] = [
+  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([
     {
       id: "1",
       videoUrl: "/api/placeholder/400/700",
@@ -69,7 +81,74 @@ export default function Shorts() {
       isLiked: false,
       createdAt: "2024-06-26",
     },
-  ];
+  ]);
+
+  // Инициализация комментариев
+  useEffect(() => {
+    const initialComments = {
+      "1": [
+        {
+          id: 1,
+          user: "Максим",
+          avatar: "/api/placeholder/32/32",
+          text: "Согласен, камера супер!",
+          time: "2 мин назад",
+        },
+        {
+          id: 2,
+          user: "Света",
+          avatar: "/api/placeholder/32/32",
+          text: "Стоит своих денег?",
+          time: "5 мин назад",
+        },
+      ],
+      "2": [
+        {
+          id: 1,
+          user: "Игорь",
+          avatar: "/api/placeholder/32/32",
+          text: "Тоже думаю купить",
+          time: "1 мин назад",
+        },
+      ],
+      "3": [],
+    };
+    setComments(initialComments);
+  }, []);
+
+  const handleLike = (videoId: string) => {
+    setVideoReviews((prev) =>
+      prev.map((video) => {
+        if (video.id === videoId) {
+          return {
+            ...video,
+            likes: video.isLiked ? video.likes - 1 : video.likes + 1,
+            isLiked: !video.isLiked,
+          };
+        }
+        return video;
+      }),
+    );
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const videoId = currentReview.id;
+      const comment = {
+        id: Date.now(),
+        user: "Вы",
+        avatar: "/api/placeholder/32/32",
+        text: newComment,
+        time: "только что",
+      };
+
+      setComments((prev) => ({
+        ...prev,
+        [videoId]: [...(prev[videoId] || []), comment],
+      }));
+      setNewComment("");
+    }
+  };
 
   const handleVideoClick = (index: number) => {
     const video = videoRefs.current[index];
@@ -154,35 +233,38 @@ export default function Shorts() {
             </div>
           )}
 
-          {/* Кнопки лайков и действий НА видео */}
+          {/* Кнопки лайков и комментариев НА видео */}
           <div className="absolute right-3 sm:right-4 bottom-20 sm:bottom-24 flex flex-col space-y-3 sm:space-y-4 z-10">
             <button
-              className={`flex flex-col items-center p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors ${
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLike(currentReview.id);
+              }}
+              className={`flex flex-col items-center p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-200 transform hover:scale-110 ${
                 currentReview.isLiked ? "text-red-500" : ""
               }`}
             >
               <Icon
                 name="Heart"
                 size={24}
-                className={`sm:w-6 sm:h-6 ${currentReview.isLiked ? "fill-current" : ""}`}
+                className={`sm:w-6 sm:h-6 ${currentReview.isLiked ? "fill-current animate-pulse" : ""}`}
               />
               <span className="text-xs sm:text-sm mt-1 font-medium">
                 {currentReview.likes}
               </span>
             </button>
 
-            <button className="flex flex-col items-center p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowComments(true);
+              }}
+              className="flex flex-col items-center p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-200 transform hover:scale-110"
+            >
               <Icon name="MessageCircle" size={24} className="sm:w-6 sm:h-6" />
-              <span className="text-xs sm:text-sm mt-1 font-medium">42</span>
-            </button>
-
-            <button className="flex flex-col items-center p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors">
-              <Icon name="Share" size={24} className="sm:w-6 sm:h-6" />
-              <span className="text-xs sm:text-sm mt-1 font-medium">12</span>
-            </button>
-
-            <button className="flex flex-col items-center p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors">
-              <Icon name="Bookmark" size={24} className="sm:w-6 sm:h-6" />
+              <span className="text-xs sm:text-sm mt-1 font-medium">
+                {comments[currentReview.id]?.length || 0}
+              </span>
             </button>
           </div>
 
@@ -266,6 +348,85 @@ export default function Shorts() {
           </div>
         </div>
       </div>
+
+      {/* Модальное окно комментариев */}
+      {showComments && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
+          <div className="bg-white w-full sm:w-96 sm:max-w-md h-2/3 sm:h-auto sm:max-h-[80vh] rounded-t-xl sm:rounded-xl overflow-hidden">
+            {/* Заголовок */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">
+                Комментарии ({comments[currentReview.id]?.length || 0})
+              </h3>
+              <button
+                onClick={() => setShowComments(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <Icon name="X" size={20} />
+              </button>
+            </div>
+
+            {/* Список комментариев */}
+            <div className="flex-1 overflow-y-auto p-4 max-h-96">
+              {comments[currentReview.id]?.length === 0 ? (
+                <div className="text-center text-gray-500 py-8">
+                  <Icon
+                    name="MessageCircle"
+                    size={48}
+                    className="mx-auto mb-4 opacity-50"
+                  />
+                  <p>Пока нет комментариев</p>
+                  <p className="text-sm">Станьте первым!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {comments[currentReview.id]?.map((comment) => (
+                    <div key={comment.id} className="flex space-x-3">
+                      <img
+                        src={comment.avatar}
+                        alt={comment.user}
+                        className="w-8 h-8 rounded-full flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="bg-gray-100 rounded-lg p-3">
+                          <p className="font-semibold text-sm">
+                            {comment.user}
+                          </p>
+                          <p className="text-sm">{comment.text}</p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {comment.time}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Поле ввода комментария */}
+            <div className="p-4 border-t">
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Добавить комментарий..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                  onKeyPress={(e) => e.key === "Enter" && handleAddComment()}
+                />
+                <Button
+                  onClick={handleAddComment}
+                  disabled={!newComment.trim()}
+                  className="rounded-full px-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-300"
+                >
+                  <Icon name="Send" size={16} />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
