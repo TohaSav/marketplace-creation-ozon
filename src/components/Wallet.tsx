@@ -15,37 +15,9 @@ export default function Wallet() {
   const [showTopUp, setShowTopUp] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
-  const [transactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      type: "deposit",
-      amount: 2000,
-      description: "Пополнение через карту",
-      date: "2025-06-28T10:30:00",
-    },
-    {
-      id: "2",
-      type: "purchase",
-      amount: -1580,
-      description: "Покупка iPhone 15",
-      date: "2025-06-27T15:20:00",
-    },
-    {
-      id: "3",
-      type: "deposit",
-      amount: 5000,
-      description: "Пополнение через СБП",
-      date: "2025-06-25T12:15:00",
-    },
-    {
-      id: "4",
-      type: "refund",
-      amount: 500,
-      description: "Возврат за отмененный товар",
-      date: "2025-06-24T09:45:00",
-    },
-  ]);
+  const [transactions] = useState<Transaction[]>([]);
 
   const paymentMethods = [
     { id: "card", name: "Банковская карта", icon: "CreditCard" },
@@ -110,7 +82,13 @@ export default function Wallet() {
             <Icon name="Wallet" size={24} className="mr-3" />
             <h3 className="text-lg font-semibold">Мой кошелек</h3>
           </div>
-          <Icon name="Eye" size={20} className="opacity-70" />
+          <button onClick={() => setIsBalanceVisible(!isBalanceVisible)}>
+            <Icon
+              name={isBalanceVisible ? "Eye" : "EyeOff"}
+              size={20}
+              className="opacity-70 hover:opacity-100 transition-opacity"
+            />
+          </button>
         </div>
 
         <div className="mb-4">
@@ -247,47 +225,51 @@ export default function Wallet() {
       )}
 
       {/* История операций */}
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="p-6 border-b">
-          <h3 className="text-lg font-semibold">История операций</h3>
-        </div>
+      {transactions.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold">История операций</h3>
+          </div>
 
-        <div className="divide-y">
-          {transactions.map((transaction) => (
-            <div key={transaction.id} className="p-4 hover:bg-gray-50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={`p-2 rounded-full bg-gray-100 mr-4`}>
-                    <Icon
-                      name={getTransactionIcon(transaction.type) as any}
-                      size={16}
-                      className={getTransactionColor(transaction.type)}
-                    />
+          <div className="divide-y">
+            {transactions.map((transaction) => (
+              <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className={`p-2 rounded-full bg-gray-100 mr-4`}>
+                      <Icon
+                        name={getTransactionIcon(transaction.type) as any}
+                        size={16}
+                        className={getTransactionColor(transaction.type)}
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {transaction.description}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(transaction.date)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {transaction.description}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(transaction.date)}
+                  <div className="text-right">
+                    <p
+                      className={`font-semibold ${
+                        transaction.amount > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {transaction.amount > 0 ? "+" : ""}
+                      {transaction.amount.toLocaleString("ru-RU")} ₽
                     </p>
                   </div>
-                </div>
-                <div className="text-right">
-                  <p
-                    className={`font-semibold ${
-                      transaction.amount > 0 ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {transaction.amount > 0 ? "+" : ""}
-                    {transaction.amount.toLocaleString("ru-RU")} ₽
-                  </p>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
