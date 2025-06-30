@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,32 +8,50 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Icon from "@/components/ui/icon";
-import AuthModal from "@/components/AuthModal";
 import { useStore } from "@/lib/store";
+import { toast } from "@/hooks/use-toast";
 
 export default function Header() {
   const navigate = useNavigate();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [user, setUser] = useState<{
-    name: string;
-    type: "buyer" | "seller";
-  } | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [seller, setSeller] = useState<any>(null);
 
   const { favorites, getTotalItems } = useStore();
 
-  const handleLogin = (
-    email: string,
-    password: string,
-    userType: "buyer" | "seller",
-  ) => {
-    // Mock login - в реальном приложении здесь будет API запрос
-    setUser({ name: email.split("@")[0], type: userType });
-  };
+  useEffect(() => {
+    const userData = localStorage.getItem("user-token");
+    const sellerData = localStorage.getItem("seller-token");
+
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (e) {
+        localStorage.removeItem("user-token");
+      }
+    }
+
+    if (sellerData) {
+      try {
+        setSeller(JSON.parse(sellerData));
+      } catch (e) {
+        localStorage.removeItem("seller-token");
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("user-token");
+    localStorage.removeItem("seller-token");
     setUser(null);
+    setSeller(null);
+    toast({
+      title: "Вы вышли из аккаунта",
+      description: "До свидания!",
+    });
+    navigate("/");
   };
 
   return (
@@ -97,7 +115,7 @@ export default function Header() {
                 )}
               </Button>
 
-              {user ? (
+              {user || seller ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -105,47 +123,50 @@ export default function Header() {
                       className="flex items-center space-x-2 px-2 md:px-4"
                     >
                       <Icon name="User" size={20} />
-                      <span className="hidden md:inline">{user.name}</span>
+                      <span className="hidden md:inline">
+                        {user?.name || seller?.name}
+                      </span>
                       <Icon name="ChevronDown" size={16} />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem
-                      onClick={() =>
-                        navigate(
-                          user.type === "buyer"
-                            ? "/profile"
-                            : "/admin/dashboard",
-                        )
-                      }
-                    >
-                      <Icon name="User" size={16} className="mr-2" />
-                      {user.type === "buyer"
-                        ? "Личный кабинет"
-                        : "Кабинет продавца"}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        navigate(
-                          user.type === "buyer" ? "/orders" : "/admin/products",
-                        )
-                      }
-                    >
-                      <Icon name="Package" size={16} className="mr-2" />
-                      {user.type === "buyer" ? "Мои заказы" : "Мои товары"}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        navigate(
-                          user.type === "buyer"
-                            ? "/bonus-card"
-                            : "/admin/analytics",
-                        )
-                      }
-                    >
-                      <Icon name="CreditCard" size={16} className="mr-2" />
-                      {user.type === "buyer" ? "Бонусная карта" : "Финансы"}
-                    </DropdownMenuItem>
+                    {user && (
+                      <>
+                        <DropdownMenuItem onClick={() => navigate("/profile")}>
+                          <Icon name="User" size={16} className="mr-2" />
+                          Личный кабинет
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/orders")}>
+                          <Icon name="Package" size={16} className="mr-2" />
+                          Мои заказы
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => navigate("/bonus-card")}
+                        >
+                          <Icon name="CreditCard" size={16} className="mr-2" />
+                          Бонусная карта
+                        </DropdownMenuItem>
+                      </>
+                    )}
+
+                    {seller && (
+                      <>
+                        <DropdownMenuItem
+                          onClick={() => navigate("/seller/dashboard")}
+                        >
+                          <Icon name="Store" size={16} className="mr-2" />
+                          Кабинет продавца
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => navigate("/seller/add-product")}
+                        >
+                          <Icon name="Plus" size={16} className="mr-2" />
+                          Добавить товар
+                        </DropdownMenuItem>
+                      </>
+                    )}
+
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate("/settings")}>
                       <Icon name="Settings" size={16} className="mr-2" />
                       Настройки
@@ -157,24 +178,38 @@ export default function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button
-                  variant="ghost"
-                  className="flex items-center space-x-2 px-2 md:px-4"
-                  onClick={() => setIsAuthModalOpen(true)}
-                >
-                  <Icon name="User" size={20} />
-                  <span className="hidden md:inline">Войти</span>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="flex items-center space-x-2 px-2 md:px-4"
+                    >
+                      <Icon name="User" size={20} />
+                      <span className="hidden md:inline">Войти</span>
+                      <Icon name="ChevronDown" size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => navigate("/login")}>
+                      <Icon name="User" size={16} className="mr-2" />
+                      Войти как покупатель
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/register")}>
+                      <Icon name="UserPlus" size={16} className="mr-2" />
+                      Регистрация покупателя
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/seller")}>
+                      <Icon name="Store" size={16} className="mr-2" />
+                      Стать продавцом
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
         </div>
       </header>
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onLogin={handleLogin}
-      />
     </>
   );
 }

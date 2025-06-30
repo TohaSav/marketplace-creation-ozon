@@ -24,6 +24,8 @@ import Cart from "./pages/Cart";
 import SellerLogin from "./pages/SellerLogin";
 import SellerDashboard from "./pages/SellerDashboard";
 import AddProduct from "./pages/AddProduct";
+import UserLogin from "./pages/UserLogin";
+import UserRegister from "./pages/UserRegister";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +99,10 @@ const App = () => (
           <Route path="/returns" element={<Returns />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/cart" element={<Cart />} />
+
+          {/* Авторизация покупателей */}
+          <Route path="/login" element={<UserLogin />} />
+          <Route path="/register" element={<UserRegister />} />
 
           {/* Кабинет продавца */}
           <Route path="/seller" element={<SellerLogin />} />
