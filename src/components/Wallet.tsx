@@ -11,7 +11,7 @@ interface Transaction {
 }
 
 export default function Wallet() {
-  const [balance, setBalance] = useState(5420.5);
+  const [balance, setBalance] = useState(0);
   const [showTopUp, setShowTopUp] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
@@ -115,9 +115,18 @@ export default function Wallet() {
 
         <div className="mb-4">
           <p className="text-sm opacity-80 mb-1">Доступный баланс</p>
-          <p className="text-3xl font-bold">
-            {balance.toLocaleString("ru-RU")} ₽
-          </p>
+          {balance === 0 ? (
+            <div className="text-center py-4">
+              <p className="text-lg opacity-70 mb-2">Кошелёк пуст</p>
+              <p className="text-sm opacity-60">
+                Пополните баланс для совершения покупок
+              </p>
+            </div>
+          ) : (
+            <p className="text-3xl font-bold">
+              {balance.toLocaleString("ru-RU")} ₽
+            </p>
+          )}
         </div>
 
         <div className="flex gap-3">
