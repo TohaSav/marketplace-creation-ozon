@@ -349,7 +349,10 @@ export default function Index() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a
+                    href="mailto:support@calibrestore.ru?subject=Поддержка продавцов"
+                    className="hover:text-white transition-colors"
+                  >
                     Поддержка продавцов
                   </a>
                 </li>
