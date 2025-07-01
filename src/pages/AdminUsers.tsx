@@ -3,6 +3,8 @@ import AdminLayout from "@/components/AdminLayout";
 import Icon from "@/components/ui/icon";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { UserDataManager } from "@/utils/userDataManager";
+import { Button } from "@/components/ui/button";
 
 interface User {
   id: number;
@@ -105,11 +107,38 @@ export default function AdminUsers() {
       : "bg-red-100 text-red-800";
   };
 
+  const handleClearAllUsers = () => {
+    if (
+      window.confirm(
+        "Вы уверены, что хотите удалить ВСЕХ пользователей? Это действие необратимо!",
+      )
+    ) {
+      try {
+        UserDataManager.clearAllUsers();
+        setUsers([]);
+        toast({
+          title: "База очищена",
+          description: "Все пользователи и продавцы удалены из базы данных",
+          variant: "destructive",
+        });
+        // Перезагружаем страницу для синхронизации с AuthContext
+        window.location.reload();
+      } catch (error) {
+        toast({
+          title: "Ошибка",
+          description:
+            error instanceof Error ? error.message : "Не удалось очистить базу",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
         {/* Заголовок */}
-        <div className="sm:flex sm:items-center">
+        <div className="sm:flex sm:items-center sm:justify-between">
           <div className="sm:flex-auto">
             <h1 className="text-2xl font-semibold text-gray-900">
               Управление пользователями
@@ -117,6 +146,16 @@ export default function AdminUsers() {
             <p className="mt-2 text-sm text-gray-700">
               Просмотр и управление учётными записями пользователей
             </p>
+          </div>
+          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <Button
+              variant="destructive"
+              onClick={handleClearAllUsers}
+              className="flex items-center"
+            >
+              <Icon name="Trash2" size={16} className="mr-2" />
+              Очистить всех пользователей
+            </Button>
           </div>
         </div>
 

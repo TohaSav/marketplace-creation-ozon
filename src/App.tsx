@@ -15,6 +15,7 @@ import AdminSellers from "./pages/AdminSellers";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminChat from "./pages/AdminChat";
 import AdminPayments from "./pages/AdminPayments";
+import AdminDataManagement from "./pages/AdminDataManagement";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import PersonalData from "./pages/PersonalData";
@@ -109,6 +110,14 @@ const App = () => (
               element={
                 <AdminProtectedRoute>
                   <AdminPayments />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/data"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDataManagement />
                 </AdminProtectedRoute>
               }
             />

@@ -16,6 +16,7 @@ const navigation = [
   { name: "Пополнение", href: "/admin/payments", icon: "CreditCard" },
   { name: "Чат", href: "/admin/chat", icon: "MessageCircle" },
   { name: "Аналитика", href: "/admin/analytics", icon: "BarChart3" },
+  { name: "Управление данными", href: "/admin/data", icon: "Database" },
   { name: "Настройки", href: "/admin/settings", icon: "Settings" },
 ];
 

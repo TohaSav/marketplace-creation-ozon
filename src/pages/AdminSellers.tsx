@@ -1,7 +1,39 @@
 import AdminLayout from "@/components/AdminLayout";
 import SellersTab from "@/components/admin-dashboard/SellersTab";
+import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
+import { UserDataManager } from "@/utils/userDataManager";
+import { toast } from "@/hooks/use-toast";
 
 export default function AdminSellers() {
+  const handleClearSellers = () => {
+    if (
+      window.confirm(
+        "Вы уверены, что хотите удалить ВСЕХ продавцов? Это действие необратимо!",
+      )
+    ) {
+      try {
+        UserDataManager.clearSellers();
+        toast({
+          title: "Продавцы удалены",
+          description: "Все продавцы удалены из базы данных",
+          variant: "destructive",
+        });
+        // Перезагружаем страницу для синхронизации
+        window.location.reload();
+      } catch (error) {
+        toast({
+          title: "Ошибка",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Не удалось удалить продавцов",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -13,6 +45,16 @@ export default function AdminSellers() {
             <p className="mt-1 text-sm text-gray-500">
               Управление продавцами и их магазинами
             </p>
+          </div>
+          <div className="mt-4 flex md:ml-4 md:mt-0">
+            <Button
+              variant="destructive"
+              onClick={handleClearSellers}
+              className="flex items-center"
+            >
+              <Icon name="Trash2" size={16} className="mr-2" />
+              Очистить всех продавцов
+            </Button>
           </div>
         </div>
         <SellersTab />
