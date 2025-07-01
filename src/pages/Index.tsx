@@ -345,9 +345,12 @@ export default function Index() {
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/commissions"
+                    className="hover:text-white transition-colors"
+                  >
                     Комиссии
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">

@@ -19,6 +19,7 @@ import AdminChat from "./pages/AdminChat";
 import AdminPayments from "./pages/AdminPayments";
 import AdminDataManagement from "./pages/AdminDataManagement";
 import TradingRules from "./pages/TradingRules";
+import Commissions from "./pages/Commissions";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import PersonalData from "./pages/PersonalData";
@@ -169,6 +170,7 @@ const App = () => {
               <Route path="/delivery" element={<Delivery />} />
               <Route path="/returns" element={<Returns />} />
               <Route path="/trading-rules" element={<TradingRules />} />
+              <Route path="/commissions" element={<Commissions />} />
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/bonus-card" element={<BonusCard />} />
