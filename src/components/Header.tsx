@@ -137,7 +137,19 @@ export default function Header() {
               <Button
                 variant="ghost"
                 className="flex items-center space-x-2 px-2 md:px-4 relative"
-                onClick={() => navigate("/favorites")}
+                onClick={() => {
+                  if (!user) {
+                    toast({
+                      title: "Требуется регистрация",
+                      description:
+                        "Для доступа к избранному необходимо войти в аккаунт",
+                      variant: "destructive",
+                    });
+                    navigate("/auth");
+                  } else {
+                    navigate("/favorites");
+                  }
+                }}
               >
                 <Icon name="Heart" size={20} />
                 <span className="hidden md:inline">Избранное</span>
