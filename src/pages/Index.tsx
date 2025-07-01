@@ -154,51 +154,20 @@ export default function Index() {
               {/* Content */}
               <div className="relative h-full flex items-center">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                  <div className="flex items-center justify-center h-full">
                     {/* Text Content */}
-                    <div className="text-white text-center lg:text-left">
-                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
-                        {banner.title}
+                    <div className="text-white text-center">
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+                        🎉 Тут будут акции и скидки
                       </h1>
-                      <p className="text-lg sm:text-xl opacity-90 mb-2 md:mb-4">
-                        {banner.subtitle}
+                      <p className="text-xl sm:text-2xl md:text-3xl opacity-90 mb-6">
+                        Следите за новостями
                       </p>
-                      <p className="text-sm sm:text-base opacity-75 mb-4 md:mb-6">
-                        {banner.description}
-                      </p>
-                      <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-3 mb-4 md:mb-6">
-                        {[
-                          "Электроника",
-                          "Одежда",
-                          "Дом и сад",
-                          "Спорт",
-                          "Красота",
-                          "Автотовары",
-                        ].map((category) => (
-                          <button
-                            key={category}
-                            className="px-3 md:px-6 py-1 md:py-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors text-xs md:text-sm font-medium"
-                          >
-                            {category}
-                          </button>
-                        ))}
+                      <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 md:p-6 max-w-2xl mx-auto">
+                        <p className="text-base sm:text-lg md:text-xl font-medium">
+                          Скоро здесь появятся горячие предложения! 🔥
+                        </p>
                       </div>
-                      <a
-                        href={banner.buttonLink}
-                        className="inline-flex items-center px-4 md:px-8 py-2 md:py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-semibold text-sm md:text-base"
-                      >
-                        {banner.buttonText}
-                        <Icon name="ArrowRight" size={16} className="ml-2" />
-                      </a>
-                    </div>
-
-                    {/* Image for larger screens */}
-                    <div className="hidden lg:block">
-                      <img
-                        src={banner.image}
-                        alt={banner.title}
-                        className="w-full h-64 object-cover rounded-lg shadow-2xl"
-                      />
                     </div>
                   </div>
                 </div>
