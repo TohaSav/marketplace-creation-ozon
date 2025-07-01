@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
+import AdminSellers from "./pages/AdminSellers";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminChat from "./pages/AdminChat";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
