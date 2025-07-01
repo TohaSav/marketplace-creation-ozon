@@ -40,6 +40,8 @@ import Settings from "./pages/Settings";
 import Shorts from "./pages/Shorts";
 import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
+import SellerTariffs from "./pages/SellerTariffs";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const queryClient = new QueryClient();
 
