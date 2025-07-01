@@ -42,6 +42,7 @@ import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
@@ -147,6 +148,9 @@ const App = () => {
                   </AdminProtectedRoute>
                 }
               />
+
+              {/* Главная страница */}
+              <Route path="/" element={<Home />} />
 
               {/* Общие страницы */}
               <Route path="/privacy" element={<PrivacyPolicy />} />
