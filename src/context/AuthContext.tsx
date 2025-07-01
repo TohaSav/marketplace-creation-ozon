@@ -26,49 +26,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Инициализация с тестовыми данными
-const initialUsers: User[] = [
-  {
-    id: 1,
-    name: "Алексей Смирнов",
-    email: "aleksey@example.com",
-    phone: "+7 (999) 111-22-33",
-    userType: "user",
-    status: "active",
-    joinDate: "2024-01-10",
-  },
-  {
-    id: 2,
-    name: "Мария Козлова",
-    email: "maria@example.com",
-    phone: "+7 (999) 222-33-44",
-    userType: "user",
-    status: "active",
-    joinDate: "2024-01-15",
-  },
-  {
-    id: 3,
-    name: "Анна Петрова",
-    email: "anna@example.com",
-    phone: "+7 (999) 333-44-55",
-    userType: "seller",
-    shopName: "Магазин Анны",
-    status: "active",
-    joinDate: "2024-01-20",
-    isSeller: true,
-  },
-  {
-    id: 4,
-    name: "Сергей Иванов",
-    email: "sergey@example.com",
-    phone: "+7 (999) 444-55-66",
-    userType: "seller",
-    shopName: "СИ Электроника",
-    status: "pending",
-    joinDate: "2024-02-01",
-    isSeller: true,
-  },
-];
+// Пустой массив - пользователи будут добавляться только через регистрацию
+const initialUsers: User[] = [];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

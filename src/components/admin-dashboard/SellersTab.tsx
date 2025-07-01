@@ -24,30 +24,7 @@ interface Seller {
   totalSales: number;
 }
 
-const mockSellers: Seller[] = [
-  {
-    id: "1",
-    name: "Анна Петрова",
-    email: "anna@example.com",
-    phone: "+7 (999) 123-45-67",
-    shopName: "Магазин Анны",
-    status: "active",
-    joinDate: "2024-01-15",
-    productsCount: 25,
-    totalSales: 150000,
-  },
-  {
-    id: "2",
-    name: "Сергей Иванов",
-    email: "sergey@example.com",
-    phone: "+7 (999) 234-56-78",
-    shopName: "СИ Электроника",
-    status: "pending",
-    joinDate: "2024-02-20",
-    productsCount: 0,
-    totalSales: 0,
-  },
-];
+// Убираем тестовых продавцов - данные только из регистрации
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -78,21 +55,18 @@ const getStatusText = (status: string) => {
 export default function SellersTab() {
   const { sellers } = useAuth();
 
-  // Объединяем реальных продавцов с тестовыми данными
-  const allSellers = [
-    ...sellers.map((seller) => ({
-      id: seller.id.toString(),
-      name: seller.name,
-      email: seller.email,
-      phone: seller.phone || "",
-      shopName: seller.shopName || "Без названия",
-      status: seller.status || "pending",
-      joinDate: seller.joinDate || new Date().toISOString().split("T")[0],
-      productsCount: 0,
-      totalSales: 0,
-    })),
-    ...mockSellers,
-  ];
+  // Отображаем только зарегистрированных продавцов
+  const allSellers = sellers.map((seller) => ({
+    id: seller.id.toString(),
+    name: seller.name,
+    email: seller.email,
+    phone: seller.phone || "",
+    shopName: seller.shopName || "Без названия",
+    status: seller.status || "pending",
+    joinDate: seller.joinDate || new Date().toISOString().split("T")[0],
+    productsCount: 0,
+    totalSales: 0,
+  }));
 
   return (
     <Card>

@@ -20,8 +20,6 @@ interface User {
 export default function AdminUsers() {
   const { users: authUsers } = useAuth();
 
-  console.log("AdminUsers: authUsers =", authUsers);
-
   // Преобразуем пользователей из AuthContext в формат AdminUsers
   const transformedUsers = (authUsers || []).map((user) => ({
     id: user.id,
