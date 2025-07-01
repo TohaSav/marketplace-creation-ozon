@@ -24,7 +24,7 @@ export default function SellerModerationModal({
   isOpen,
   onClose,
 }: SellerModerationModalProps) {
-  const { updateSellerStatus } = useAuth();
+  const { updateSellerStatus, deleteSeller } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCommentField, setShowCommentField] = useState(false);
   const [comment, setComment] = useState("");
@@ -106,6 +106,35 @@ export default function SellerModerationModal({
       toast({
         title: "Ошибка",
         description: "Не удалось отклонить заявку",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        `⚠️ ВНИМАНИЕ!\n\nВы хотите ПОЛНОСТЬЮ УДАЛИТЬ продавца ${seller.name}?\n\nЭто действие:\n• Удалит все данные продавца\n• Нельзя будет отменить\n• Удалит все связанные товары и заказы\n\nПродолжить?`,
+      )
+    ) {
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await deleteSeller(seller.id);
+      toast({
+        title: "Продавец удален",
+        description: `${seller.name} полностью удален из системы`,
+        variant: "destructive",
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить продавца",
         variant: "destructive",
       });
     } finally {
@@ -207,6 +236,61 @@ export default function SellerModerationModal({
             )}
           </div>
 
+          {/* Реквизиты организации */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Реквизиты организации</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-700">ИНН</Label>
+                <p className="mt-1 text-sm text-gray-900">
+                  {seller.inn || "Не указан"}
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  ОГРН
+                </Label>
+                <p className="mt-1 text-sm text-gray-900">
+                  {seller.ogrn || "Не указан"}
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-gray-700">КПП</Label>
+                <p className="mt-1 text-sm text-gray-900">
+                  {seller.kpp || "Не указан"}
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-gray-700">БИК</Label>
+                <p className="mt-1 text-sm text-gray-900">
+                  {seller.bik || "Не указан"}
+                </p>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label className="text-sm font-medium text-gray-700">
+                  Расчётный счёт
+                </Label>
+                <p className="mt-1 text-sm text-gray-900 font-mono">
+                  {seller.bankAccount || "Не указан"}
+                </p>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label className="text-sm font-medium text-gray-700">
+                  Корреспондентский счёт
+                </Label>
+                <p className="mt-1 text-sm text-gray-900 font-mono">
+                  {seller.corrAccount || "Не указан"}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Дополнительная информация */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Дополнительная информация</h3>
@@ -256,65 +340,84 @@ export default function SellerModerationModal({
           )}
 
           {/* Кнопки действий */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          <div className="space-y-3 pt-4 border-t">
             {!showCommentField ? (
               <>
-                <Button
-                  onClick={handleApprove}
-                  disabled={isProcessing}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Icon name="Check" size={16} className="mr-2" />
-                  Подтвердить
-                </Button>
+                {/* Основные кнопки модерации */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={handleApprove}
+                    disabled={isProcessing}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Icon name="Check" size={16} className="mr-2" />
+                    Подтвердить
+                  </Button>
 
-                <Button
-                  onClick={handleRevision}
-                  disabled={isProcessing}
-                  variant="outline"
-                  className="border-yellow-500 text-yellow-600 hover:bg-yellow-50"
-                >
-                  <Icon name="AlertCircle" size={16} className="mr-2" />
-                  Доработка
-                </Button>
+                  <Button
+                    onClick={handleRevision}
+                    disabled={isProcessing}
+                    variant="outline"
+                    className="border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+                  >
+                    <Icon name="AlertCircle" size={16} className="mr-2" />
+                    Доработка
+                  </Button>
 
-                <Button
-                  onClick={handleReject}
-                  disabled={isProcessing}
-                  variant="destructive"
-                >
-                  <Icon name="X" size={16} className="mr-2" />
-                  Отклонить
-                </Button>
+                  <Button
+                    onClick={handleReject}
+                    disabled={isProcessing}
+                    variant="destructive"
+                  >
+                    <Icon name="X" size={16} className="mr-2" />
+                    Отклонить
+                  </Button>
 
-                <Button
-                  onClick={onClose}
-                  variant="outline"
-                  className="sm:ml-auto"
-                >
-                  Закрыть
-                </Button>
+                  <Button
+                    onClick={onClose}
+                    variant="outline"
+                    className="sm:ml-auto"
+                  >
+                    Закрыть
+                  </Button>
+                </div>
+
+                {/* Кнопка удаления */}
+                <div className="flex justify-end pt-2 border-t border-gray-200">
+                  <Button
+                    onClick={handleDelete}
+                    disabled={isProcessing}
+                    variant="destructive"
+                    size="sm"
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Icon name="Trash2" size={14} className="mr-2" />
+                    Удалить продавца
+                  </Button>
+                </div>
               </>
             ) : (
               <>
-                <Button
-                  onClick={handleSendRevision}
-                  disabled={isProcessing || !comment.trim()}
-                  className="bg-yellow-600 hover:bg-yellow-700"
-                >
-                  <Icon name="Send" size={16} className="mr-2" />
-                  Отправить
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={handleSendRevision}
+                    disabled={isProcessing || !comment.trim()}
+                    className="bg-yellow-600 hover:bg-yellow-700"
+                  >
+                    <Icon name="Send" size={16} className="mr-2" />
+                    Отправить
+                  </Button>
 
-                <Button
-                  onClick={() => {
-                    setShowCommentField(false);
-                    setComment("");
-                  }}
-                  variant="outline"
-                >
-                  Отмена
-                </Button>
+                  <Button
+                    onClick={() => {
+                      setShowCommentField(false);
+                      setComment("");
+                    }}
+                    variant="outline"
+                  >
+                    Отмена
+                  </Button>
+                </div>
               </>
             )}
           </div>

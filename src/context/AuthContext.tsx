@@ -28,6 +28,12 @@ interface AuthContextType {
   logout: () => void;
   register: (userData: Omit<User, "id" | "joinDate" | "status">) => void;
   updateSellerStats: (stats: SellerStats) => void;
+  updateSellerStatus: (
+    sellerId: number,
+    status: string,
+    comment?: string,
+  ) => Promise<void>;
+  deleteSeller: (sellerId: number) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -142,6 +148,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateSellerStatus = async (
+    sellerId: number,
+    status: string,
+    comment?: string,
+  ) => {
+    setAllUsers((prev) => {
+      const updatedUsers = prev.map((user) =>
+        user.id === sellerId
+          ? {
+              ...user,
+              status: status as "active" | "pending" | "blocked",
+              moderationComment: comment,
+            }
+          : user,
+      );
+
+      // Сохраняем в localStorage
+      const regularUsers = updatedUsers.filter((u) => u.userType === "user");
+      const sellers = updatedUsers.filter((u) => u.userType === "seller");
+
+      localStorage.setItem("users", JSON.stringify(regularUsers));
+      localStorage.setItem("sellers", JSON.stringify(sellers));
+
+      return updatedUsers;
+    });
+  };
+
+  const deleteSeller = async (sellerId: number) => {
+    setAllUsers((prev) => {
+      const updatedUsers = prev.filter((user) => user.id !== sellerId);
+
+      // Сохраняем в localStorage
+      const regularUsers = updatedUsers.filter((u) => u.userType === "user");
+      const sellers = updatedUsers.filter((u) => u.userType === "seller");
+
+      localStorage.setItem("users", JSON.stringify(regularUsers));
+      localStorage.setItem("sellers", JSON.stringify(sellers));
+
+      return updatedUsers;
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -152,6 +200,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         register,
         updateSellerStats,
+        updateSellerStatus,
+        deleteSeller,
       }}
     >
       {children}
