@@ -3,6 +3,9 @@ import Header from "@/components/Header";
 import CreateStoryModal from "@/components/CreateStoryModal";
 import SellerWallet from "@/components/SellerWallet";
 import { useSellerDashboard } from "@/hooks/useSellerDashboard";
+import { useAuth } from "@/context/AuthContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Icon from "@/components/ui/icon";
 
 // Tab Components
 import StatsGrid from "@/components/seller-dashboard/StatsGrid";
@@ -13,6 +16,7 @@ import StoriesTab from "@/components/seller-dashboard/StoriesTab";
 import SettingsTab from "@/components/seller-dashboard/SettingsTab";
 
 export default function SellerDashboard() {
+  const { user } = useAuth();
   const {
     stats,
     products,
@@ -29,6 +33,44 @@ export default function SellerDashboard() {
     handleMessageCustomer,
     handleEditProfile,
   } = useSellerDashboard();
+
+  // Проверяем статус продавца
+  if (user?.userType === "seller" && user?.status === "pending") {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card className="text-center">
+            <CardHeader>
+              <div className="flex justify-center mb-4">
+                <Icon name="Clock" size={64} className="text-yellow-500" />
+              </div>
+              <CardTitle className="text-2xl">
+                Дождитесь проверки Администрации Calibre Store
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 text-lg mb-6">
+                Ваша заявка на продажу товаров находится на рассмотрении.
+                Администрация проверит предоставленные данные и одобрит ваш
+                аккаунт в течение 24 часов.
+              </p>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="text-blue-800 text-sm">
+                  <strong>Что происходит сейчас:</strong>
+                  <br />
+                  • Проверка ваших контактных данных
+                  <br />
+                  • Верификация информации о магазине
+                  <br />• Подготовка вашего кабинета продавца
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
