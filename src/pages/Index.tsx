@@ -261,8 +261,8 @@ export default function Index() {
             <div>
               <h3 className="text-lg font-semibold mb-4">О Calibre Store</h3>
               <p className="text-gray-300 text-sm mb-4">
-                Ведущий маркетплейс с миллионами товаров от проверенных
-                продавцов по всей России.
+                Новый маркетплейс с качественными товарами от надёжных продавцов
+                по всей стране и выгодными ценами.
               </p>
               <div className="flex space-x-4">
                 <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-xs">
