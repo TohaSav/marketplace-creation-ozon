@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Product,
   Order,
@@ -10,6 +10,7 @@ import {
   MOCK_ORDERS,
   MOCK_STATS,
 } from "@/constants/seller-dashboard.constants";
+import { useAuth } from "@/context/AuthContext";
 
 export interface UseSellerDashboardResult {
   stats: SellerStats;
@@ -29,11 +30,42 @@ export interface UseSellerDashboardResult {
 }
 
 export function useSellerDashboard(): UseSellerDashboardResult {
-  const [stats] = useState<SellerStats>(MOCK_STATS);
-  const [products] = useState<Product[]>(MOCK_PRODUCTS);
-  const [orders] = useState<Order[]>(MOCK_ORDERS);
+  const { user } = useAuth();
+  const [stats, setStats] = useState<SellerStats>(MOCK_STATS);
+  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
   const [stories, setStories] = useState<Story[]>([]);
   const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
+
+  // Проверяем, является ли пользователь новым продавцом
+  const isNewSeller =
+    !user?.sellerStats ||
+    (user.sellerStats.totalSales === 0 &&
+      user.sellerStats.ordersCount === 0 &&
+      user.sellerStats.productsCount === 0);
+
+  useEffect(() => {
+    if (isNewSeller) {
+      // Устанавливаем нулевые значения для нового продавца
+      setStats({
+        totalSales: 0,
+        ordersCount: 0,
+        productsCount: 0,
+        rating: 0,
+        balance: 0,
+      });
+      setProducts([]);
+      setOrders([]);
+    } else if (user?.sellerStats) {
+      // Используем реальные данные пользователя если они есть
+      setStats(user.sellerStats);
+      // Фильтруем товары и заказы по ID продавца
+      setProducts(
+        MOCK_PRODUCTS.filter((product) => product.sellerId === user.id),
+      );
+      setOrders(MOCK_ORDERS.filter((order) => order.sellerId === user.id));
+    }
+  }, [user, isNewSeller]);
 
   const handleCreateStory = (storyData: any) => {
     const newStory: Story = {

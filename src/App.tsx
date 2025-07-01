@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
@@ -39,108 +40,110 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
 
-          {/* Админка */}
-          <Route
-            path="/admin"
-            element={<Navigate to="/admin/dashboard" replace />}
-          />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <AdminProtectedRoute>
-                <AdminDashboard />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products"
-            element={
-              <AdminProtectedRoute>
-                <AdminProducts />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/orders"
-            element={
-              <AdminProtectedRoute>
-                <AdminOrders />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminProtectedRoute>
-                <AdminUsers />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/analytics"
-            element={
-              <AdminProtectedRoute>
-                <AdminAnalytics />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/chat"
-            element={
-              <AdminProtectedRoute>
-                <AdminChat />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <AdminProtectedRoute>
-                <AdminDashboard />
-              </AdminProtectedRoute>
-            }
-          />
+            {/* Админка */}
+            <Route
+              path="/admin"
+              element={<Navigate to="/admin/dashboard" replace />}
+            />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/products"
+              element={
+                <AdminProtectedRoute>
+                  <AdminProducts />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/orders"
+              element={
+                <AdminProtectedRoute>
+                  <AdminOrders />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminProtectedRoute>
+                  <AdminUsers />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <AdminProtectedRoute>
+                  <AdminAnalytics />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/chat"
+              element={
+                <AdminProtectedRoute>
+                  <AdminChat />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
+            />
 
-          {/* Общие страницы */}
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/personal-data" element={<PersonalData />} />
-          <Route path="/how-to-sell" element={<HowToSell />} />
-          <Route path="/how-to-order" element={<HowToOrder />} />
-          <Route path="/payment-methods" element={<PaymentMethods />} />
-          <Route path="/delivery" element={<Delivery />} />
-          <Route path="/returns" element={<Returns />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/bonus-card" element={<BonusCard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/shorts" element={<Shorts />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/notifications" element={<Notifications />} />
+            {/* Общие страницы */}
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/personal-data" element={<PersonalData />} />
+            <Route path="/how-to-sell" element={<HowToSell />} />
+            <Route path="/how-to-order" element={<HowToOrder />} />
+            <Route path="/payment-methods" element={<PaymentMethods />} />
+            <Route path="/delivery" element={<Delivery />} />
+            <Route path="/returns" element={<Returns />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/bonus-card" element={<BonusCard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/shorts" element={<Shorts />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/notifications" element={<Notifications />} />
 
-          {/* Авторизация покупателей */}
-          <Route path="/login" element={<UserLogin />} />
-          <Route path="/register" element={<UserRegister />} />
+            {/* Авторизация покупателей */}
+            <Route path="/login" element={<UserLogin />} />
+            <Route path="/register" element={<UserRegister />} />
 
-          {/* Кабинет продавца */}
-          <Route path="/seller" element={<SellerLogin />} />
-          <Route path="/seller/dashboard" element={<SellerDashboard />} />
-          <Route path="/seller/add-product" element={<AddProduct />} />
+            {/* Кабинет продавца */}
+            <Route path="/seller" element={<SellerLogin />} />
+            <Route path="/seller/dashboard" element={<SellerDashboard />} />
+            <Route path="/seller/add-product" element={<AddProduct />} />
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

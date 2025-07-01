@@ -6,6 +6,7 @@ export interface Product {
   sold: number;
   status: "active" | "inactive" | "draft";
   image: string;
+  sellerId?: number;
 }
 
 export interface Order {
@@ -15,6 +16,7 @@ export interface Order {
   amount: number;
   status: "new" | "shipped" | "delivered" | "cancelled";
   date: string;
+  sellerId?: number;
 }
 
 export interface SellerStats {
