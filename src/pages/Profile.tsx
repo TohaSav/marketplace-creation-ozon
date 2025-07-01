@@ -7,20 +7,58 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import Wallet from "@/components/Wallet";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Profile() {
-  const [user] = useState({
-    name: "Иван Петров",
-    email: "ivan@example.com",
-    phone: "+7 (999) 123-45-67",
-    birthDate: "1990-05-15",
-    city: "Москва",
-    address: "ул. Примерная, д. 123, кв. 45",
-    memberSince: "Март 2023",
-    ordersCount: 23,
-    bonusPoints: 1250,
-    level: "Покупатель",
-  });
+  const { user } = useAuth();
+
+  // Если пользователь не авторизован, показываем заглушку
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <Icon
+              name="User"
+              size={48}
+              className="text-gray-400 mx-auto mb-4"
+            />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Войдите в аккаунт
+            </h2>
+            <p className="text-gray-500 mb-4">
+              Чтобы просматривать профиль, нужно авторизоваться
+            </p>
+            <Link to="/login">
+              <Button>Войти в аккаунт</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Рассчитываем реальные данные пользователя
+  const userStats = {
+    ordersCount: 0, // Заказы будут добавляться при реальных покупках
+    bonusPoints: 0, // Бонусы появляются только после покупок
+    totalSpent: 0,
+    memberSince: user.joinDate
+      ? new Date(user.joinDate).toLocaleDateString("ru-RU", {
+          year: "numeric",
+          month: "long",
+        })
+      : "Недавно",
+  };
+
+  const displayUser = {
+    ...user,
+    ...userStats,
+    level: user.userType === "seller" ? "Продавец" : "Покупатель",
+    birthDate: "", // Пустое поле - будет заполняться пользователем
+    city: "", // Пустое поле - будет заполняться пользователем
+    address: "", // Пустое поле - будет заполняться пользователем
+  };
 
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
@@ -51,11 +89,11 @@ export default function Profile() {
             </h1>
             <div className="flex items-center space-x-4">
               <Badge variant="secondary" className="bg-blue-50 text-blue-700">
-                {user.level}
+                {displayUser.level}
               </Badge>
               <Avatar>
                 <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
-                  {user.name
+                  {displayUser.name
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}
@@ -76,7 +114,7 @@ export default function Profile() {
                 <div className="flex items-center space-x-4 mb-4">
                   <Avatar className="w-16 h-16">
                     <AvatarFallback className="bg-blue-100 text-blue-700 text-lg font-semibold">
-                      {user.name
+                      {displayUser.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
@@ -84,16 +122,16 @@ export default function Profile() {
                   </Avatar>
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">
-                      {user.name}
+                      {displayUser.name}
                     </h2>
                     <p className="text-sm text-gray-500">
-                      С нами с {user.memberSince}
+                      С нами с {displayUser.memberSince}
                     </p>
                     <Badge
                       variant="secondary"
                       className="mt-1 bg-green-50 text-green-700"
                     >
-                      {user.level}
+                      {displayUser.level}
                     </Badge>
                   </div>
                 </div>
@@ -101,13 +139,15 @@ export default function Profile() {
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                   <div className="text-center">
                     <div className="text-xl font-bold text-blue-600">
-                      {user.ordersCount}
+                      {displayUser.ordersCount}
                     </div>
                     <div className="text-xs text-gray-500">Заказов</div>
                   </div>
                   <div className="text-center">
                     <div className="text-xl font-bold text-orange-600">
-                      {user.bonusPoints.toLocaleString()}
+                      {displayUser.bonusPoints > 0
+                        ? displayUser.bonusPoints.toLocaleString()
+                        : "0"}
                     </div>
                     <div className="text-xs text-gray-500">Бонусов</div>
                   </div>
@@ -186,7 +226,7 @@ export default function Profile() {
                         />
                         <input
                           type="text"
-                          defaultValue={user.name}
+                          defaultValue={displayUser.name}
                           disabled={!isEditing}
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                         />
@@ -205,7 +245,7 @@ export default function Profile() {
                         />
                         <input
                           type="email"
-                          defaultValue={user.email}
+                          defaultValue={displayUser.email}
                           disabled={!isEditing}
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                         />
@@ -224,8 +264,9 @@ export default function Profile() {
                         />
                         <input
                           type="tel"
-                          defaultValue={user.phone}
+                          defaultValue={displayUser.phone || ""}
                           disabled={!isEditing}
+                          placeholder="Введите номер телефона"
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                         />
                       </div>
@@ -243,7 +284,7 @@ export default function Profile() {
                         />
                         <input
                           type="date"
-                          defaultValue={user.birthDate}
+                          defaultValue={displayUser.birthDate}
                           disabled={!isEditing}
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                         />
@@ -262,8 +303,9 @@ export default function Profile() {
                         />
                         <input
                           type="text"
-                          defaultValue={user.city}
+                          defaultValue={displayUser.city}
                           disabled={!isEditing}
+                          placeholder="Введите ваш город"
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                         />
                       </div>
@@ -281,8 +323,9 @@ export default function Profile() {
                         />
                         <input
                           type="text"
-                          defaultValue={user.address}
+                          defaultValue={displayUser.address}
                           disabled={!isEditing}
+                          placeholder="Введите адрес доставки"
                           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                         />
                       </div>
@@ -301,37 +344,28 @@ export default function Profile() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {[1, 2, 3].map((order) => (
-                      <div
-                        key={order}
-                        className="border rounded-lg p-4 hover:bg-gray-50"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="font-medium">
-                            Заказ #{order}234567
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className="bg-green-50 text-green-700"
-                          >
-                            Доставлен
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-gray-500 mb-2">
-                          12 июня 2024 • 3 товара • 2,450 ₽
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="outline" size="sm">
-                            Повторить заказ
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            Подробнее
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  {displayUser.ordersCount === 0 ? (
+                    <div className="text-center py-12">
+                      <Icon
+                        name="Package"
+                        size={48}
+                        className="text-gray-400 mx-auto mb-4"
+                      />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        У вас пока нет заказов
+                      </h3>
+                      <p className="text-gray-500 mb-4">
+                        Заказы будут отображаться здесь после ваших покупок
+                      </p>
+                      <Link to="/">
+                        <Button>Перейти к покупкам</Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Здесь будут отображаться реальные заказы пользователя */}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
