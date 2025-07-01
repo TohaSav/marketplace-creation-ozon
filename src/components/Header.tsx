@@ -13,11 +13,13 @@ import {
 import Icon from "@/components/ui/icon";
 import { useStore } from "@/lib/store";
 import { toast } from "@/hooks/use-toast";
+import BalloonGame from "./BalloonGame";
 
 export default function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [seller, setSeller] = useState<any>(null);
+  const [showBalloonGame, setShowBalloonGame] = useState(false);
 
   const { favorites, getTotalItems } = useStore();
 
@@ -52,6 +54,38 @@ export default function Header() {
       description: "До свидания!",
     });
     navigate("/");
+  };
+
+  const canPlayToday = () => {
+    const lastPlayed = localStorage.getItem("balloon-game-last-played");
+    if (!lastPlayed) return true;
+
+    const lastPlayedDate = new Date(lastPlayed);
+    const today = new Date();
+
+    return lastPlayedDate.toDateString() !== today.toDateString();
+  };
+
+  const handleGameEarnings = (amount: number) => {
+    const currentBalance = parseFloat(
+      localStorage.getItem("user-balance") || "0",
+    );
+    const newBalance = currentBalance + amount;
+    localStorage.setItem("user-balance", newBalance.toString());
+  };
+
+  const startBalloonGame = () => {
+    if (!canPlayToday()) {
+      toast({
+        title: "Игра недоступна",
+        description: "Вы уже играли сегодня. Возвращайтесь завтра!",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    localStorage.setItem("balloon-game-last-played", new Date().toISOString());
+    setShowBalloonGame(true);
   };
 
   return (
@@ -159,6 +193,15 @@ export default function Header() {
                           <Icon name="CreditCard" size={16} className="mr-2" />
                           Бонусная карта
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={startBalloonGame}>
+                          <Icon name="Gamepad2" size={16} className="mr-2" />
+                          Игра "Лопни шарики" 🎈
+                          {!canPlayToday() && (
+                            <Badge className="ml-2 bg-gray-400 text-white text-xs">
+                              Завтра
+                            </Badge>
+                          )}
+                        </DropdownMenuItem>
                       </>
                     )}
 
@@ -238,6 +281,14 @@ export default function Header() {
           </div>
         </div>
       </header>
+
+      {/* Игра с шариками */}
+      {showBalloonGame && (
+        <BalloonGame
+          onClose={() => setShowBalloonGame(false)}
+          onEarnings={handleGameEarnings}
+        />
+      )}
     </>
   );
 }
