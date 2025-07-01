@@ -61,9 +61,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
-
-              {/* Админка */}
+              {/* Админка */}}
               <Route
                 path="/admin"
                 element={<Navigate to="/admin/dashboard" replace />}
@@ -159,7 +157,7 @@ const App = () => {
               />
 
               {/* Главная страница */}
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Index />} />
 
               {/* Общие страницы */}
               <Route path="/privacy" element={<PrivacyPolicy />} />
