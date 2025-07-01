@@ -4,67 +4,38 @@ import AdminLayout from "@/components/AdminLayout";
 const stats = [
   {
     name: "Общая выручка",
-    value: "2,847,293 ₽",
-    change: "+12.5%",
-    changeType: "increase",
+    value: "0 ₽",
+    change: "0%",
+    changeType: "neutral",
   },
   {
     name: "Новые заказы",
-    value: "1,247",
-    change: "+8.2%",
-    changeType: "increase",
+    value: "0",
+    change: "0%",
+    changeType: "neutral",
   },
   {
     name: "Количество товаров",
-    value: "12,847",
-    change: "+2.1%",
-    changeType: "increase",
+    value: "0",
+    change: "0%",
+    changeType: "neutral",
   },
   {
     name: "Количество пользователей",
-    value: "8,429",
-    change: "+15.3%",
-    changeType: "increase",
+    value: "0",
+    change: "0%",
+    changeType: "neutral",
   },
 ];
 
-const recentOrders = [
-  {
-    id: "12847",
-    customer: "Иван Петров",
-    product: "iPhone 15 Pro Max",
-    amount: "119,990 ₽",
-    status: "Обрабатывается",
-  },
-  {
-    id: "12846",
-    customer: "Мария Сидорова",
-    product: "Samsung Galaxy S24",
-    amount: "89,990 ₽",
-    status: "Доставляется",
-  },
-  {
-    id: "12845",
-    customer: "Алексей Козлов",
-    product: "MacBook Air M3",
-    amount: "149,990 ₽",
-    status: "Завершен",
-  },
-  {
-    id: "12844",
-    customer: "Ольга Новикова",
-    product: "AirPods Pro",
-    amount: "24,990 ₽",
-    status: "Завершен",
-  },
-  {
-    id: "12843",
-    customer: "Дмитрий Волков",
-    product: "Клавиатура Magic",
-    amount: "12,990 ₽",
-    status: "Отменен",
-  },
-];
+// Пустой массив - заказы будут отображаться при появлении продаж
+const recentOrders: {
+  id: string;
+  customer: string;
+  product: string;
+  amount: string;
+  status: string;
+}[] = [];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -126,12 +97,18 @@ export default function AdminDashboard() {
                     className={`inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium ${
                       stat.changeType === "increase"
                         ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
+                        : stat.changeType === "decrease"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-gray-100 text-gray-600"
                     } md:mt-2 lg:mt-0`}
                   >
                     <Icon
                       name={
-                        stat.changeType === "increase" ? "ArrowUp" : "ArrowDown"
+                        stat.changeType === "increase"
+                          ? "ArrowUp"
+                          : stat.changeType === "decrease"
+                            ? "ArrowDown"
+                            : "Minus"
                       }
                       size={12}
                       className="mr-0.5"
@@ -186,31 +163,52 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {recentOrders.map((order) => (
-                        <tr key={order.id}>
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                            #{order.id}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                            {order.customer}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                            {order.product}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                            {order.amount}
-                          </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                                order.status,
-                              )}`}
-                            >
-                              {order.status}
-                            </span>
+                      {recentOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="text-center py-12">
+                            <div className="flex flex-col items-center">
+                              <Icon
+                                name="ShoppingCart"
+                                size={48}
+                                className="text-gray-400 mb-4"
+                              />
+                              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                Пока нет заказов
+                              </h3>
+                              <p className="text-gray-500">
+                                Заказы будут отображаться здесь после первых
+                                продаж
+                              </p>
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        recentOrders.map((order) => (
+                          <tr key={order.id}>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                              #{order.id}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                              {order.customer}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                              {order.product}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                              {order.amount}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                                  order.status,
+                                )}`}
+                              >
+                                {order.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
