@@ -14,6 +14,7 @@ import OrdersTab from "@/components/seller-dashboard/OrdersTab";
 import FinancesTab from "@/components/seller-dashboard/FinancesTab";
 import StoriesTab from "@/components/seller-dashboard/StoriesTab";
 import SettingsTab from "@/components/seller-dashboard/SettingsTab";
+import SubscriptionStatus from "@/components/SubscriptionStatus";
 
 export default function SellerDashboard() {
   const { user } = useAuth();
@@ -119,6 +120,11 @@ export default function SellerDashboard() {
 
         {/* Stats Cards */}
         <StatsGrid stats={stats} />
+
+        {/* Subscription Status */}
+        <div className="mb-8">
+          <SubscriptionStatus />
+        </div>
 
         {/* Tabs */}
         <Tabs defaultValue="products" className="w-full">

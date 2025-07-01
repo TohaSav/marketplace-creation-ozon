@@ -172,6 +172,11 @@ const App = () => {
               <Route path="/seller" element={<SellerLogin />} />
               <Route path="/seller/dashboard" element={<SellerDashboard />} />
               <Route path="/seller/add-product" element={<AddProduct />} />
+              <Route path="/seller/tariffs" element={<SellerTariffs />} />
+              <Route
+                path="/seller/payment-success"
+                element={<PaymentSuccess />}
+              />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

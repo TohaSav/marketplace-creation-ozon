@@ -18,6 +18,14 @@ interface User {
   joinDate?: string;
   isSeller?: boolean;
   sellerStats?: SellerStats;
+  subscription?: {
+    isActive: boolean;
+    planType: "monthly" | "yearly";
+    planName: string;
+    startDate: string;
+    endDate: string;
+    autoRenew: boolean;
+  };
 }
 
 interface AuthContextType {
@@ -27,6 +35,7 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   register: (userData: Omit<User, "id" | "joinDate" | "status">) => void;
+  updateUser: (userData: User) => void;
   updateSellerStats: (stats: SellerStats) => void;
   updateSellerStatus: (
     sellerId: number,
@@ -142,6 +151,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
   };
 
+  const updateUser = (userData: User) => {
+    setUser(userData);
+
+    // Обновляем в localStorage
+    if (userData.userType === "seller") {
+      localStorage.setItem("seller-token", JSON.stringify(userData));
+    } else {
+      localStorage.setItem("user-token", JSON.stringify(userData));
+    }
+  };
+
   const updateSellerStats = (stats: SellerStats) => {
     if (user) {
       setUser({ ...user, sellerStats: stats });
@@ -199,6 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         register,
+        updateUser,
         updateSellerStats,
         updateSellerStatus,
         deleteSeller,
