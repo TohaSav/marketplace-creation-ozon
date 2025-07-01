@@ -337,9 +337,12 @@ export default function Index() {
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <Link
+                    to="/trading-rules"
+                    className="hover:text-white transition-colors"
+                  >
                     Правила торговли
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
