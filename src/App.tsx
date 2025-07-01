@@ -43,6 +43,7 @@ import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Home from "./pages/Home";
+import ShopVerification from "./pages/admin/ShopVerification";
 
 const queryClient = new QueryClient();
 
@@ -137,6 +138,14 @@ const App = () => {
                 element={
                   <AdminProtectedRoute>
                     <AdminChat />
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/verification"
+                element={
+                  <AdminProtectedRoute>
+                    <ShopVerification />
                   </AdminProtectedRoute>
                 }
               />

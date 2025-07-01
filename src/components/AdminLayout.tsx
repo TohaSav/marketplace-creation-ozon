@@ -13,6 +13,11 @@ const navigation = [
   { name: "Заказы", href: "/admin/orders", icon: "ShoppingCart" },
   { name: "Пользователи", href: "/admin/users", icon: "Users" },
   { name: "Продавцы", href: "/admin/sellers", icon: "Store" },
+  {
+    name: "Верификация магазинов",
+    href: "/admin/verification",
+    icon: "CheckCircle",
+  },
   { name: "Пополнение", href: "/admin/payments", icon: "CreditCard" },
   { name: "Чат", href: "/admin/chat", icon: "MessageCircle" },
   { name: "Аналитика", href: "/admin/analytics", icon: "BarChart3" },

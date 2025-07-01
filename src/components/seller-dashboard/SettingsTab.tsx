@@ -1,8 +1,10 @@
+import React, { useState } from "react";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
+import VerificationModal from "@/components/VerificationModal";
 
 interface SettingsTabProps {
   onEditProfile?: () => void;
@@ -10,6 +12,16 @@ interface SettingsTabProps {
 
 export default function SettingsTab({ onEditProfile }: SettingsTabProps) {
   const { user } = useAuth();
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+
+  // Тестовые данные статистики магазина
+  const shopStats = {
+    salesCount: 156,
+    reviewsCount: 78,
+    monthsOnPlatform: 8,
+    complaintsCount: 0,
+    supportRating: 4.7,
+  };
 
   // Показываем заглушку, если пользователь не авторизован
   if (!user || user.userType !== "seller") {
@@ -65,119 +77,141 @@ export default function SettingsTab({ onEditProfile }: SettingsTabProps) {
 
   const statusInfo = getStatusBadge();
 
-  return (
-    <div className="grid gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Настройки магазина</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Название магазина
-              </label>
-              <p className="text-gray-900 font-medium">
-                {user.shopName || "Не указано"}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Статус
-              </label>
-              <div className="flex items-center mt-1">
-                <Badge className={`${statusInfo.className} mr-2`}>
-                  {statusInfo.text}
-                </Badge>
-                <Icon
-                  name={statusInfo.icon as any}
-                  className={statusInfo.iconColor}
-                  size={16}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Имя продавца
-              </label>
-              <p className="text-gray-900 font-medium">{user.name}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Дата регистрации
-              </label>
-              <p className="text-gray-900 font-medium">
-                {user.joinDate
-                  ? new Date(user.joinDate).toLocaleDateString("ru-RU")
-                  : "Недавно"}
-              </p>
-            </div>
-          </div>
-          <div className="pt-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Контактная информация
-              </label>
-              <div className="mt-2 space-y-1">
-                <p className="text-gray-900">
-                  Ð­Ð»ÐµÐºÑÑÐ¾Ð½Ð½ð¾ò Ð¿Ð¾ñòðð: {user.email}
-                </p>
-                {user.phone && (
-                  <p className="text-gray-900">Ð¢ÐµÐ»Ðµð¾Ý: {user.phone}</p>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="pt-4 border-t">
-            <Button variant="outline" onClick={onEditProfile}>
-              <Icon name="Edit" size={16} className="mr-2" />
-              Редактировать профиль
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+  const handleVerificationSubmit = () => {
+    // Здесь будет логика отправки заявки на верификацию
+    console.log("Заявка на верификацию отправлена");
+  };
 
-      {/* Дополнительные настройки */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Уведомления</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Новые заказы</p>
-              <p className="text-sm text-gray-600">
-                Получать уведомления о новых заказах
-              </p>
+  return (
+    <>
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Настройки магазина</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  Название магазина
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {user.shopName || "Не указано"}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  Статус
+                </label>
+                <div className="flex items-center mt-1">
+                  <Badge className={`${statusInfo.className} mr-2`}>
+                    {statusInfo.text}
+                  </Badge>
+                  <Icon
+                    name={statusInfo.icon as any}
+                    className={statusInfo.iconColor}
+                    size={16}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  Имя продавца
+                </label>
+                <p className="text-gray-900 font-medium">{user.name}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  Дата регистрации
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {user.joinDate
+                    ? new Date(user.joinDate).toLocaleDateString("ru-RU")
+                    : "Недавно"}
+                </p>
+              </div>
             </div>
-            <Button variant="outline" size="sm">
-              Включено
-            </Button>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Отзывы</p>
-              <p className="text-sm text-gray-600">
-                Уведомления о новых отзывах
-              </p>
+            <div className="pt-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  Контактная информация
+                </label>
+                <div className="mt-2 space-y-1">
+                  <p className="text-gray-900">
+                    Ð­Ð»ÐµÐºÑÑÐ¾Ð½Ð½ð¾ò Ð¿Ð¾ñòðð: {user.email}
+                  </p>
+                  {user.phone && (
+                    <p className="text-gray-900">Ð¢ÐµÐ»Ðµð¾Ý: {user.phone}</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <Button variant="outline" size="sm">
-              Включено
-            </Button>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Маркетинг</p>
-              <p className="text-sm text-gray-600">
-                Советы по продвижению товаров
-              </p>
+            <div className="pt-4 border-t flex flex-wrap gap-3">
+              <Button variant="outline" onClick={onEditProfile}>
+                <Icon name="Edit" size={16} className="mr-2" />
+                Редактировать профиль
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIsVerificationModalOpen(true)}
+                className="border-blue-300 text-blue-600 hover:bg-blue-50"
+              >
+                <Icon name="CheckCircle" size={16} className="mr-2" />
+                Верификация магазина
+              </Button>
             </div>
-            <Button variant="outline" size="sm">
-              Отключено
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+
+        {/* Дополнительные настройки */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Уведомления</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Новые заказы</p>
+                <p className="text-sm text-gray-600">
+                  Получать уведомления о новых заказах
+                </p>
+              </div>
+              <Button variant="outline" size="sm">
+                Включено
+              </Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Отзывы</p>
+                <p className="text-sm text-gray-600">
+                  Уведомления о новых отзывах
+                </p>
+              </div>
+              <Button variant="outline" size="sm">
+                Включено
+              </Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Маркетинг</p>
+                <p className="text-sm text-gray-600">
+                  Советы по продвижению товаров
+                </p>
+              </div>
+              <Button variant="outline" size="sm">
+                Отключено
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <VerificationModal
+        isOpen={isVerificationModalOpen}
+        onClose={() => setIsVerificationModalOpen(false)}
+        onSubmit={handleVerificationSubmit}
+        shopStats={shopStats}
+      />
+    </>
   );
 }
