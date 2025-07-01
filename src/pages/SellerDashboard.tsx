@@ -165,7 +165,7 @@ export default function SellerDashboard() {
           <TabsContent value="stories" className="mt-6">
             <StoriesTab
               stories={stories}
-              onCreateStory={() => setIsCreateStoryOpen(true)}
+              onCreateStory={() => (window.location.href = "/create-story")}
               onDeleteStory={handleDeleteStory}
             />
           </TabsContent>

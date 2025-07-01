@@ -2,12 +2,12 @@ import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Story } from "@/types/seller-dashboard.types";
+import { Story } from "@/types/stories";
 
 interface StoriesTabProps {
   stories: Story[];
   onCreateStory?: () => void;
-  onDeleteStory?: (storyId: number) => void;
+  onDeleteStory?: (storyId: string) => void;
 }
 
 export default function StoriesTab({
@@ -30,6 +30,21 @@ export default function StoriesTab({
         </div>
       </CardHeader>
       <CardContent>
+        {/* Pricing Info */}
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h3 className="font-semibold text-blue-900 mb-2">Тарифы Stories</h3>
+          <div className="grid gap-2 md:grid-cols-2 text-sm">
+            <div className="flex justify-between">
+              <span>Неделя (7 дней):</span>
+              <span className="font-medium">100₽ (97₽ с кошелька -3%)</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Месяц (30 дней):</span>
+              <span className="font-medium">500₽ (485₽ с кошелька -3%)</span>
+            </div>
+          </div>
+        </div>
+
         {stories.length === 0 ? (
           <div className="text-center py-8">
             <Icon
@@ -39,42 +54,56 @@ export default function StoriesTab({
             />
             <p className="text-gray-500">Пока нет созданных Stories</p>
             <p className="text-sm text-gray-400 mt-2">
-              Создавайте Stories для привлечения покупателей
+              Создавайте Stories для продвижения товаров на главной странице
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="space-y-4">
             {stories.map((story) => (
               <Card key={story.id} className="overflow-hidden">
-                <div className="aspect-[9/16] relative">
+                <div className="flex gap-4 p-4">
                   <img
-                    src={
-                      story.image
-                        ? URL.createObjectURL(story.image)
-                        : "/placeholder.svg"
-                    }
-                    alt="Story"
-                    className="w-full h-full object-cover"
+                    src={story.image || "/placeholder.svg"}
+                    alt={story.title}
+                    className="w-20 h-20 rounded-lg object-cover"
                   />
-                  <div className="absolute top-2 right-2">
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => onDeleteStory?.(story.id)}
-                    >
-                      <Icon name="Trash2" size={14} />
-                    </Button>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-semibold">{story.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                          {story.description}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Icon name="Eye" size={12} />
+                            {story.views}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Icon name="MousePointer" size={12} />
+                            {story.clicks}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          className={
+                            story.isActive ? "bg-green-500" : "bg-gray-500"
+                          }
+                        >
+                          {story.isActive ? "Активна" : "Неактивна"}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onDeleteStory?.(story.id)}
+                          className="text-red-600"
+                        >
+                          <Icon name="Trash2" size={14} />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="p-2">
-                  <p className="text-xs text-gray-600 truncate">
-                    Товар ID: {story.productId}
-                  </p>
-                  {story.discount && (
-                    <Badge className="text-xs mt-1">
-                      Скидка {story.discount}%
-                    </Badge>
-                  )}
                 </div>
               </Card>
             ))}
