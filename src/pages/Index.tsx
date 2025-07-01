@@ -273,9 +273,7 @@ export default function Index() {
                 >
                   VK
                 </a>
-                <div className="w-8 h-8 bg-pink-600 rounded flex items-center justify-center text-xs">
-                  IG
-                </div>
+
                 <div className="w-8 h-8 bg-blue-400 rounded flex items-center justify-center text-xs">
                   TG
                 </div>
