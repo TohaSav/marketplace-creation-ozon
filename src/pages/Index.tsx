@@ -265,9 +265,14 @@ export default function Index() {
                 по всей стране и выгодными ценами.
               </p>
               <div className="flex space-x-4">
-                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-xs">
+                <a
+                  href="https://vk.com/cloudpryanik"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-xs hover:bg-blue-700 transition-colors"
+                >
                   VK
-                </div>
+                </a>
                 <div className="w-8 h-8 bg-pink-600 rounded flex items-center justify-center text-xs">
                   IG
                 </div>
