@@ -15,10 +15,56 @@ import {
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AddProduct() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+
+  // Проверяем статус продавца - разрешаем доступ только подтвержденным
+  if (user?.userType === "seller" && user?.status !== "active") {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card className="text-center">
+            <CardHeader>
+              <div className="flex justify-center mb-4">
+                <Icon name="Lock" size={64} className="text-red-500" />
+              </div>
+              <CardTitle className="text-2xl text-red-600">
+                Доступ ограничен
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 text-lg mb-6">
+                Добавление товаров доступно только после подтверждения вашего
+                профиля администрацией.
+              </p>
+              <div className="space-y-3">
+                <Button
+                  onClick={() => navigate("/seller/dashboard")}
+                  variant="outline"
+                >
+                  <Icon name="ArrowLeft" size={16} className="mr-2" />
+                  Вернуться к кабинету
+                </Button>
+                <br />
+                <Button
+                  onClick={() => navigate("/notifications")}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Icon name="Bell" size={16} className="mr-2" />
+                  Проверить уведомления
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
   const [product, setProduct] = useState({
     title: "",
     description: "",

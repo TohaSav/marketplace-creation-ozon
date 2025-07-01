@@ -170,12 +170,27 @@ export default function Header() {
                           <Icon name="Store" size={16} className="mr-2" />
                           Кабинет продавца
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => navigate("/seller/add-product")}
-                        >
-                          <Icon name="Plus" size={16} className="mr-2" />
-                          Добавить товар
-                        </DropdownMenuItem>
+                        {seller.status === "active" ? (
+                          <DropdownMenuItem
+                            onClick={() => navigate("/seller/add-product")}
+                          >
+                            <Icon name="Plus" size={16} className="mr-2" />
+                            Добавить товар
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => navigate("/notifications")}
+                            className="text-yellow-600"
+                          >
+                            <Icon name="Bell" size={16} className="mr-2" />
+                            Уведомления
+                            {seller.status === "pending" && (
+                              <Badge className="ml-2 bg-yellow-500 text-white">
+                                На модерации
+                              </Badge>
+                            )}
+                          </DropdownMenuItem>
+                        )}
                       </>
                     )}
 
