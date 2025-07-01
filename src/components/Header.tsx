@@ -163,7 +163,19 @@ export default function Header() {
               <Button
                 variant="ghost"
                 className="flex items-center space-x-2 relative px-2 md:px-4"
-                onClick={() => navigate("/cart")}
+                onClick={() => {
+                  if (!user) {
+                    toast({
+                      title: "Требуется регистрация",
+                      description:
+                        "Для доступа к корзине необходимо войти в аккаунт",
+                      variant: "destructive",
+                    });
+                    navigate("/auth");
+                  } else {
+                    navigate("/cart");
+                  }
+                }}
               >
                 <Icon name="ShoppingCart" size={20} />
                 <span className="hidden md:inline">Корзина</span>
