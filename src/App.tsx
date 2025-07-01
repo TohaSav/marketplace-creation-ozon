@@ -61,7 +61,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Админка */}}
+              {/* Админка */}
               <Route
                 path="/admin"
                 element={<Navigate to="/admin/dashboard" replace />}
