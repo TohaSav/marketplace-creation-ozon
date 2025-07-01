@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { SellerStats } from "@/types/seller-dashboard.types";
 
 interface User {
@@ -26,12 +32,74 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Пустой массив - пользователи будут добавляться только через регистрацию
-const initialUsers: User[] = [];
+// Загружаем пользователей из localStorage
+const loadUsersFromStorage = (): User[] => {
+  try {
+    const savedUsers = localStorage.getItem("users");
+    const savedSellers = localStorage.getItem("sellers");
+
+    const users: User[] = [];
+
+    // Загружаем обычных пользователей
+    if (savedUsers) {
+      const parsedUsers = JSON.parse(savedUsers);
+      if (Array.isArray(parsedUsers)) {
+        users.push(
+          ...parsedUsers.map((user: any) => ({
+            ...user,
+            userType: "user" as const,
+            status: user.status || "active",
+          })),
+        );
+      }
+    }
+
+    // Загружаем продавцов
+    if (savedSellers) {
+      const parsedSellers = JSON.parse(savedSellers);
+      if (Array.isArray(parsedSellers)) {
+        users.push(
+          ...parsedSellers.map((seller: any) => ({
+            ...seller,
+            userType: "seller" as const,
+            status: seller.status || "pending",
+          })),
+        );
+      }
+    }
+
+    return users;
+  } catch (error) {
+    console.error("Ошибка загрузки пользователей из localStorage:", error);
+    return [];
+  }
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [allUsers, setAllUsers] = useState<User[]>(initialUsers);
+  const [allUsers, setAllUsers] = useState<User[]>(loadUsersFromStorage());
+
+  // Загружаем текущего пользователя при инициализации
+  useEffect(() => {
+    const userToken = localStorage.getItem("user-token");
+    const sellerToken = localStorage.getItem("seller-token");
+
+    if (userToken) {
+      try {
+        const userData = JSON.parse(userToken);
+        setUser({ ...userData, userType: "user" });
+      } catch (error) {
+        console.error("Ошибка загрузки данных пользователя:", error);
+      }
+    } else if (sellerToken) {
+      try {
+        const sellerData = JSON.parse(sellerToken);
+        setUser({ ...sellerData, userType: "seller" });
+      } catch (error) {
+        console.error("Ошибка загрузки данных продавца:", error);
+      }
+    }
+  }, []);
 
   const users = allUsers.filter((u) => u.userType === "user");
   const sellers = allUsers.filter((u) => u.userType === "seller");
@@ -52,7 +120,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status: userData.userType === "seller" ? "pending" : "active",
     };
 
-    setAllUsers((prev) => [...prev, newUser]);
+    setAllUsers((prev) => {
+      const updatedUsers = [...prev, newUser];
+
+      // Сохраняем в localStorage
+      const regularUsers = updatedUsers.filter((u) => u.userType === "user");
+      const sellers = updatedUsers.filter((u) => u.userType === "seller");
+
+      localStorage.setItem("users", JSON.stringify(regularUsers));
+      localStorage.setItem("sellers", JSON.stringify(sellers));
+
+      return updatedUsers;
+    });
+
     setUser(newUser);
   };
 

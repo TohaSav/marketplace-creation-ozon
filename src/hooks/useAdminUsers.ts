@@ -10,7 +10,7 @@ import type {
 } from "@/types/admin-user.types";
 
 export const useAdminUsers = () => {
-  const { users: authUsers } = useAuth();
+  const { users: authUsers, sellers } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,7 +19,7 @@ export const useAdminUsers = () => {
     statusFilter: "all",
   });
 
-  // Синхронизируем пользователей из AuthContext
+  // Синхронизируем пользователей из AuthContext (только обычных пользователей, не продавцов)
   useEffect(() => {
     if (authUsers) {
       const transformedUsers = transformAuthUsersToAdminUsers(authUsers);
