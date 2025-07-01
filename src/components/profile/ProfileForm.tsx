@@ -50,6 +50,11 @@ export default function ProfileForm({
   isEditing,
   onToggleEdit,
 }: ProfileFormProps) {
+  // Проверяем статус продавца
+  const isSellerPending =
+    (user.userType === "seller" || user.role === "seller") &&
+    (user.sellerStatus === "pending" || user.status === "pending");
+
   return (
     <Card>
       <CardHeader>
@@ -69,6 +74,23 @@ export default function ProfileForm({
         </div>
       </CardHeader>
       <CardContent>
+        {/* Уведомление для продавцов в ожидании */}
+        {isSellerPending && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center">
+              <Icon name="Clock" size={20} className="text-yellow-600 mr-2" />
+              <div>
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Дождитесь проверки Администрации Calibre Store
+                </h3>
+                <p className="text-sm text-yellow-700 mt-1">
+                  Ваш профиль продавца находится на модерации. Мы рассмотрим
+                  заявку в течение 24 часов.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             label="Полное имя"
