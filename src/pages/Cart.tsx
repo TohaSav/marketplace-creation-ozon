@@ -5,13 +5,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
+import PaymentMethodSelector from "@/components/payment/PaymentMethodSelector";
+import OrderSummary from "@/components/payment/OrderSummary";
+import { PaymentMethod } from "@/types/payment";
+import { calculateFinalAmount } from "@/utils/paymentUtils";
 
 export default function Cart() {
   const { cart, removeFromCart, updateCartQuantity, getTotalPrice, clearCart } =
     useStore();
 
-  const [paymentMethod, setPaymentMethod] = useState("wallet");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wallet");
   const [walletBalance] = useState(5420.5); // В реальном приложении получать из контекста/API
+
+  const totalPrice = getTotalPrice();
+  const finalAmount = calculateFinalAmount(totalPrice, paymentMethod);
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleQuantityChange = (productId: number, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -20,6 +28,16 @@ export default function Cart() {
       updateCartQuantity(productId, newQuantity);
     }
   };
+
+  const handlePayment = () => {
+    // Здесь будет логика обработки платежа
+    console.log(`Оплата через ${paymentMethod} на сумму ${finalAmount}`);
+  };
+
+  const isWalletSufficient = walletBalance >= finalAmount;
+  const canProceed =
+    paymentMethod === "yukassa" ||
+    (paymentMethod === "wallet" && isWalletSufficient);
 
   if (cart.length === 0) {
     return (
@@ -53,8 +71,7 @@ export default function Cart() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Корзина ({cart.reduce((sum, item) => sum + item.quantity, 0)}{" "}
-            товаров)
+            Корзина ({totalItems} товаров)
           </h1>
           <Button
             variant="outline"
@@ -135,11 +152,14 @@ export default function Cart() {
                       </div>
 
                       <div className="text-right">
-                        <div className="font-bold text-lg text-purple-600">
-                          ${(item.price * item.quantity).toFixed(2)}
+                        <div className="font-bold text-lg text-blue-600">
+                          {(item.price * item.quantity * 85).toLocaleString(
+                            "ru-RU",
+                          )}{" "}
+                          ₽
                         </div>
                         <div className="text-sm text-gray-500">
-                          ${item.price} за шт.
+                          {(item.price * 85).toLocaleString("ru-RU")} ₽ за шт.
                         </div>
                       </div>
 
@@ -158,178 +178,61 @@ export default function Cart() {
             ))}
           </div>
 
-          {/* Итого */}
+          {/* Оформление заказа */}
           <div className="lg:col-span-1">
             <Card className="sticky top-24">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Итого по заказу</h3>
+              <CardContent className="p-6 space-y-6">
+                {/* Итого по заказу */}
+                <OrderSummary
+                  subtotal={totalPrice * 85}
+                  paymentMethod={paymentMethod}
+                  itemCount={totalItems}
+                />
 
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between">
-                    <span>
-                      Товары (
-                      {cart.reduce((sum, item) => sum + item.quantity, 0)})
-                    </span>
-                    <span>${getTotalPrice().toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Доставка</span>
-                    <span className="text-green-600">Бесплатно</span>
-                  </div>
-                  <hr />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>К оплате</span>
-                    <span className="text-purple-600">
-                      ${getTotalPrice().toFixed(2)}
-                    </span>
-                  </div>
-                </div>
+                {/* Выбор способа оплаты */}
+                <PaymentMethodSelector
+                  selectedMethod={paymentMethod}
+                  onMethodChange={setPaymentMethod}
+                  walletBalance={walletBalance}
+                  requiredAmount={finalAmount * 85}
+                />
 
-                {/* Способы оплаты */}
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-3">Способ оплаты</h4>
-                  <div className="space-y-2">
-                    <label
-                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                        paymentMethod === "wallet"
-                          ? "border-purple-500 bg-purple-50"
-                          : "border-gray-200 hover:bg-gray-50"
-                      }`}
+                {/* Кнопки */}
+                <div className="space-y-3">
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    disabled={!canProceed}
+                    onClick={handlePayment}
+                  >
+                    {paymentMethod === "wallet" ? (
+                      <>
+                        <Icon name="Wallet" size={20} className="mr-2" />
+                        Оплатить с личного счёта
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="CreditCard" size={20} className="mr-2" />
+                        Оплатить через ЮКассу
+                      </>
+                    )}
+                  </Button>
+
+                  {paymentMethod === "wallet" && !isWalletSufficient && (
+                    <Button
+                      variant="outline"
+                      className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
                     >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="wallet"
-                        checked={paymentMethod === "wallet"}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="sr-only"
-                      />
-                      <Icon
-                        name="Wallet"
-                        size={20}
-                        className="mr-3 text-purple-600"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">Кошелек Calibre</div>
-                        <div className="text-sm text-gray-600">
-                          Баланс: {walletBalance.toLocaleString("ru-RU")} ₽
-                        </div>
-                      </div>
-                      {walletBalance < getTotalPrice() * 85 && (
-                        <Icon
-                          name="AlertCircle"
-                          size={16}
-                          className="text-red-500"
-                        />
-                      )}
-                    </label>
-
-                    <label
-                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                        paymentMethod === "card"
-                          ? "border-purple-500 bg-purple-50"
-                          : "border-gray-200 hover:bg-gray-50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="card"
-                        checked={paymentMethod === "card"}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="sr-only"
-                      />
-                      <Icon
-                        name="CreditCard"
-                        size={20}
-                        className="mr-3 text-blue-600"
-                      />
-                      <div className="font-medium">Банковская карта</div>
-                    </label>
-
-                    <label
-                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                        paymentMethod === "sbp"
-                          ? "border-purple-500 bg-purple-50"
-                          : "border-gray-200 hover:bg-gray-50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="sbp"
-                        checked={paymentMethod === "sbp"}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="sr-only"
-                      />
-                      <Icon
-                        name="Smartphone"
-                        size={20}
-                        className="mr-3 text-green-600"
-                      />
-                      <div className="font-medium">СБП (Быстрые платежи)</div>
-                    </label>
-                  </div>
-                </div>
-
-                {paymentMethod === "wallet" &&
-                  walletBalance < getTotalPrice() * 85 && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-                      <div className="flex items-center">
-                        <Icon
-                          name="AlertCircle"
-                          size={16}
-                          className="text-red-500 mr-2"
-                        />
-                        <div className="text-sm text-red-700">
-                          <div className="font-medium">
-                            Недостаточно средств
-                          </div>
-                          <div>
-                            Нужно пополнить на{" "}
-                            {(
-                              getTotalPrice() * 85 -
-                              walletBalance
-                            ).toLocaleString("ru-RU")}{" "}
-                            ₽
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        className="mt-2 w-full bg-red-600 hover:bg-red-700"
-                      >
-                        <Icon name="Plus" size={14} className="mr-1" />
-                        Пополнить кошелек
-                      </Button>
-                    </div>
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Пополнить личный счёт
+                    </Button>
                   )}
 
-                <Button
-                  className="w-full mb-3"
-                  size="lg"
-                  disabled={
-                    paymentMethod === "wallet" &&
-                    walletBalance < getTotalPrice() * 85
-                  }
-                >
-                  {paymentMethod === "wallet" ? (
-                    <>
-                      <Icon name="Wallet" size={20} className="mr-2" />
-                      Оплатить из кошелька
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="CreditCard" size={20} className="mr-2" />
-                      Оформить заказ
-                    </>
-                  )}
-                </Button>
-
-                <Button variant="outline" className="w-full">
-                  <Icon name="ArrowLeft" size={16} className="mr-2" />
-                  Продолжить покупки
-                </Button>
+                  <Button variant="outline" className="w-full">
+                    <Icon name="ArrowLeft" size={16} className="mr-2" />
+                    Продолжить покупки
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
