@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import Icon from "@/components/ui/icon";
 import { toast } from "@/hooks/use-toast";
@@ -21,7 +21,6 @@ const initialUsers: User[] = [];
 
 export default function AdminUsers() {
   const { users: authUsers } = useAuth();
-  const [localUsers, setLocalUsers] = useState<User[]>([]);
 
   // Преобразуем пользователей из AuthContext в формат AdminUsers
   const transformedUsers = authUsers.map((user) => ({
@@ -38,11 +37,26 @@ export default function AdminUsers() {
     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
   }));
 
-  const [users, setUsers] = useState<User[]>([
-    ...transformedUsers,
-    ...localUsers,
-  ]);
+  const [users, setUsers] = useState<User[]>(transformedUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Синхронизируем с authUsers при изменениях
+  useEffect(() => {
+    const newTransformedUsers = authUsers.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone || "",
+      registrationDate: user.joinDate || new Date().toISOString().split("T")[0],
+      lastActivity: user.joinDate || new Date().toISOString().split("T")[0],
+      totalOrders: 0,
+      totalSpent: 0,
+      status:
+        user.status === "active" ? ("active" as const) : ("blocked" as const),
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
+    }));
+    setUsers(newTransformedUsers);
+  }, [authUsers]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -186,7 +200,7 @@ export default function AdminUsers() {
                       Общая выручка
                     </dt>
                     <dd className="text-lg font-medium text-gray-900">
-                      {allUsers
+                      {users
                         .reduce((sum, user) => sum + (user.totalSpent || 0), 0)
                         .toLocaleString()}{" "}
                       ₽
