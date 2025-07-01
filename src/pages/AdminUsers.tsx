@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import Icon from "@/components/ui/icon";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 interface User {
   id: number;
@@ -16,14 +17,13 @@ interface User {
   avatar: string;
 }
 
-// Пустой массив пользователей - данные будут загружаться с сервера
-const initialUsers: User[] = [];
-
 export default function AdminUsers() {
   const { users: authUsers } = useAuth();
 
+  console.log("AdminUsers: authUsers =", authUsers);
+
   // Преобразуем пользователей из AuthContext в формат AdminUsers
-  const transformedUsers = authUsers.map((user) => ({
+  const transformedUsers = (authUsers || []).map((user) => ({
     id: user.id,
     name: user.name,
     email: user.email,
@@ -39,10 +39,13 @@ export default function AdminUsers() {
 
   const [users, setUsers] = useState<User[]>(transformedUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Синхронизируем с authUsers при изменениях
   useEffect(() => {
-    const newTransformedUsers = authUsers.map((user) => ({
+    const newTransformedUsers = (authUsers || []).map((user) => ({
       id: user.id,
       name: user.name,
       email: user.email,
@@ -57,9 +60,6 @@ export default function AdminUsers() {
     }));
     setUsers(newTransformedUsers);
   }, [authUsers]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
