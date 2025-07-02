@@ -47,6 +47,7 @@ import SellerTariffs from "./pages/SellerTariffs";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Home from "./pages/Home";
 import ShopVerification from "./pages/admin/ShopVerification";
+import SellersManagement from "./pages/admin/SellersManagement";
 
 const queryClient = new QueryClient();
 
@@ -147,6 +148,14 @@ const App = () => {
                 element={
                   <AdminProtectedRoute>
                     <ShopVerification />
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/sellers-management"
+                element={
+                  <AdminProtectedRoute>
+                    <SellersManagement />
                   </AdminProtectedRoute>
                 }
               />
