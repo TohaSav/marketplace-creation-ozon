@@ -8,6 +8,7 @@ import {
   getProductStatusColor,
   getProductStatusText,
 } from "@/utils/seller-dashboard.utils";
+import { formatBarcode } from "@/utils/productGenerators";
 
 interface ProductRowProps {
   product: Product;
@@ -29,16 +30,30 @@ export default function ProductRow({
             alt={product.name}
             className="w-10 h-10 object-cover rounded"
           />
-          <span className="font-medium">{product.name}</span>
+          <div>
+            <div className="font-medium">{product.name}</div>
+            {(product as any).article && (
+              <div className="text-xs text-gray-500 font-mono">
+                {(product as any).article}
+              </div>
+            )}
+          </div>
         </div>
       </TableCell>
       <TableCell>{formatCurrency(product.price)}</TableCell>
       <TableCell>{product.stock}</TableCell>
       <TableCell>{product.sold}</TableCell>
       <TableCell>
-        <Badge className={getProductStatusColor(product.status)}>
-          {getProductStatusText(product.status)}
-        </Badge>
+        <div className="space-y-1">
+          <Badge className={getProductStatusColor(product.status)}>
+            {getProductStatusText(product.status)}
+          </Badge>
+          {(product as any).barcode && (
+            <div className="text-xs text-gray-500 font-mono">
+              {formatBarcode((product as any).barcode)}
+            </div>
+          )}
+        </div>
       </TableCell>
       <TableCell>
         <div className="flex space-x-2">

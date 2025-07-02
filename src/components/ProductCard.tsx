@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { toast } from "@/hooks/use-toast";
 import { useStore } from "@/lib/store";
+import { formatBarcode } from "@/utils/productGenerators";
 
 interface ProductCardProps {
   id: number;
@@ -22,6 +23,9 @@ interface ProductCardProps {
   isHit?: boolean;
   isNew?: boolean;
   fastDelivery?: boolean;
+  article?: string;
+  barcode?: string;
+  showDetails?: boolean;
 }
 
 export default function ProductCard({
@@ -41,6 +45,9 @@ export default function ProductCard({
   isHit = false,
   isNew = false,
   fastDelivery = false,
+  article,
+  barcode,
+  showDetails = false,
 }: ProductCardProps) {
   const { addToCart, addToFavorites, removeFavorites, favorites } = useStore();
   const isFavorite = favorites.some((fav) => fav.id === id);
@@ -200,6 +207,24 @@ export default function ProductCard({
           {bonusPercent && (
             <div className="text-sm text-indigo-600 font-medium">
               +{bonusPercent}% бонусами
+            </div>
+          )}
+
+          {/* Product Details */}
+          {showDetails && (article || barcode) && (
+            <div className="border-t pt-3 space-y-2">
+              {article && (
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <Icon name="Hash" size={12} />
+                  <span className="font-mono">{article}</span>
+                </div>
+              )}
+              {barcode && (
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <Icon name="BarChart3" size={12} />
+                  <span className="font-mono">{formatBarcode(barcode)}</span>
+                </div>
+              )}
             </div>
           )}
 

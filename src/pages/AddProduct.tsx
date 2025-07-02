@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,12 @@ import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
 import { useAuth } from "@/context/AuthContext";
+import {
+  generateUniqueArticle,
+  generateUniqueBarcode,
+  formatBarcode,
+  generateProductQRCode,
+} from "@/utils/productGenerators";
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -72,7 +78,23 @@ export default function AddProduct() {
     category: "",
     image: null as File | null,
     stock: "",
+    article: "",
+    barcode: "",
   });
+
+  // Автоматическая генерация артикула и штрих-кода при изменении названия и категории
+  useEffect(() => {
+    if (product.title && product.category) {
+      const newArticle = generateUniqueArticle(product.title, product.category);
+      const newBarcode = generateUniqueBarcode();
+
+      setProduct((prev) => ({
+        ...prev,
+        article: newArticle,
+        barcode: newBarcode,
+      }));
+    }
+  }, [product.title, product.category]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -105,6 +127,9 @@ export default function AddProduct() {
         stock: parseInt(product.stock),
         sold: 0,
         createdAt: new Date().toISOString(),
+        article: product.article,
+        barcode: product.barcode,
+        qrCode: generateProductQRCode(product.article, product.title),
       };
 
       // Добавляем к глобальным товарам
@@ -237,6 +262,85 @@ export default function AddProduct() {
                   />
                 </div>
               </div>
+
+              {/* Автоматически сгенерированные поля */}
+              {product.article && product.barcode && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Icon name="Zap" size={20} className="text-blue-600" />
+                    <h3 className="font-semibold text-blue-900">
+                      Автоматически сгенерировано
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="article">Артикул товара</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="article"
+                          type="text"
+                          value={product.article}
+                          readOnly
+                          className="bg-gray-50"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newArticle = generateUniqueArticle(
+                              product.title,
+                              product.category,
+                            );
+                            setProduct({ ...product, article: newArticle });
+                          }}
+                          title="Сгенерировать новый артикул"
+                        >
+                          <Icon name="RefreshCcw" size={16} />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="barcode">Штрих-код (EAN-13)</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="barcode"
+                          type="text"
+                          value={formatBarcode(product.barcode)}
+                          readOnly
+                          className="bg-gray-50 font-mono text-sm"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newBarcode = generateUniqueBarcode();
+                            setProduct({ ...product, barcode: newBarcode });
+                          }}
+                          title="Сгенерировать новый штрих-код"
+                        >
+                          <Icon name="RefreshCcw" size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                    <Icon name="QrCode" size={24} className="text-green-600" />
+                    <div>
+                      <p className="text-sm font-medium">
+                        QR-код будет создан автоматически
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Содержит артикул и ссылку на товар
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="description">Описание товара *</Label>
