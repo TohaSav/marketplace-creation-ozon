@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   ChatUser,
@@ -21,9 +21,47 @@ export const useAdminChat = () => {
   const { toast } = useToast();
 
   // Данные (в реальном приложении они бы приходили из API)
-  const [chatUsers] = useState<ChatUser[]>(SAMPLE_CHAT_USERS);
+  const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
   const [tickets] = useState<SupportTicket[]>(SAMPLE_TICKETS);
-  const [messages, setMessages] = useState<ChatMessage[]>(SAMPLE_MESSAGES);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  // Загрузка данных из localStorage при инициализации
+  useEffect(() => {
+    const savedUsers = localStorage.getItem("admin-chat-users");
+    const savedMessages = localStorage.getItem("admin-chat-messages");
+
+    if (savedUsers) {
+      setChatUsers(JSON.parse(savedUsers));
+    } else {
+      setChatUsers(SAMPLE_CHAT_USERS);
+      localStorage.setItem(
+        "admin-chat-users",
+        JSON.stringify(SAMPLE_CHAT_USERS),
+      );
+    }
+
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    } else {
+      setMessages(SAMPLE_MESSAGES);
+      localStorage.setItem(
+        "admin-chat-messages",
+        JSON.stringify(SAMPLE_MESSAGES),
+      );
+    }
+  }, []);
+
+  // Сохранение пользователей в localStorage
+  const saveChatUsers = (users: ChatUser[]) => {
+    setChatUsers(users);
+    localStorage.setItem("admin-chat-users", JSON.stringify(users));
+  };
+
+  // Сохранение сообщений в localStorage
+  const saveChatMessages = (msgs: ChatMessage[]) => {
+    setMessages(msgs);
+    localStorage.setItem("admin-chat-messages", JSON.stringify(msgs));
+  };
 
   // Получить выбранного пользователя
   const selectedUserData = selectedUser
@@ -54,12 +92,34 @@ export const useAdminChat = () => {
       status: "sent",
     };
 
-    setMessages((prev) => [...prev, adminMessage]);
+    const updatedMessages = [...messages, adminMessage];
+    saveChatMessages(updatedMessages);
     setNewMessage("");
 
     toast({
       title: "Сообщение отправлено",
       description: `Отправлено пользователю ${selectedUserData?.name}`,
+    });
+  };
+
+  // Удалить диалог пользователя
+  const deleteUserChat = (userId: string) => {
+    const updatedUsers = chatUsers.filter((user) => user.id !== userId);
+    const updatedMessages = messages.filter(
+      (message) => message.userId !== userId,
+    );
+
+    saveChatUsers(updatedUsers);
+    saveChatMessages(updatedMessages);
+
+    // Если удаляем выбранного пользователя, сбрасываем selection
+    if (selectedUser === userId) {
+      setSelectedUser(null);
+    }
+
+    toast({
+      title: "Диалог удален",
+      description: "Диалог пользователя успешно удален",
     });
   };
 
@@ -105,6 +165,7 @@ export const useAdminChat = () => {
     setNewMessage,
     setSearchQuery,
     sendMessage,
+    deleteUserChat,
 
     // Utilities
     toast,

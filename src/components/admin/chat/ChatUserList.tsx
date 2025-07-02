@@ -2,6 +2,14 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Icon from "@/components/ui/icon";
 
 interface ChatUser {
   id: string;
@@ -21,6 +29,7 @@ interface ChatUserListProps {
   searchQuery: string;
   onUserSelect: (userId: string) => void;
   onSearchChange: (query: string) => void;
+  onDeleteUser?: (userId: string) => void;
 }
 
 export default function ChatUserList({
@@ -29,6 +38,7 @@ export default function ChatUserList({
   searchQuery,
   onUserSelect,
   onSearchChange,
+  onDeleteUser,
 }: ChatUserListProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -104,7 +114,7 @@ export default function ChatUserList({
                     <h3 className="font-medium text-sm truncate">
                       {user.name}
                     </h3>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2">
                       {user.unreadCount > 0 && (
                         <Badge
                           variant="destructive"
@@ -122,6 +132,32 @@ export default function ChatUserList({
                             ? "Ожидает"
                             : "Решен"}
                       </Badge>
+                      {onDeleteUser && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 hover:bg-gray-200"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Icon name="MoreVertical" size={14} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteUser(user.id);
+                              }}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Icon name="Trash2" size={14} className="mr-2" />
+                              Удалить диалог
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 truncate mt-1">

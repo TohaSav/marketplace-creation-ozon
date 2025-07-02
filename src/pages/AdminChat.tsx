@@ -25,6 +25,7 @@ export default function AdminChat() {
     setNewMessage,
     setSearchQuery,
     sendMessage,
+    deleteUserChat,
   } = useAdminChat();
 
   return (
@@ -67,6 +68,7 @@ export default function AdminChat() {
                 searchQuery={searchQuery}
                 onUserSelect={setSelectedUser}
                 onSearchChange={setSearchQuery}
+                onDeleteUser={deleteUserChat}
               />
 
               {/* Chat Window */}
