@@ -48,122 +48,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Дефолтные зарегистрированные продавцы
-const defaultSellers: User[] = [
-  {
-    id: 1001,
-    name: "Андрей Иванов",
-    email: "ivanov@paseka.ru",
-    phone: "+7 (916) 123-45-67",
-    userType: "seller",
-    shopName: "Пасека Иванова",
-    status: "active",
-    joinDate: "2024-11-15",
-    isSeller: true,
-    sellerStats: {
-      totalOrders: 127,
-      totalRevenue: 113030,
-      averageRating: 4.9,
-      totalProducts: 8,
-      pendingOrders: 3,
-      completedOrders: 124,
-    },
-  },
-  {
-    id: 1002,
-    name: "Елена Петрова",
-    email: "elena@master.ru",
-    phone: "+7 (925) 234-56-78",
-    userType: "seller",
-    shopName: "Мастерская Елены",
-    status: "active",
-    joinDate: "2024-12-01",
-    isSeller: true,
-    sellerStats: {
-      totalOrders: 89,
-      totalRevenue: 106800,
-      averageRating: 4.8,
-      totalProducts: 15,
-      pendingOrders: 2,
-      completedOrders: 87,
-    },
-  },
-  {
-    id: 1003,
-    name: "Мария Сидорова",
-    email: "maria@zagatovki.ru",
-    phone: "+7 (903) 345-67-89",
-    userType: "seller",
-    shopName: "Бабушкины заготовки",
-    status: "active",
-    joinDate: "2024-10-20",
-    isSeller: true,
-    sellerStats: {
-      totalOrders: 203,
-      totalRevenue: 487200,
-      averageRating: 4.7,
-      totalProducts: 25,
-      pendingOrders: 8,
-      completedOrders: 195,
-    },
-  },
-  {
-    id: 1004,
-    name: "Дмитрий Козлов",
-    email: "kozlov@stoljar.ru",
-    phone: "+7 (964) 456-78-90",
-    userType: "seller",
-    shopName: "Столярная мастерская",
-    status: "active",
-    joinDate: "2024-12-10",
-    isSeller: true,
-    sellerStats: {
-      totalOrders: 156,
-      totalRevenue: 546000,
-      averageRating: 4.9,
-      totalProducts: 12,
-      pendingOrders: 4,
-      completedOrders: 152,
-    },
-  },
-  {
-    id: 1005,
-    name: "Ольга Романова",
-    email: "olga@gonchar.ru",
-    phone: "+7 (915) 567-89-01",
-    userType: "seller",
-    shopName: "Гончарная студия",
-    status: "pending",
-    joinDate: "2024-12-25",
-    isSeller: true,
-    sellerStats: {
-      totalOrders: 12,
-      totalRevenue: 54000,
-      averageRating: 4.6,
-      totalProducts: 6,
-      pendingOrders: 1,
-      completedOrders: 11,
-    },
-  },
-  {
-    id: 1006,
-    name: "Александр Новиков",
-    email: "alex@jewelry.ru",
-    phone: "+7 (926) 678-90-12",
-    userType: "seller",
-    shopName: "Ювелирная мастерская",
-    status: "active",
-    joinDate: "2024-11-28",
-    isSeller: true,
-    sellerStats: {
-      totalOrders: 67,
-      totalRevenue: 596300,
-      averageRating: 4.8,
-      totalProducts: 18,
-      pendingOrders: 2,
-      completedOrders: 65,
-    },
-  },
-];
+const defaultSellers: User[] = [];
 
 // Загружаем пользователей из localStorage
 const loadUsersFromStorage = (): User[] => {
@@ -200,17 +85,16 @@ const loadUsersFromStorage = (): User[] => {
         );
       }
     } else {
-      // Если нет сохраненных продавцов, используем дефолтных и сохраняем их
-      localStorage.setItem("sellers", JSON.stringify(defaultSellers));
-      users.push(...defaultSellers);
+      // Если нет сохраненных продавцов, инициализируем пустым массивом
+      localStorage.setItem("sellers", JSON.stringify([]));
     }
 
     return users;
   } catch (error) {
     console.error("Ошибка загрузки пользователей из localStorage:", error);
-    // В случае ошибки возвращаем дефолтных продавцов
-    localStorage.setItem("sellers", JSON.stringify(defaultSellers));
-    return [...defaultSellers];
+    // В случае ошибки возвращаем пустой массив
+    localStorage.setItem("sellers", JSON.stringify([]));
+    return [];
   }
 };
 
