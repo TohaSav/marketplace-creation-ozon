@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "./ui/button";
 import Icon from "./ui/icon";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 interface Balloon {
   id: number;
@@ -11,6 +12,8 @@ interface Balloon {
   color: string;
   hasMoney: boolean;
   money?: number;
+  isGolden?: boolean;
+  text?: string;
 }
 
 interface BalloonGameProps {
@@ -19,12 +22,14 @@ interface BalloonGameProps {
 }
 
 const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
+  const { user, updateUserBalance } = useAuth();
   const [balloons, setBalloons] = useState<Balloon[]>([]);
   const [score, setScore] = useState(0);
   const [earnings, setEarnings] = useState(0);
   const [timeLeft, setTimeLeft] = useState(180); // 3 минуты = 180 секунд
   const [gameActive, setGameActive] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
+  const [goldenBalloonActive, setGoldenBalloonActive] = useState(false);
 
   const colors = [
     "#FF69B4",
@@ -36,8 +41,10 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
   ];
 
   const createBalloon = useCallback(() => {
-    const hasMoney = Math.random() < 1 / 200; // 1 к 200 шанс
-    const money = hasMoney ? Math.floor(Math.random() * 10) + 1 : 0; // 1-10 рублей
+    // Каждый 10-й шарик (по счетчику) дает призы 1-3 рубля
+    const isEveryTenth = (score + 1) % 10 === 0;
+    const hasMoney = isEveryTenth;
+    const money = hasMoney ? Math.floor(Math.random() * 3) + 1 : 0; // 1-3 рубля
 
     return {
       id: Date.now() + Math.random(),
@@ -47,6 +54,23 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
       color: colors[Math.floor(Math.random() * colors.length)],
       hasMoney,
       money,
+      isGolden: false,
+    };
+  }, [score]);
+
+  const createGoldenBalloon = useCallback(() => {
+    const money = Math.floor(Math.random() * 9) + 7; // 7-15 рублей
+
+    return {
+      id: Date.now() + Math.random() + 1000,
+      x: Math.random() * (window.innerWidth - 120),
+      y: window.innerHeight + 50,
+      speed: Math.random() * 4 + 3, // Быстрее обычных
+      color: "#FFD700", // Золотой цвет
+      hasMoney: true,
+      money,
+      isGolden: true,
+      text: "Calibre Store",
     };
   }, []);
 
@@ -57,14 +81,35 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
         if (balloon) {
           if (balloon.hasMoney) {
             setEarnings((prev) => prev + balloon.money!);
-            onEarnings(balloon.money!);
-            toast({
-              title: "🎉 Поздравляем!",
-              description: `Вы выиграли ${balloon.money} рублей!`,
-              duration: 2000,
-            });
+
+            if (balloon.isGolden) {
+              toast({
+                title: "🏆 ЗОЛОТОЙ ШАРИК!",
+                description: `Calibre Store дарит вам ${balloon.money} рублей!`,
+                duration: 3000,
+              });
+              setGoldenBalloonActive(false);
+            } else {
+              toast({
+                title: "🎉 Поздравляем!",
+                description: `Вы выиграли ${balloon.money} рублей!`,
+                duration: 2000,
+              });
+            }
           }
-          setScore((prev) => prev + 1);
+
+          const newScore = score + 1;
+          setScore(newScore);
+
+          // Запуск золотого шарика после каждого 10-го лопнутого
+          if (newScore % 10 === 0 && !goldenBalloonActive) {
+            setTimeout(() => {
+              if (!goldenBalloonActive) {
+                setBalloons((current) => [...current, createGoldenBalloon()]);
+                setGoldenBalloonActive(true);
+              }
+            }, 1000);
+          }
 
           // Эффект взрыва
           const element = document.getElementById(`balloon-${balloonId}`);
@@ -80,7 +125,7 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
         return prev;
       });
     },
-    [onEarnings],
+    [score, goldenBalloonActive, createGoldenBalloon],
   );
 
   // Запуск игры
@@ -91,7 +136,29 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
     setScore(0);
     setEarnings(0);
     setBalloons([]);
+    setGoldenBalloonActive(false);
   };
+
+  // Окончание игры и начисление денег
+  const endGame = useCallback(() => {
+    setGameActive(false);
+
+    // Автоматически начисляем заработанные деньги на баланс
+    if (earnings > 0 && user) {
+      updateUserBalance(earnings);
+      toast({
+        title: "💰 Деньги зачислены!",
+        description: `${earnings} рублей добавлены на ваш счет`,
+        duration: 4000,
+      });
+    }
+
+    toast({
+      title: "Время вышло!",
+      description: `Игра окончена! Вы заработали ${earnings} рублей.`,
+      duration: 3000,
+    });
+  }, [earnings, user, updateUserBalance]);
 
   // Обновление позиций шариков
   useEffect(() => {
@@ -132,12 +199,7 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          setGameActive(false);
-          toast({
-            title: "Время вышло!",
-            description: `Игра окончена! Вы заработали ${earnings} рублей.`,
-            duration: 3000,
-          });
+          endGame();
           return 0;
         }
         return prev - 1;
@@ -145,7 +207,7 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameActive, gameStarted, earnings]);
+  }, [gameActive, gameStarted, endGame]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -177,6 +239,16 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
           }
           50% {
             transform: translateY(-10px);
+          }
+        }
+        @keyframes goldenGlow {
+          0% {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+          }
+          100% {
+            box-shadow:
+              0 0 30px rgba(255, 215, 0, 1),
+              0 0 40px rgba(255, 215, 0, 0.6);
           }
         }
         .balloon {
@@ -226,14 +298,17 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
                 Лопни шарики!
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                Лопайте воздушные шарики, чтобы заработать деньги! Шанс найти
-                деньги в шарике: 1 из 200. Выигрыш: от 1 до 10 рублей.
+                Лопайте шарики и зарабатывайте! Каждый 10-й шарик содержит 1-3
+                рубля. После каждого 10-го появляется золотой шарик Calibre
+                Store с призом 7-15 рублей!
               </p>
               <div className="bg-blue-50 p-4 rounded-lg">
                 <p className="text-sm text-blue-800 font-medium">
                   ⏰ Время игры: 3 минуты
                   <br />
                   🎯 Играть можно раз в сутки
+                  <br />
+                  💰 Призы автоматически зачисляются на баланс
                 </p>
               </div>
               <Button
@@ -261,12 +336,34 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
                 onClick={() => popBalloon(balloon.id)}
               >
                 <div
-                  className="w-16 h-20 rounded-full relative shadow-lg hover:scale-110 transition-transform"
-                  style={{ backgroundColor: balloon.color }}
+                  className={`relative shadow-lg hover:scale-110 transition-transform ${
+                    balloon.isGolden ? "w-20 h-24" : "w-16 h-20"
+                  } rounded-full`}
+                  style={{
+                    backgroundColor: balloon.color,
+                    boxShadow: balloon.isGolden
+                      ? "0 0 20px rgba(255, 215, 0, 0.8)"
+                      : undefined,
+                    animation: balloon.isGolden
+                      ? "goldenGlow 1s ease-in-out infinite alternate"
+                      : undefined,
+                  }}
                 >
                   <div className="absolute top-2 left-4 w-4 h-6 bg-white/30 rounded-full"></div>
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0.5 h-4 bg-gray-400"></div>
-                  {balloon.hasMoney && (
+
+                  {balloon.isGolden && (
+                    <>
+                      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-black text-center px-1">
+                        {balloon.text}
+                      </div>
+                      <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center text-sm animate-bounce">
+                        👑
+                      </div>
+                    </>
+                  )}
+
+                  {balloon.hasMoney && !balloon.isGolden && (
                     <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs">
                       💰
                     </div>
@@ -291,6 +388,11 @@ const BalloonGame: React.FC<BalloonGameProps> = ({ onClose, onEarnings }) => {
                       <span className="font-bold text-green-600">
                         {earnings} рублей
                       </span>
+                    </p>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg mb-6">
+                    <p className="text-sm text-green-800 font-medium">
+                      💰 Деньги автоматически зачислены на ваш счет!
                     </p>
                   </div>
                   <p className="text-sm text-gray-600 mb-6">

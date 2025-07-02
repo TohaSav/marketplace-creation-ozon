@@ -17,6 +17,7 @@ interface User {
   status?: "active" | "pending" | "blocked";
   joinDate?: string;
   isSeller?: boolean;
+  balance?: number;
   sellerStats?: SellerStats;
   subscription?: {
     isActive: boolean;
@@ -36,6 +37,7 @@ interface AuthContextType {
   logout: () => void;
   register: (userData: Omit<User, "id" | "joinDate" | "status">) => void;
   updateUser: (userData: User) => void;
+  updateUserBalance: (amount: number) => void;
   updateSellerStats: (stats: SellerStats) => void;
   updateSellerStatus: (
     sellerId: number,
@@ -171,6 +173,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUserBalance = (amount: number) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        balance: (user.balance || 0) + amount,
+      };
+      setUser(updatedUser);
+
+      // Обновляем в localStorage
+      if (updatedUser.userType === "seller") {
+        localStorage.setItem("seller-token", JSON.stringify(updatedUser));
+      } else {
+        localStorage.setItem("user-token", JSON.stringify(updatedUser));
+      }
+    }
+  };
+
   const updateSellerStats = (stats: SellerStats) => {
     if (user) {
       setUser({ ...user, sellerStats: stats });
@@ -246,6 +265,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         register,
         updateUser,
+        updateUserBalance,
         updateSellerStats,
         updateSellerStatus,
         deleteSeller,
