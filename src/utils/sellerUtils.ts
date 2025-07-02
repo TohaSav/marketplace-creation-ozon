@@ -25,6 +25,11 @@ export const getStatusBadge = (status: SellerStatus) => {
     case "pending":
       return {
         text: "На модерации",
+        className: "bg-blue-100 text-blue-800",
+      };
+    case "revision":
+      return {
+        text: "Доработка",
         className: "bg-yellow-100 text-yellow-800",
       };
     default:
@@ -84,5 +89,20 @@ export const mockSellers: Seller[] = [
     revenue: 45000,
     rating: 4.9,
     description: "Детские товары, игрушки и развивающие материалы",
+  },
+  {
+    id: "5",
+    name: "Андрей Новиков",
+    email: "andrey@example.com",
+    phone: "+7 (555) 333-22-11",
+    shopName: "Авто Запчасти",
+    registrationDate: "2024-03-15",
+    status: "revision",
+    totalOrders: 0,
+    revenue: 0,
+    rating: 0,
+    description: "Автомобильные запчасти и аксессуары",
+    rejectionReason:
+      "Необходимо предоставить документы о сертификации товаров и лицензию на продажу автозапчастей",
   },
 ];

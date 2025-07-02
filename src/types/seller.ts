@@ -5,11 +5,12 @@ export interface Seller {
   phone: string;
   shopName: string;
   registrationDate: string;
-  status: "active" | "blocked" | "pending";
+  status: "active" | "blocked" | "pending" | "revision";
   totalOrders: number;
   revenue: number;
   rating: number;
   description: string;
+  rejectionReason?: string;
 }
 
 export type SellerStatus = Seller["status"];
@@ -29,6 +30,15 @@ export interface SellerModalProps {
 }
 
 export interface SellerAction {
-  type: "view" | "edit" | "block";
+  type: "view" | "edit" | "block" | "moderate";
   seller: Seller;
+}
+
+export interface ModerationModalProps {
+  seller: Seller | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onApprove: () => void;
+  onRevision: (reason: string) => void;
+  onReject: () => void;
 }

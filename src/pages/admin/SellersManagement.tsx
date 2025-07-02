@@ -8,13 +8,22 @@ import SellersTable from "@/components/sellers/SellersTable";
 import ViewSellerModal from "@/components/sellers/ViewSellerModal";
 import EditSellerModal from "@/components/sellers/EditSellerModal";
 import BlockSellerModal from "@/components/sellers/BlockSellerModal";
+import ModerationModal from "@/components/sellers/ModerationModal";
 
 const SellersManagement: React.FC = () => {
-  const { sellers, updateSeller, toggleSellerStatus } = useSellers();
+  const {
+    sellers,
+    updateSeller,
+    toggleSellerStatus,
+    approveSeller,
+    sendForRevision,
+    rejectSeller,
+  } = useSellers();
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
+  const [moderationModalOpen, setModerationModalOpen] = useState(false);
 
   const handleView = (seller: Seller) => {
     setSelectedSeller(seller);
@@ -35,10 +44,36 @@ const SellersManagement: React.FC = () => {
     updateSeller(updatedSeller);
   };
 
+  const handleModerate = (seller: Seller) => {
+    setSelectedSeller(seller);
+    setModerationModalOpen(true);
+  };
+
   const handleConfirmBlock = () => {
     if (selectedSeller) {
       toggleSellerStatus(selectedSeller.id);
       setBlockModalOpen(false);
+    }
+  };
+
+  const handleApprove = () => {
+    if (selectedSeller) {
+      approveSeller(selectedSeller.id);
+      setModerationModalOpen(false);
+    }
+  };
+
+  const handleRevision = (reason: string) => {
+    if (selectedSeller) {
+      sendForRevision(selectedSeller.id, reason);
+      setModerationModalOpen(false);
+    }
+  };
+
+  const handleReject = () => {
+    if (selectedSeller) {
+      rejectSeller(selectedSeller.id);
+      setModerationModalOpen(false);
     }
   };
 
@@ -73,6 +108,7 @@ const SellersManagement: React.FC = () => {
           onView={handleView}
           onEdit={handleEdit}
           onBlock={handleBlock}
+          onModerate={handleModerate}
         />
 
         <ViewSellerModal
@@ -93,6 +129,15 @@ const SellersManagement: React.FC = () => {
           isOpen={blockModalOpen}
           onClose={() => setBlockModalOpen(false)}
           onConfirm={handleConfirmBlock}
+        />
+
+        <ModerationModal
+          seller={selectedSeller}
+          isOpen={moderationModalOpen}
+          onClose={() => setModerationModalOpen(false)}
+          onApprove={handleApprove}
+          onRevision={handleRevision}
+          onReject={handleReject}
         />
       </div>
     </AdminLayout>

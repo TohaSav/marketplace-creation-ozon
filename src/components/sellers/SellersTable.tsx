@@ -23,6 +23,7 @@ interface SellersTableProps {
   onView: (seller: Seller) => void;
   onEdit: (seller: Seller) => void;
   onBlock: (seller: Seller) => void;
+  onModerate?: (seller: Seller) => void;
 }
 
 const SellersTable: React.FC<SellersTableProps> = ({
@@ -30,6 +31,7 @@ const SellersTable: React.FC<SellersTableProps> = ({
   onView,
   onEdit,
   onBlock,
+  onModerate,
 }) => {
   return (
     <Card className="shadow-lg">
@@ -57,7 +59,12 @@ const SellersTable: React.FC<SellersTableProps> = ({
             {sellers.map((seller) => {
               const statusBadge = getStatusBadge(seller.status);
               return (
-                <TableRow key={seller.id} className="hover:bg-gray-50">
+                <TableRow
+                  key={seller.id}
+                  className={`hover:bg-gray-50 ${
+                    seller.status === "revision" ? "bg-yellow-50" : ""
+                  }`}
+                >
                   <TableCell>
                     <div>
                       <div className="font-medium">{seller.name}</div>
@@ -89,51 +96,78 @@ const SellersTable: React.FC<SellersTableProps> = ({
                   <TableCell>{formatDate(seller.registrationDate)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onView(seller)}
-                        className="h-8 w-8 p-0 hover:bg-blue-100"
-                        title="Просмотр"
-                      >
-                        <Icon name="Eye" size={16} className="text-blue-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(seller)}
-                        className="h-8 w-8 p-0 hover:bg-green-100"
-                        title="Редактировать"
-                      >
-                        <Icon
-                          name="Edit"
-                          size={16}
-                          className="text-green-600"
-                        />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onBlock(seller)}
-                        className="h-8 w-8 p-0 hover:bg-red-100"
-                        title={
-                          seller.status === "blocked"
-                            ? "Разблокировать"
-                            : "Заблокировать"
-                        }
-                      >
-                        <Icon
-                          name={
-                            seller.status === "blocked" ? "UserCheck" : "UserX"
-                          }
-                          size={16}
-                          className={
-                            seller.status === "blocked"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }
-                        />
-                      </Button>
+                      {seller.status === "pending" ||
+                      seller.status === "revision" ? (
+                        onModerate && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onModerate(seller)}
+                            className="h-8 w-8 p-0 hover:bg-blue-100"
+                            title="Проверить"
+                          >
+                            <Icon
+                              name="Shield"
+                              size={16}
+                              className="text-blue-600"
+                            />
+                          </Button>
+                        )
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onView(seller)}
+                            className="h-8 w-8 p-0 hover:bg-blue-100"
+                            title="Просмотр"
+                          >
+                            <Icon
+                              name="Eye"
+                              size={16}
+                              className="text-blue-600"
+                            />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onEdit(seller)}
+                            className="h-8 w-8 p-0 hover:bg-green-100"
+                            title="Редактировать"
+                          >
+                            <Icon
+                              name="Edit"
+                              size={16}
+                              className="text-green-600"
+                            />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onBlock(seller)}
+                            className="h-8 w-8 p-0 hover:bg-red-100"
+                            title={
+                              seller.status === "blocked"
+                                ? "Разблокировать"
+                                : "Заблокировать"
+                            }
+                          >
+                            <Icon
+                              name={
+                                seller.status === "blocked"
+                                  ? "UserCheck"
+                                  : "UserX"
+                              }
+                              size={16}
+                              className={
+                                seller.status === "blocked"
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }
+                            />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

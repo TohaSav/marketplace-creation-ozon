@@ -37,6 +37,51 @@ export const useSellers = () => {
     return updatedSeller;
   };
 
+  const approveSeller = (sellerId: string) => {
+    const seller = sellers.find((s) => s.id === sellerId);
+    if (!seller) return;
+
+    const updatedSeller = { ...seller, status: "active" as const };
+    setSellers(sellers.map((s) => (s.id === sellerId ? updatedSeller : s)));
+
+    toast({
+      title: "Продавец подтверждён",
+      description: `${seller.name} успешно прошёл модерацию и может начать работу`,
+      variant: "default",
+    });
+  };
+
+  const sendForRevision = (sellerId: string, reason: string) => {
+    const seller = sellers.find((s) => s.id === sellerId);
+    if (!seller) return;
+
+    const updatedSeller = {
+      ...seller,
+      status: "revision" as const,
+      rejectionReason: reason,
+    };
+    setSellers(sellers.map((s) => (s.id === sellerId ? updatedSeller : s)));
+
+    toast({
+      title: "Продавец отправлен на доработку",
+      description: `${seller.name} получит уведомление о необходимых изменениях`,
+      variant: "default",
+    });
+  };
+
+  const rejectSeller = (sellerId: string) => {
+    const seller = sellers.find((s) => s.id === sellerId);
+    if (!seller) return;
+
+    setSellers(sellers.filter((s) => s.id !== sellerId));
+
+    toast({
+      title: "Продавец отклонён",
+      description: `Заявка от ${seller.name} была отклонена и удалена`,
+      variant: "destructive",
+    });
+  };
+
   const getSellerById = (sellerId: string): Seller | undefined => {
     return sellers.find((s) => s.id === sellerId);
   };
@@ -45,6 +90,9 @@ export const useSellers = () => {
     sellers,
     updateSeller,
     toggleSellerStatus,
+    approveSeller,
+    sendForRevision,
+    rejectSeller,
     getSellerById,
   };
 };
