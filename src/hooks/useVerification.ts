@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { VerificationRequest } from "@/types/verification";
+import { useAuth } from "@/context/AuthContext";
 
 // Тестовые данные заявок
 const mockRequests: VerificationRequest[] = [
@@ -108,42 +109,97 @@ const mockRequests: VerificationRequest[] = [
 ];
 
 export const useVerification = () => {
+  const { sellers, updateSellerStatus, deleteSeller } = useAuth();
   const [requests, setRequests] = useState<VerificationRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Имитация загрузки данных
-    setTimeout(() => {
-      setRequests(mockRequests);
+    // Загружаем заявки из localStorage или создаем из sellers
+    const loadRequests = () => {
+      try {
+        const savedRequests = localStorage.getItem("verification-requests");
+        if (savedRequests) {
+          setRequests(JSON.parse(savedRequests));
+        } else {
+          // Если нет сохраненных заявок, берем из mockRequests только pending
+          const pendingMockRequests = mockRequests.filter(
+            (req) => req.status === "pending",
+          );
+          setRequests(pendingMockRequests);
+          localStorage.setItem(
+            "verification-requests",
+            JSON.stringify(pendingMockRequests),
+          );
+        }
+      } catch (error) {
+        console.error("Ошибка загрузки заявок:", error);
+        setRequests([]);
+      }
       setIsLoading(false);
-    }, 1000);
-  }, []);
+    };
 
-  const updateRequestStatus = (
+    setTimeout(loadRequests, 500);
+  }, [sellers]);
+
+  const updateRequestStatus = async (
     requestId: string,
     status: "approved" | "rejected",
     rejectionReason?: string,
   ) => {
-    setRequests((prevRequests) =>
-      prevRequests.map((req) => {
-        if (req.id === requestId) {
-          return {
-            ...req,
-            status,
-            reviewedAt: new Date().toISOString(),
-            reviewedBy: "admin@calibrestore.ru",
-            rejectionReason:
-              status === "rejected" ? rejectionReason : undefined,
-          };
-        }
-        return req;
-      }),
+    const updatedRequests = requests.map((req) => {
+      if (req.id === requestId) {
+        return {
+          ...req,
+          status,
+          reviewedAt: new Date().toISOString(),
+          reviewedBy: "admin@calibrestore.ru",
+          rejectionReason: status === "rejected" ? rejectionReason : undefined,
+        };
+      }
+      return req;
+    });
+
+    // Если отклоняем заявку, удаляем ее из списка
+    const finalRequests =
+      status === "rejected"
+        ? updatedRequests.filter((req) => req.id !== requestId)
+        : updatedRequests;
+
+    setRequests(finalRequests);
+
+    // Сохраняем в localStorage
+    localStorage.setItem(
+      "verification-requests",
+      JSON.stringify(finalRequests),
     );
+
+    // Находим продавца в AuthContext и обновляем его статус
+    const request = requests.find((req) => req.id === requestId);
+    if (request) {
+      const seller = sellers.find((s) => s.email === request.sellerEmail);
+      if (seller) {
+        if (status === "approved") {
+          await updateSellerStatus(
+            seller.id,
+            "active",
+            "Заявка на верификацию одобрена",
+          );
+        } else if (status === "rejected") {
+          await deleteSeller(seller.id);
+        }
+      }
+    }
   };
 
   const pendingRequests = requests.filter((req) => req.status === "pending");
   const approvedRequests = requests.filter((req) => req.status === "approved");
   const rejectedRequests = requests.filter((req) => req.status === "rejected");
+
+  // Функция для очистки всех заявок
+  const clearAllRequests = () => {
+    setRequests([]);
+    localStorage.removeItem("verification-requests");
+  };
 
   return {
     requests,
@@ -151,6 +207,7 @@ export const useVerification = () => {
     approvedRequests,
     rejectedRequests,
     updateRequestStatus,
+    clearAllRequests,
     isLoading,
   };
 };
