@@ -82,6 +82,19 @@ export const useSellers = () => {
     });
   };
 
+  const deleteSeller = (sellerId: string) => {
+    const seller = sellers.find((s) => s.id === sellerId);
+    if (!seller) return;
+
+    setSellers(sellers.filter((s) => s.id !== sellerId));
+
+    toast({
+      title: "Продавец удалён",
+      description: `${seller.name} был полностью удалён с платформы`,
+      variant: "destructive",
+    });
+  };
+
   const getSellerById = (sellerId: string): Seller | undefined => {
     return sellers.find((s) => s.id === sellerId);
   };
@@ -93,6 +106,7 @@ export const useSellers = () => {
     approveSeller,
     sendForRevision,
     rejectSeller,
+    deleteSeller,
     getSellerById,
   };
 };

@@ -18,6 +18,7 @@ const SellersManagement: React.FC = () => {
     approveSeller,
     sendForRevision,
     rejectSeller,
+    deleteSeller,
   } = useSellers();
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -77,6 +78,13 @@ const SellersManagement: React.FC = () => {
     }
   };
 
+  const handleDelete = () => {
+    if (selectedSeller) {
+      deleteSeller(selectedSeller.id);
+      setBlockModalOpen(false);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -129,6 +137,7 @@ const SellersManagement: React.FC = () => {
           isOpen={blockModalOpen}
           onClose={() => setBlockModalOpen(false)}
           onConfirm={handleConfirmBlock}
+          onDelete={handleDelete}
         />
 
         <ModerationModal
