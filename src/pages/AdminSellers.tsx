@@ -2,10 +2,12 @@ import AdminLayout from "@/components/AdminLayout";
 import SellersTab from "@/components/admin-dashboard/SellersTab";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
-import { UserDataManager } from "@/utils/userDataManager";
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/hooks/use-toast";
 
 export default function AdminSellers() {
+  const { clearAllSellers } = useAuth();
+
   const handleClearSellers = () => {
     if (
       window.confirm(
@@ -13,14 +15,12 @@ export default function AdminSellers() {
       )
     ) {
       try {
-        UserDataManager.clearSellers();
+        clearAllSellers();
         toast({
           title: "Продавцы удалены",
           description: "Все продавцы удалены из базы данных",
           variant: "destructive",
         });
-        // Перезагружаем страницу для синхронизации
-        window.location.reload();
       } catch (error) {
         toast({
           title: "Ошибка",

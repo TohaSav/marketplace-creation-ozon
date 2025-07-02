@@ -43,6 +43,7 @@ interface AuthContextType {
     comment?: string,
   ) => Promise<void>;
   deleteSeller: (sellerId: number) => Promise<void>;
+  clearAllSellers: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -218,6 +219,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const clearAllSellers = () => {
+    setAllUsers((prev) => {
+      const updatedUsers = prev.filter((user) => user.userType !== "seller");
+
+      // Очищаем localStorage от продавцов
+      localStorage.setItem("sellers", JSON.stringify([]));
+      localStorage.removeItem("seller-token");
+
+      return updatedUsers;
+    });
+
+    // Если текущий пользователь - продавец, разлогиниваем его
+    if (user?.userType === "seller") {
+      setUser(null);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -231,6 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateSellerStats,
         updateSellerStatus,
         deleteSeller,
+        clearAllSellers,
       }}
     >
       {children}
