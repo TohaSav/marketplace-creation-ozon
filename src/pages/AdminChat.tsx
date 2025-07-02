@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
@@ -7,8 +8,11 @@ import AdminChatTabs from "@/components/admin/chat/AdminChatTabs";
 import ChatUserList from "@/components/admin/chat/ChatUserList";
 import ChatWindow from "@/components/admin/chat/ChatWindow";
 import TicketList from "@/components/admin/chat/TicketList";
+import ChatSettingsModal from "@/components/admin/chat/ChatSettingsModal";
 
 export default function AdminChat() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   const {
     activeTab,
     selectedUser,
@@ -42,7 +46,7 @@ export default function AdminChat() {
               <Icon name="Download" size={16} className="mr-2" />
               Экспорт
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={() => setSettingsOpen(true)}>
               <Icon name="Settings" size={16} className="mr-2" />
               Настройки
             </Button>
@@ -93,6 +97,9 @@ export default function AdminChat() {
             />
           </TabsContent>
         </Tabs>
+
+        {/* Settings Modal */}
+        <ChatSettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
       </div>
     </AdminLayout>
   );
