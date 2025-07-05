@@ -14,6 +14,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useMarketplace } from "@/contexts/MarketplaceContext";
+import { formatPrice } from "@/utils/marketplace";
 
 const categories = [
   { value: "", label: "Все категории" },
@@ -53,14 +54,6 @@ export const ProductFilters: React.FC = () => {
     filterByCategory("");
     setPriceRange([0, 10000]);
     setSorting("newest", "desc");
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: "RUB",
-      minimumFractionDigits: 0,
-    }).format(price);
   };
 
   return (

@@ -22,6 +22,11 @@ import {
 } from "@/components/ui/dialog";
 import Icon from "@/components/ui/icon";
 import { useMarketplace } from "@/contexts/MarketplaceContext";
+import {
+  formatPrice,
+  calculateCartTotal,
+  calculateCartItemCount,
+} from "@/utils/marketplace";
 
 export const Cart: React.FC = () => {
   const { state, removeFromCart, updateCartQuantity, clearCart, placeOrder } =
@@ -29,19 +34,8 @@ export const Cart: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = state.cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: "RUB",
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
+  const totalItems = calculateCartItemCount(state.cart);
+  const totalPrice = calculateCartTotal(state.cart);
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     updateCartQuantity(itemId, newQuantity);

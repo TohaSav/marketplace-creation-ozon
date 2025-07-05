@@ -3,73 +3,23 @@ import { ProductCard } from "./ProductCard";
 import { useMarketplace } from "@/contexts/MarketplaceContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Icon from "@/components/ui/icon";
+import { filterProducts, sortProducts } from "@/utils/marketplace";
+import { MarketplaceFilters } from "@/types/marketplace";
 
 export const ProductGrid: React.FC = () => {
   const { state } = useMarketplace();
 
   const filteredProducts = useMemo(() => {
-    let filtered = [...state.products];
+    const filters: MarketplaceFilters = {
+      searchQuery: state.searchQuery,
+      selectedCategory: state.selectedCategory,
+      priceRange: state.priceRange,
+      sortBy: state.sortBy,
+      sortOrder: state.sortOrder,
+    };
 
-    // Search filter
-    if (state.searchQuery) {
-      filtered = filtered.filter(
-        (product) =>
-          product.name
-            .toLowerCase()
-            .includes(state.searchQuery.toLowerCase()) ||
-          product.description
-            .toLowerCase()
-            .includes(state.searchQuery.toLowerCase()),
-      );
-    }
-
-    // Category filter
-    if (state.selectedCategory) {
-      filtered = filtered.filter(
-        (product) => product.category === state.selectedCategory,
-      );
-    }
-
-    // Price range filter
-    filtered = filtered.filter(
-      (product) =>
-        product.price >= state.priceRange[0] &&
-        product.price <= state.priceRange[1],
-    );
-
-    // Sort
-    filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
-
-      switch (state.sortBy) {
-        case "name":
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-          break;
-        case "price":
-          aValue = a.price;
-          bValue = b.price;
-          break;
-        case "rating":
-          aValue = a.rating;
-          bValue = b.rating;
-          break;
-        case "newest":
-          aValue = a.createdAt;
-          bValue = b.createdAt;
-          break;
-        default:
-          return 0;
-      }
-
-      if (state.sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    return filtered;
+    const filtered = filterProducts(state.products, filters);
+    return sortProducts(filtered, state.sortBy, state.sortOrder);
   }, [
     state.products,
     state.searchQuery,

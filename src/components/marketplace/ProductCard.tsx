@@ -4,19 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useMarketplace } from "@/contexts/MarketplaceContext";
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  sellerId: string;
-  category: string;
-  stock: number;
-  rating: number;
-  reviews: number;
-}
+import { Product } from "@/types/marketplace";
+import { formatPrice } from "@/utils/marketplace";
 
 interface ProductCardProps {
   product: Product;
@@ -33,14 +22,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: "RUB",
-      minimumFractionDigits: 0,
-    }).format(price);
   };
 
   if (isLoading) {
