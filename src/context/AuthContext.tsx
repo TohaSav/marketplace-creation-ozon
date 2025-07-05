@@ -6,6 +6,7 @@ import {
   useEffect,
 } from "react";
 import { SellerStats } from "@/types/seller-dashboard.types";
+import { statusSyncManager } from "@/utils/statusSync";
 
 interface User {
   id: number;
@@ -221,6 +222,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return updatedUsers;
     });
+
+    // Уведомляем о изменении статуса через систему синхронизации
+    statusSyncManager.notifyStatusChange({
+      type: "seller_status_change",
+      sellerId,
+      newStatus: status as "active" | "pending" | "blocked" | "revision",
+      moderationComment: comment,
+      timestamp: Date.now(),
+    });
+
+    // Обновляем токен текущего пользователя если это он
+    if (user?.id === sellerId) {
+      const updatedUser = {
+        ...user,
+        status: status as "active" | "pending" | "blocked",
+        moderationComment: comment,
+      };
+      setUser(updatedUser);
+      localStorage.setItem("seller-token", JSON.stringify(updatedUser));
+    }
   };
 
   const deleteSeller = async (sellerId: number) => {

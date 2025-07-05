@@ -14,6 +14,8 @@ import Icon from "@/components/ui/icon";
 import { useStore } from "@/lib/store";
 import { toast } from "@/hooks/use-toast";
 import BalloonGame from "./BalloonGame";
+import SellerNotifications from "./SellerNotifications";
+import SellerStatusBadge from "./SellerStatusBadge";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -125,6 +127,8 @@ export default function Header() {
 
             {/* Navigation */}
             <div className="flex items-center space-x-2 md:space-x-6">
+              {/* Seller Notifications */}
+              {user?.userType === "seller" && <SellerNotifications />}
               <Button
                 variant="ghost"
                 className="flex items-center space-x-2 px-2 md:px-4"
@@ -252,9 +256,11 @@ export default function Header() {
                             <Icon name="Bell" size={16} className="mr-2" />
                             Уведомления
                             {seller.status === "pending" && (
-                              <Badge className="ml-2 bg-yellow-500 text-white">
-                                На модерации
-                              </Badge>
+                              <SellerStatusBadge
+                                sellerId={seller.id}
+                                status={seller.status}
+                                className="ml-2"
+                              />
                             )}
                           </DropdownMenuItem>
                         )}

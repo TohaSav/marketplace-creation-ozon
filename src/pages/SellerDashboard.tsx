@@ -15,6 +15,7 @@ import FinancesTab from "@/components/seller-dashboard/FinancesTab";
 import StoriesTab from "@/components/seller-dashboard/StoriesTab";
 import SettingsTab from "@/components/seller-dashboard/SettingsTab";
 import SubscriptionStatus from "@/components/SubscriptionStatus";
+import SellerStatusAlert from "@/components/SellerStatusAlert";
 
 export default function SellerDashboard() {
   const { user } = useAuth();
@@ -117,6 +118,9 @@ export default function SellerDashboard() {
             Управляйте своим магазином и товарами
           </p>
         </div>
+
+        {/* Seller Status Alert */}
+        <SellerStatusAlert />
 
         {/* Stats Cards */}
         <StatsGrid stats={stats} />

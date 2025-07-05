@@ -14,11 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import Icon from "@/components/ui/icon";
 import { ModerationModalProps } from "@/types/seller";
-import {
-  formatCurrency,
-  formatDate,
-  getStatusBadge,
-} from "@/utils/sellerUtils";
+import { formatCurrency, formatDate } from "@/utils/sellerUtils";
+import SellerStatusBadge from "@/components/SellerStatusBadge";
 
 const ModerationModal: React.FC<ModerationModalProps> = ({
   seller,
@@ -58,8 +55,6 @@ const ModerationModal: React.FC<ModerationModalProps> = ({
 
   if (!seller) return null;
 
-  const statusBadge = getStatusBadge(seller.status);
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -94,9 +89,10 @@ const ModerationModal: React.FC<ModerationModalProps> = ({
                   Статус
                 </Label>
                 <div className="mt-1">
-                  <Badge className={statusBadge.className}>
-                    {statusBadge.text}
-                  </Badge>
+                  <SellerStatusBadge
+                    sellerId={parseInt(seller.id)}
+                    status={seller.status}
+                  />
                 </div>
               </div>
               <div>
