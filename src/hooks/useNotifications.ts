@@ -29,11 +29,8 @@ export const useNotifications = () => {
     if (savedNotifications) {
       setNotifications(JSON.parse(savedNotifications));
     } else {
-      setNotifications(SAMPLE_NOTIFICATIONS);
-      localStorage.setItem(
-        STORAGE_KEYS.NOTIFICATIONS,
-        JSON.stringify(SAMPLE_NOTIFICATIONS),
-      );
+      setNotifications([]);
+      localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify([]));
     }
 
     if (savedSettings) {
