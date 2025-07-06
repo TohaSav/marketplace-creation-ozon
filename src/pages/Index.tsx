@@ -58,14 +58,24 @@ export default function Index() {
 
   // Категории товаров
   const categories = [
-    { name: "Электроника", icon: "Smartphone", color: "bg-blue-500" },
-    { name: "Одежда", icon: "Shirt", color: "bg-pink-500" },
-    { name: "Дом и сад", icon: "Home", color: "bg-green-500" },
-    { name: "Спорт", icon: "Dumbbell", color: "bg-orange-500" },
-    { name: "Красота", icon: "Sparkles", color: "bg-purple-500" },
-    { name: "Авто", icon: "Car", color: "bg-red-500" },
-    { name: "Книги", icon: "BookOpen", color: "bg-indigo-500" },
-    { name: "Игрушки", icon: "Gamepad2", color: "bg-yellow-500" },
+    {
+      name: "Электроника",
+      icon: "Smartphone",
+      color: "bg-blue-500",
+      slug: "electronics",
+    },
+    { name: "Одежда", icon: "Shirt", color: "bg-pink-500", slug: "clothing" },
+    { name: "Дом и сад", icon: "Home", color: "bg-green-500", slug: "home" },
+    { name: "Спорт", icon: "Dumbbell", color: "bg-orange-500", slug: "sport" },
+    {
+      name: "Красота",
+      icon: "Sparkles",
+      color: "bg-purple-500",
+      slug: "beauty",
+    },
+    { name: "Авто", icon: "Car", color: "bg-red-500", slug: "auto" },
+    { name: "Книги", icon: "BookOpen", color: "bg-indigo-500", slug: "books" },
+    { name: "Игрушки", icon: "Gamepad2", color: "bg-yellow-500", slug: "toys" },
   ];
 
   // Автопереключение баннеров
@@ -219,24 +229,23 @@ export default function Index() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
             {categories.map((category) => (
-              <Card
-                key={category.name}
-                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-emerald-300"
-              >
-                <CardContent className="p-6 text-center">
-                  <div
-                    className={`w-16 h-16 ${category.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <Icon
-                      name={category.icon as any}
-                      className="w-8 h-8 text-white"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                    {category.name}
-                  </h3>
-                </CardContent>
-              </Card>
+              <Link key={category.name} to={`/category/${category.slug}`}>
+                <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-emerald-300">
+                  <CardContent className="p-6 text-center">
+                    <div
+                      className={`w-16 h-16 ${category.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <Icon
+                        name={category.icon as any}
+                        className="w-8 h-8 text-white"
+                      />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                      {category.name}
+                    </h3>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>

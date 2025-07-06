@@ -48,6 +48,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import Home from "./pages/Home";
 import ShopVerification from "./pages/admin/ShopVerification";
 import SellersManagement from "./pages/admin/SellersManagement";
+import Category from "./pages/Category";
 
 const queryClient = new QueryClient();
 
@@ -170,6 +171,9 @@ const App = () => {
 
               {/* Главная страница */}
               <Route path="/" element={<Index />} />
+
+              {/* Категории */}
+              <Route path="/category/:categorySlug" element={<Category />} />
 
               {/* Общие страницы */}
               <Route path="/privacy" element={<PrivacyPolicy />} />

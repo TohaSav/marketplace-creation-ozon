@@ -238,11 +238,11 @@ export default function AddProduct() {
                     <SelectContent>
                       <SelectItem value="electronics">Электроника</SelectItem>
                       <SelectItem value="clothing">Одежда</SelectItem>
-                      <SelectItem value="jewelery">Украшения</SelectItem>
-                      <SelectItem value="books">Книги</SelectItem>
                       <SelectItem value="home">Дом и сад</SelectItem>
-                      <SelectItem value="sports">Спорт</SelectItem>
+                      <SelectItem value="sport">Спорт</SelectItem>
                       <SelectItem value="beauty">Красота</SelectItem>
+                      <SelectItem value="auto">Авто</SelectItem>
+                      <SelectItem value="books">Книги</SelectItem>
                       <SelectItem value="toys">Игрушки</SelectItem>
                     </SelectContent>
                   </Select>
