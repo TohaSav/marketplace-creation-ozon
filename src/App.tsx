@@ -45,7 +45,7 @@ import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
 import PaymentSuccess from "./pages/PaymentSuccess";
-import Home from "./pages/Home";
+
 import ShopVerification from "./pages/admin/ShopVerification";
 import SellersManagement from "./pages/admin/SellersManagement";
 import Category from "./pages/Category";
@@ -185,7 +185,7 @@ const App = () => {
               <Route path="/returns" element={<Returns />} />
               <Route path="/trading-rules" element={<TradingRules />} />
               <Route path="/commissions" element={<Commissions />} />
-              <Route path="/admin" element={<Admin />} />
+
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/bonus-card" element={<BonusCard />} />
