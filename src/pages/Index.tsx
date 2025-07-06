@@ -20,7 +20,7 @@ export default function Index() {
       subtitle: "Скидки до 90% на всё",
       image:
         "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200&h=500&fit=crop",
-      color: "from-gray-900 to-black",
+      color: "from-slate-900 via-purple-900 to-slate-900",
     },
     {
       id: 2,
@@ -28,7 +28,7 @@ export default function Index() {
       subtitle: "Топ товары от 99₽",
       image:
         "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=500&fit=crop",
-      color: "from-orange-500 to-red-600",
+      color: "from-orange-400 via-red-500 to-pink-600",
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ export default function Index() {
       subtitle: "iPhone 15, MacBook и многое другое",
       image:
         "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1200&h=500&fit=crop",
-      color: "from-blue-600 to-purple-700",
+      color: "from-blue-500 via-indigo-600 to-purple-700",
     },
     {
       id: 4,
@@ -44,7 +44,7 @@ export default function Index() {
       subtitle: "Заказ сегодня — получи завтра",
       image:
         "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=500&fit=crop",
-      color: "from-green-500 to-emerald-600",
+      color: "from-green-400 via-emerald-500 to-teal-600",
     },
     {
       id: 5,
@@ -52,7 +52,7 @@ export default function Index() {
       subtitle: "Оригинальные товары с гарантией",
       image:
         "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=500&fit=crop",
-      color: "from-purple-600 to-pink-600",
+      color: "from-pink-400 via-purple-500 to-indigo-600",
     },
   ];
 
