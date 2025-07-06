@@ -16,27 +16,43 @@ export default function Index() {
   const banners = [
     {
       id: 1,
-      title: "Скидки до 70%",
-      subtitle: "На технику и электронику",
+      title: "Черная пятница",
+      subtitle: "Скидки до 90% на всё",
       image:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1200&h=400&fit=crop",
-      color: "from-emerald-600 to-teal-600",
+        "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200&h=500&fit=crop",
+      color: "from-gray-900 to-black",
     },
     {
       id: 2,
-      title: "Новая коллекция",
-      subtitle: "Модная одежда весна-лето",
+      title: "Суперцены",
+      subtitle: "Топ товары от 99₽",
       image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=400&fit=crop",
-      color: "from-purple-600 to-pink-600",
+        "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=500&fit=crop",
+      color: "from-orange-500 to-red-600",
     },
     {
       id: 3,
-      title: "Доставка за 1 день",
-      subtitle: "Бесплатная доставка от 1000₽",
+      title: "Новинки техники",
+      subtitle: "iPhone 15, MacBook и многое другое",
       image:
-        "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=1200&h=400&fit=crop",
-      color: "from-blue-600 to-cyan-600",
+        "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1200&h=500&fit=crop",
+      color: "from-blue-600 to-purple-700",
+    },
+    {
+      id: 4,
+      title: "Быстрая доставка",
+      subtitle: "Заказ сегодня — получи завтра",
+      image:
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=500&fit=crop",
+      color: "from-green-500 to-emerald-600",
+    },
+    {
+      id: 5,
+      title: "Премиум бренды",
+      subtitle: "Оригинальные товары с гарантией",
+      image:
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=500&fit=crop",
+      color: "from-purple-600 to-pink-600",
     },
   ];
 
