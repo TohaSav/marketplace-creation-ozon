@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { useEffect } from "react";
 import { initializeTestData } from "@/utils/seedData";
 import ScrollToTop from "@/components/ScrollToTop";
+import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
@@ -172,48 +173,241 @@ const App = () => {
               />
 
               {/* Главная страница */}
-              <Route path="/" element={<Index />} />
+              <Route
+                path="/"
+                element={
+                  <Layout>
+                    <Index />
+                  </Layout>
+                }
+              />
 
               {/* Категории */}
-              <Route path="/category/:categorySlug" element={<Category />} />
+              <Route
+                path="/category/:categorySlug"
+                element={
+                  <Layout>
+                    <Category />
+                  </Layout>
+                }
+              />
 
               {/* Общие страницы */}
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/personal-data" element={<PersonalData />} />
-              <Route path="/how-to-sell" element={<HowToSell />} />
-              <Route path="/how-to-order" element={<HowToOrder />} />
-              <Route path="/payment-methods" element={<PaymentMethods />} />
-              <Route path="/delivery" element={<Delivery />} />
-              <Route path="/returns" element={<Returns />} />
-              <Route path="/trading-rules" element={<TradingRules />} />
-              <Route path="/commissions" element={<Commissions />} />
+              <Route
+                path="/privacy"
+                element={
+                  <Layout>
+                    <PrivacyPolicy />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/personal-data"
+                element={
+                  <Layout>
+                    <PersonalData />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/how-to-sell"
+                element={
+                  <Layout>
+                    <HowToSell />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/how-to-order"
+                element={
+                  <Layout>
+                    <HowToOrder />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/payment-methods"
+                element={
+                  <Layout>
+                    <PaymentMethods />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/delivery"
+                element={
+                  <Layout>
+                    <Delivery />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/returns"
+                element={
+                  <Layout>
+                    <Returns />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/trading-rules"
+                element={
+                  <Layout>
+                    <TradingRules />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/commissions"
+                element={
+                  <Layout>
+                    <Commissions />
+                  </Layout>
+                }
+              />
 
-              <Route path="/favorites" element={<Favorites />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/bonus-card" element={<BonusCard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/shorts" element={<Shorts />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/notifications" element={<Notifications />} />
+              <Route
+                path="/favorites"
+                element={
+                  <Layout>
+                    <Favorites />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/cart"
+                element={
+                  <Layout>
+                    <Cart />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/bonus-card"
+                element={
+                  <Layout>
+                    <BonusCard />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <Layout>
+                    <Profile />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <Layout>
+                    <Orders />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <Layout>
+                    <Settings />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/shorts"
+                element={
+                  <Layout>
+                    <Shorts />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/support"
+                element={
+                  <Layout>
+                    <Support />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/notifications"
+                element={
+                  <Layout>
+                    <Notifications />
+                  </Layout>
+                }
+              />
 
               {/* Авторизация покупателей */}
-              <Route path="/login" element={<UserLogin />} />
-              <Route path="/register" element={<UserRegister />} />
+              <Route
+                path="/login"
+                element={
+                  <Layout>
+                    <UserLogin />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <Layout>
+                    <UserRegister />
+                  </Layout>
+                }
+              />
 
               {/* Кабинет продавца */}
-              <Route path="/seller" element={<SellerLogin />} />
-              <Route path="/seller/dashboard" element={<SellerDashboard />} />
-              <Route path="/seller/add-product" element={<AddProduct />} />
-              <Route path="/seller/tariffs" element={<SellerTariffs />} />
+              <Route
+                path="/seller"
+                element={
+                  <Layout>
+                    <SellerLogin />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/seller/dashboard"
+                element={
+                  <Layout>
+                    <SellerDashboard />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/seller/add-product"
+                element={
+                  <Layout>
+                    <AddProduct />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/seller/tariffs"
+                element={
+                  <Layout>
+                    <SellerTariffs />
+                  </Layout>
+                }
+              />
               <Route
                 path="/seller/payment-success"
-                element={<PaymentSuccess />}
+                element={
+                  <Layout>
+                    <PaymentSuccess />
+                  </Layout>
+                }
               />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+              <Route
+                path="*"
+                element={
+                  <Layout>
+                    <NotFound />
+                  </Layout>
+                }
+              />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

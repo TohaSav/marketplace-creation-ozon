@@ -1,17 +1,10 @@
-import { useState } from "react";
-import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import CategoriesSection from "@/components/CategoriesSection";
 import ProductsSection from "@/components/ProductsSection";
 import BenefitsSection from "@/components/BenefitsSection";
 import CTASection from "@/components/CTASection";
-import Footer from "@/components/Footer";
 
 export default function Index() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [favoritesCount, setFavoritesCount] = useState(0);
-  const [cartCount, setCartCount] = useState(0);
-
   // Баннеры для карусели
   const banners = [
     {
@@ -79,31 +72,19 @@ export default function Index() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-      <Header
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        favoritesCount={favoritesCount}
-        cartCount={cartCount}
+    <div className="container mx-auto px-4 py-8">
+      <HeroSection banners={banners} />
+
+      <CategoriesSection categories={categories} />
+
+      <ProductsSection
+        title="Рекомендуемые товары"
+        products={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
       />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <HeroSection banners={banners} />
+      <BenefitsSection />
 
-        <CategoriesSection categories={categories} />
-
-        <ProductsSection
-          title="Рекомендуемые товары"
-          products={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-        />
-
-        <BenefitsSection />
-
-        <CTASection />
-      </main>
-
-      <Footer />
+      <CTASection />
     </div>
   );
 }
