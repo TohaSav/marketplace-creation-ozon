@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 export default function Index() {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
   // Баннеры для карусели
   const banners = [
@@ -98,17 +100,21 @@ export default function Index() {
               <Link to="/favorites">
                 <Button variant="ghost" size="icon" className="relative">
                   <Icon name="Heart" className="w-6 h-6" />
-                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5">
-                    3
-                  </Badge>
+                  {favoritesCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5">
+                      {favoritesCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
               <Link to="/cart">
                 <Button variant="ghost" size="icon" className="relative">
                   <Icon name="ShoppingCart" className="w-6 h-6" />
-                  <Badge className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs px-1.5 py-0.5">
-                    5
-                  </Badge>
+                  {cartCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs px-1.5 py-0.5">
+                      {cartCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
               <Link to="/login">
