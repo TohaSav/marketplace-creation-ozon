@@ -255,26 +255,35 @@ export default function Index() {
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             Рекомендуемые товары
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => (
               <Card
                 key={item}
-                className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-emerald-300"
+                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-white rounded-2xl overflow-hidden hover:scale-105"
               >
                 <CardContent className="p-0">
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg flex items-center justify-center">
-                    <Icon name="Package" className="w-16 h-16 text-gray-400" />
+                  <div className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden">
+                    <Icon
+                      name="Package"
+                      className="w-8 h-8 text-slate-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    />
+                    <div className="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                      -15%
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <div className="h-4 bg-gray-200 rounded mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-3/4 mb-3" />
+                  <div className="p-3">
+                    <div className="h-3 bg-slate-200 rounded-full mb-2" />
+                    <div className="h-2 bg-slate-200 rounded-full w-2/3 mb-3" />
                     <div className="flex items-center justify-between">
-                      <div className="h-6 bg-emerald-200 rounded w-20" />
+                      <div className="flex flex-col">
+                        <div className="h-4 bg-emerald-100 rounded-full w-12 mb-1" />
+                        <div className="h-2 bg-slate-200 rounded-full w-8" />
+                      </div>
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg"
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full w-8 h-8 p-0 shadow-lg"
                       >
-                        <Icon name="ShoppingCart" className="w-4 h-4" />
+                        <Icon name="Plus" className="w-3 h-3" />
                       </Button>
                     </div>
                   </div>
