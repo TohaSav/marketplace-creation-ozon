@@ -274,6 +274,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteSeller = async (sellerId: number) => {
+    // Если удаляется текущий пользователь, очищаем его сессию
+    if (user?.id === sellerId && user?.userType === "seller") {
+      localStorage.removeItem("seller-token");
+      setUser(null);
+    }
+
     setAllUsers((prev) => {
       const updatedUsers = prev.filter((user) => user.id !== sellerId);
 
@@ -285,6 +291,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("sellers", JSON.stringify(sellers));
 
       return updatedUsers;
+    });
+
+    // Уведомляем о удалении через систему синхронизации
+    statusSyncManager.notifyStatusChange({
+      type: "seller_status_change",
+      sellerId,
+      newStatus: "blocked", // Используем как маркер удаления
+      moderationComment: "Продавец удален администратором",
+      timestamp: Date.now(),
     });
   };
 

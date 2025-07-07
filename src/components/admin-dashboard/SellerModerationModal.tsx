@@ -88,24 +88,27 @@ export default function SellerModerationModal({
 
   const handleReject = async () => {
     if (
-      !window.confirm(`Вы уверены, что хотите отклонить заявку ${seller.name}?`)
+      !window.confirm(
+        `⚠️ ВНИМАНИЕ!\n\nВы хотите ОТКЛОНИТЬ и УДАЛИТЬ продавца ${seller.name}?\n\nЭто действие:\n• Полностью удалит продавца из системы\n• Нельзя будет отменить\n• Продавец не сможет войти в систему\n\nПродолжить?`,
+      )
     ) {
       return;
     }
 
     setIsProcessing(true);
     try {
-      await updateSellerStatus(seller.id, "rejected");
+      // Удаляем продавца полностью вместо изменения статуса
+      await deleteSeller(seller.id);
       toast({
-        title: "Заявка отклонена",
-        description: `${seller.name} уведомлен об отклонении`,
+        title: "Продавец отклонен и удален",
+        description: `${seller.name} полностью удален из системы`,
         variant: "destructive",
       });
       onClose();
     } catch (error) {
       toast({
         title: "Ошибка",
-        description: "Не удалось отклонить заявку",
+        description: "Не удалось отклонить и удалить продавца",
         variant: "destructive",
       });
     } finally {
@@ -405,9 +408,10 @@ export default function SellerModerationModal({
                     onClick={handleReject}
                     disabled={isProcessing}
                     variant="destructive"
+                    className="bg-red-600 hover:bg-red-700"
                   >
-                    <Icon name="X" size={16} className="mr-2" />
-                    Отклонить
+                    <Icon name="Trash2" size={16} className="mr-2" />
+                    Отклонить и удалить
                   </Button>
 
                   <Button

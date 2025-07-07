@@ -27,6 +27,19 @@ export default function SellerDashboard() {
   useEffect(() => {
     const unsubscribe = statusSyncManager.subscribe((event) => {
       if (event.sellerId === user?.id) {
+        // Если продавец удален (статус blocked с соответствующим комментарием)
+        if (
+          event.newStatus === "blocked" &&
+          event.moderationComment === "Продавец удален администратором"
+        ) {
+          localStorage.removeItem("seller-token");
+          alert(
+            "Ваш аккаунт был удален администратором. Обратитесь в службу поддержки для получения дополнительной информации.",
+          );
+          window.location.href = "/";
+          return;
+        }
+
         // Обновляем данные в localStorage для синхронизации
         const currentSellerToken = localStorage.getItem("seller-token");
         if (currentSellerToken) {
