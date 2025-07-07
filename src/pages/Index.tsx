@@ -3,7 +3,6 @@ import CategoriesSection from "@/components/CategoriesSection";
 import ProductsSection from "@/components/ProductsSection";
 import BenefitsSection from "@/components/BenefitsSection";
 import CTASection from "@/components/CTASection";
-import BallCatchGame from "@/components/BallCatchGame";
 
 export default function Index() {
   // Баннеры для карусели
@@ -59,8 +58,6 @@ export default function Index() {
       <CategoriesSection categories={categories} />
 
       <ProductsSection title="Рекомендуемые товары" products={[]} />
-
-      <BallCatchGame isSellerView={false} />
 
       <BenefitsSection />
 

@@ -47,6 +47,7 @@ import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import Game from "./pages/Game";
 
 import ShopVerification from "./pages/admin/ShopVerification";
 import SellersManagement from "./pages/admin/SellersManagement";
@@ -335,6 +336,14 @@ const App = () => {
                 element={
                   <Layout>
                     <Notifications />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/game"
+                element={
+                  <Layout>
+                    <Game />
                   </Layout>
                 }
               />

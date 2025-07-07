@@ -230,6 +230,10 @@ export default function Header() {
                             </Badge>
                           )}
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/game")}>
+                          <Icon name="Target" size={16} className="mr-2" />
+                          Ловим шарики 🎯
+                        </DropdownMenuItem>
                       </>
                     )}
 
