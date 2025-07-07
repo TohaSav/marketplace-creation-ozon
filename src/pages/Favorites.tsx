@@ -1,11 +1,11 @@
-import { useStore } from "@/lib/store";
+import { useMarketplace } from "@/contexts/MarketplaceContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
 
 export default function Favorites() {
-  const { favorites, removeFromFavorites, addToCart } = useStore();
+  const { favorites, removeFromFavorites, addToCart } = useMarketplace();
 
   if (favorites.length === 0) {
     return (

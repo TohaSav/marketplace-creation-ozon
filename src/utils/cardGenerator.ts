@@ -70,6 +70,10 @@ export function createSellerCard(
     initialEarnings.monthly,
   );
 
+  // Устанавливаем базовую подписку на 30 дней
+  const subscriptionEnd = new Date();
+  subscriptionEnd.setDate(subscriptionEnd.getDate() + 30);
+
   return {
     id: `card_${Date.now()}_${sellerId}`,
     cardNumber,
@@ -81,6 +85,7 @@ export function createSellerCard(
     transactions: [],
     monthlyEarnings: initialEarnings.monthly,
     totalEarnings: initialEarnings.total,
+    subscriptionEndDate: subscriptionEnd.toISOString(),
   };
 }
 
@@ -122,6 +127,17 @@ export function addTransactionToCard(
   }
 
   return updatedCard;
+}
+
+// Обновление даты окончания подписки
+export function updateSubscriptionEndDate(
+  card: SellerCard,
+  newEndDate: string,
+): SellerCard {
+  return {
+    ...card,
+    subscriptionEndDate: newEndDate,
+  };
 }
 
 // Форматирование номера карты (скрытие части номера)

@@ -2,6 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
+import { useMarketplace } from "@/contexts/MarketplaceContext";
+import { toast } from "@/hooks/use-toast";
 
 interface Product {
   id: number;
@@ -25,6 +27,7 @@ export default function ProductsSection({
   products = [],
 }: ProductsSectionProps) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
+  const { addToCart, addToFavorites } = useMarketplace();
 
   useEffect(() => {
     // Получаем данные из localStorage
@@ -80,6 +83,13 @@ export default function ProductsSection({
           <Card
             key={product.id}
             className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-white rounded-2xl overflow-hidden hover:scale-105"
+            onClick={() => {
+              addToFavorites(product);
+              toast({
+                title: "Товар добавлен в избранное",
+                description: product.name,
+              });
+            }}
           >
             <CardContent className="p-0">
               <div className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden">
@@ -131,6 +141,14 @@ export default function ProductsSection({
                     <Button
                       size="sm"
                       className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full w-8 h-8 p-0 shadow-lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                        toast({
+                          title: "Товар добавлен в корзину",
+                          description: product.name,
+                        });
+                      }}
                     >
                       <Icon name="Plus" className="w-3 h-3" />
                     </Button>

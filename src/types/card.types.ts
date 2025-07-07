@@ -9,6 +9,7 @@ export interface SellerCard {
   transactions: CardTransaction[];
   monthlyEarnings: number;
   totalEarnings: number;
+  subscriptionEndDate: string;
 }
 
 export interface CardTransaction {

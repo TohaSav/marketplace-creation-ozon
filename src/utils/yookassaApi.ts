@@ -101,6 +101,15 @@ export const activateSubscription = (
   );
   localStorage.setItem("sellers", JSON.stringify(updatedSellers));
 
+  // Обновляем карту продавца
+  const sellerCards = JSON.parse(localStorage.getItem("sellerCards") || "[]");
+  const updatedCards = sellerCards.map((card: any) =>
+    card.sellerId === sellerId
+      ? { ...card, subscriptionEndDate: endDate.toISOString() }
+      : card,
+  );
+  localStorage.setItem("sellerCards", JSON.stringify(updatedCards));
+
   return subscription;
 };
 

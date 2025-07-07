@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useStore } from "@/lib/store";
+import { useMarketplace } from "@/contexts/MarketplaceContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { calculateFinalAmount } from "@/utils/paymentUtils";
 
 export default function Cart() {
   const { cart, removeFromCart, updateCartQuantity, getTotalPrice, clearCart } =
-    useStore();
+    useMarketplace();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wallet");
   const [walletBalance] = useState(5420.5); // В реальном приложении получать из контекста/API
