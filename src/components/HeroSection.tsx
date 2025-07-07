@@ -32,6 +32,9 @@ export default function HeroSection({ banners }: HeroSectionProps) {
             <div className={`absolute inset-0 ${banner.gradient}`} />
             <div className="absolute inset-0 flex items-center justify-center text-white">
               <div className="text-center">
+                <div className="inline-block bg-black/20 px-3 py-1 rounded-full text-sm font-medium mb-4 backdrop-blur-sm">
+                  Реклама
+                </div>
                 <h1 className="text-5xl md:text-7xl font-bold drop-shadow-lg tracking-wide">
                   Реклама Магазинов
                 </h1>
