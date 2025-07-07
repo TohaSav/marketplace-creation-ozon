@@ -30,7 +30,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
-import { Advertisement, ADVERTISING_PLANS } from "@/types/advertisement";
+import { Advertisement, ADVERTISING_PLANS } from "@/types/advertising";
 
 export default function AdvertisingAdminPage() {
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
