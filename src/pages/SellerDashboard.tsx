@@ -5,6 +5,8 @@ import { useSellerDashboard } from "@/hooks/useSellerDashboard";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useEffect } from "react";
+import { statusSyncManager } from "@/utils/statusSync";
 
 // Tab Components
 import StatsGrid from "@/components/seller-dashboard/StatsGrid";
@@ -18,6 +20,37 @@ import SellerStatusAlert from "@/components/SellerStatusAlert";
 
 export default function SellerDashboard() {
   const { user } = useAuth();
+
+  // Подписываемся на изменения статуса продавца
+  useEffect(() => {
+    const unsubscribe = statusSyncManager.subscribe((event) => {
+      if (event.sellerId === user?.id) {
+        // Обновляем данные в localStorage для синхронизации
+        const currentSellerToken = localStorage.getItem("seller-token");
+        if (currentSellerToken) {
+          try {
+            const sellerData = JSON.parse(currentSellerToken);
+            const updatedSeller = {
+              ...sellerData,
+              status: event.newStatus,
+              moderationComment: event.moderationComment,
+            };
+            localStorage.setItem("seller-token", JSON.stringify(updatedSeller));
+
+            // Принудительно обновляем интерфейс
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+          } catch (error) {
+            console.error("Ошибка обновления данных продавца:", error);
+          }
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.id]);
+
   const {
     stats,
     products,

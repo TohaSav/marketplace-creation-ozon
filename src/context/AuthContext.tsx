@@ -126,6 +126,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Ошибка загрузки данных продавца:", error);
       }
     }
+
+    // Слушаем изменения в localStorage для синхронизации между вкладками
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "seller-token" && event.newValue) {
+        try {
+          const sellerData = JSON.parse(event.newValue);
+          setUser({ ...sellerData, userType: "seller" });
+        } catch (error) {
+          console.error("Ошибка синхронизации данных продавца:", error);
+        }
+      } else if (event.key === "user-token" && event.newValue) {
+        try {
+          const userData = JSON.parse(event.newValue);
+          setUser({ ...userData, userType: "user" });
+        } catch (error) {
+          console.error("Ошибка синхронизации данных пользователя:", error);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const users = allUsers.filter((u) => u.userType === "user");
