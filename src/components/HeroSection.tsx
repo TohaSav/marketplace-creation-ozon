@@ -25,7 +25,10 @@ export default function HeroSection({ banners }: HeroSectionProps) {
 
   return (
     <div className="relative mb-12 rounded-2xl overflow-hidden shadow-2xl">
-      <div className="relative h-96 md:h-[500px]">
+      <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium z-10">
+        РЕКЛАМА
+      </div>
+      <div className="relative h-[300px]">
         {banners.map((banner, index) => (
           <div
             key={banner.id}
