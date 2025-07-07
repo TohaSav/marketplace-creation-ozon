@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
+import StoriesSection from "@/components/StoriesSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
@@ -184,6 +185,9 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Stories Section */}
+        <StoriesSection className="mb-8" />
 
         {/* Categories */}
         <div className="mb-8">

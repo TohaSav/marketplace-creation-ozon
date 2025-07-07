@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,18 +16,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/context/AuthContext";
+import { StoryPlan, CreateStoryData } from "@/types/stories";
+import { Product } from "@/types/product";
 
 interface CreateStoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (storyData: any) => void;
+  onSubmit: (storyData: CreateStoryData) => void;
 }
 
-const mockProducts = [
-  { id: 1, name: "iPhone 15 Pro Max 256GB", price: 119999 },
-  { id: 2, name: "AirPods Pro 2-го поколения", price: 24999 },
-  { id: 3, name: 'MacBook Air M3 13"', price: 109999 },
+const storyPlans: StoryPlan[] = [
+  {
+    id: "week",
+    name: "Неделя",
+    duration: 7,
+    price: 100,
+    walletPrice: 97,
+    discount: 3,
+  },
+  {
+    id: "month",
+    name: "Месяц",
+    duration: 30,
+    price: 500,
+    walletPrice: 485,
+    discount: 3,
+  },
 ];
 
 export default function CreateStoryModal({
@@ -35,13 +54,52 @@ export default function CreateStoryModal({
   onClose,
   onSubmit,
 }: CreateStoryModalProps) {
+  const { user } = useAuth();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     productId: "",
+    planId: "week" as StoryPlan["id"],
+    paymentMethod: "wallet" as "wallet" | "yookassa",
     image: null as File | null,
     description: "",
-    discount: "",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState(0);
+
+  // Загрузка товаров продавца
+  useEffect(() => {
+    if (isOpen && user) {
+      const allProducts = JSON.parse(localStorage.getItem("products") || "[]");
+      const sellerProducts = allProducts.filter(
+        (p: Product) => p.sellerId === user.id,
+      );
+      setProducts(sellerProducts);
+
+      // Загрузка баланса кошелька
+      const walletData = JSON.parse(
+        localStorage.getItem(`wallet_${user.id}`) || "{}",
+      );
+      setWalletBalance(walletData.balance || 0);
+    }
+  }, [isOpen, user]);
+
+  // Обновление выбранного товара
+  useEffect(() => {
+    if (formData.productId) {
+      const product = products.find((p) => p.id === formData.productId);
+      setSelectedProduct(product || null);
+    } else {
+      setSelectedProduct(null);
+    }
+  }, [formData.productId, products]);
+
+  const selectedPlan = storyPlans.find((p) => p.id === formData.planId);
+  const finalPrice =
+    formData.paymentMethod === "wallet"
+      ? selectedPlan?.walletPrice
+      : selectedPlan?.price;
+  const canPayWithWallet = walletBalance >= (selectedPlan?.walletPrice || 0);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,9 +115,32 @@ export default function CreateStoryModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({ productId: "", image: null, description: "", discount: "" });
+
+    if (!selectedProduct) return;
+
+    const storyData: CreateStoryData = {
+      title: selectedProduct.name,
+      description:
+        formData.description ||
+        `${selectedProduct.name} - ${selectedProduct.price.toLocaleString()}₽`,
+      image: formData.image || selectedProduct.images[0],
+      productId: selectedProduct.id,
+      planId: formData.planId,
+      paymentMethod: formData.paymentMethod,
+    };
+
+    onSubmit(storyData);
+
+    // Сброс формы
+    setFormData({
+      productId: "",
+      planId: "week",
+      paymentMethod: "wallet",
+      image: null,
+      description: "",
+    });
     setImagePreview(null);
+    setSelectedProduct(null);
     onClose();
   };
 
@@ -72,37 +153,192 @@ export default function CreateStoryModal({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Product Selection */}
-          <div className="space-y-2">
-            <Label>Выберите товар</Label>
-            <Select
-              value={formData.productId}
-              onValueChange={(value) =>
-                setFormData({ ...formData, productId: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Выберите товар для Story" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockProducts.map((product) => (
-                  <SelectItem key={product.id} value={product.id.toString()}>
-                    <div className="flex justify-between items-center w-full">
-                      <span className="truncate">{product.name}</span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        ₽{product.price.toLocaleString()}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">Выберите товар</Label>
+            {products.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Icon
+                  name="Package"
+                  size={48}
+                  className="mx-auto mb-4 text-gray-300"
+                />
+                <p>У вас пока нет товаров</p>
+                <p className="text-sm mt-2">
+                  Добавьте товары, чтобы создавать Stories
+                </p>
+              </div>
+            ) : (
+              <Select
+                value={formData.productId}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, productId: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Выберите товар для Story" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      <div className="flex items-center gap-3 w-full">
+                        <img
+                          src={product.images[0] || "/placeholder.svg"}
+                          alt={product.name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="truncate font-medium">
+                            {product.name}
+                          </span>
+                          <div className="text-sm text-gray-500">
+                            ₽{product.price.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
-          {/* Image Upload */}
-          <div className="space-y-2">
-            <Label>Изображение для Story</Label>
+          {/* Selected Product Preview */}
+          {selectedProduct && (
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-4">
+                  <img
+                    src={selectedProduct.images[0] || "/placeholder.svg"}
+                    alt={selectedProduct.name}
+                    className="w-16 h-16 rounded-lg object-cover"
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{selectedProduct.name}</h4>
+                    <p className="text-lg font-bold text-primary">
+                      ₽{selectedProduct.price.toLocaleString()}
+                    </p>
+                    <Badge className="mt-1">{selectedProduct.category}</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Plan Selection */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">Выберите тариф</Label>
+            <RadioGroup
+              value={formData.planId}
+              onValueChange={(value) =>
+                setFormData({ ...formData, planId: value as StoryPlan["id"] })
+              }
+            >
+              <div className="grid gap-3">
+                {storyPlans.map((plan) => (
+                  <div key={plan.id} className="flex items-center space-x-3">
+                    <RadioGroupItem value={plan.id} id={plan.id} />
+                    <Label htmlFor={plan.id} className="flex-1 cursor-pointer">
+                      <Card className="p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="font-semibold">
+                              {plan.name} ({plan.duration} дней)
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              Обычная цена: ₽{plan.price}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-green-600 font-bold">
+                              ₽{plan.walletPrice} с кошелька
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              -{plan.discount}% скидка
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Payment Method */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">Способ оплаты</Label>
+            <RadioGroup
+              value={formData.paymentMethod}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  paymentMethod: value as "wallet" | "yookassa",
+                })
+              }
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem
+                  value="wallet"
+                  id="wallet"
+                  disabled={!canPayWithWallet}
+                />
+                <Label htmlFor="wallet" className="flex-1 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Wallet" size={16} />
+                    <span>Кошелёк продавца</span>
+                    <Badge variant="secondary">
+                      Баланс: ₽{walletBalance.toLocaleString()}
+                    </Badge>
+                    {!canPayWithWallet && (
+                      <Badge variant="destructive">Недостаточно средств</Badge>
+                    )}
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="yookassa" id="yookassa" />
+                <Label htmlFor="yookassa" className="flex-1 cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <Icon name="CreditCard" size={16} />
+                    <span>Банковская карта</span>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Price Summary */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">Итого к оплате:</span>
+                <span className="text-xl font-bold text-primary">
+                  ₽{finalPrice?.toLocaleString()}
+                </span>
+              </div>
+              {formData.paymentMethod === "wallet" && selectedPlan && (
+                <div className="text-sm text-green-600 mt-2">
+                  Экономия ₽
+                  {(
+                    selectedPlan.price - selectedPlan.walletPrice
+                  ).toLocaleString()}{" "}
+                  при оплате с кошелька
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Custom Image Upload (Optional) */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">
+              Изображение для Story (необязательно)
+            </Label>
+            <p className="text-sm text-gray-600">
+              Если не загружено, будет использована обложка товара
+            </p>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-purple-400 transition-colors">
               {imagePreview ? (
                 <div className="relative">
@@ -142,17 +378,18 @@ export default function CreateStoryModal({
                 accept="image/*"
                 onChange={handleImageChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                required
               />
             </div>
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Описание (необязательно)</Label>
+            <Label htmlFor="description">
+              Дополнительное описание (необязательно)
+            </Label>
             <Textarea
               id="description"
-              placeholder="Расскажите о товаре..."
+              placeholder="Расскажите о товаре подробнее..."
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
@@ -161,35 +398,17 @@ export default function CreateStoryModal({
             />
           </div>
 
-          {/* Discount */}
-          <div className="space-y-2">
-            <Label htmlFor="discount">Скидка (необязательно)</Label>
-            <div className="relative">
-              <Input
-                id="discount"
-                type="number"
-                placeholder="Размер скидки"
-                value={formData.discount}
-                onChange={(e) =>
-                  setFormData({ ...formData, discount: e.target.value })
-                }
-                min="0"
-                max="90"
-              />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
-                %
-              </span>
-            </div>
-          </div>
-
           {/* Submit Button */}
           <Button
             type="submit"
             className="w-full bg-purple-600 hover:bg-purple-700"
-            disabled={!formData.productId || !formData.image}
+            disabled={
+              !formData.productId ||
+              (formData.paymentMethod === "wallet" && !canPayWithWallet)
+            }
           >
             <Icon name="Plus" size={16} className="mr-2" />
-            Создать Story
+            Создать Story за ₽{finalPrice?.toLocaleString()}
           </Button>
         </form>
       </DialogContent>
