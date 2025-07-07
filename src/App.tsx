@@ -47,6 +47,7 @@ import Shorts from "./pages/Shorts";
 import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
+import SellerAdvertising from "./pages/SellerAdvertising";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Game from "./pages/Game";
 
@@ -394,6 +395,14 @@ const App = () => {
                   element={
                     <Layout>
                       <SellerTariffs />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/seller/advertising"
+                  element={
+                    <Layout>
+                      <SellerAdvertising />
                     </Layout>
                   }
                 />

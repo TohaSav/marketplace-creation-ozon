@@ -246,12 +246,24 @@ export default function Header() {
                           Кабинет продавца
                         </DropdownMenuItem>
                         {seller.status === "active" ? (
-                          <DropdownMenuItem
-                            onClick={() => navigate("/seller/add-product")}
-                          >
-                            <Icon name="Plus" size={16} className="mr-2" />
-                            Добавить товар
-                          </DropdownMenuItem>
+                          <>
+                            <DropdownMenuItem
+                              onClick={() => navigate("/seller/add-product")}
+                            >
+                              <Icon name="Plus" size={16} className="mr-2" />
+                              Добавить товар
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => navigate("/seller/advertising")}
+                            >
+                              <Icon
+                                name="Megaphone"
+                                size={16}
+                                className="mr-2"
+                              />
+                              Реклама
+                            </DropdownMenuItem>
+                          </>
                         ) : (
                           <DropdownMenuItem
                             onClick={() => navigate("/notifications")}
