@@ -36,13 +36,13 @@ export default function SellerTariffs() {
   );
   const yookassaActive = isYookassaActive();
 
-  // Загружаем баланс кошелька
+  // Загружаем баланс кошелька продавца
   useEffect(() => {
     if (user) {
-      const walletData = JSON.parse(
-        localStorage.getItem(`wallet-${user.id}`) || "{}",
+      const sellerData = JSON.parse(
+        localStorage.getItem("seller-token") || "{}",
       );
-      setWalletBalance(walletData.balance || 0);
+      setWalletBalance(parseFloat(sellerData.balance || "0"));
     }
   }, [user]);
 
@@ -94,16 +94,19 @@ export default function SellerTariffs() {
           return;
         }
 
-        // Списываем средства с кошелька
+        // Списываем средства с кошелька продавца
         const newBalance = walletBalance - tariff.price;
-        const walletData = { balance: newBalance };
-        localStorage.setItem(`wallet-${user.id}`, JSON.stringify(walletData));
+        const sellerData = JSON.parse(
+          localStorage.getItem("seller-token") || "{}",
+        );
+        sellerData.balance = newBalance.toString();
+        localStorage.setItem("seller-token", JSON.stringify(sellerData));
         setWalletBalance(newBalance);
 
         // Создаем транзакцию списания
         const transaction = {
           id: Date.now().toString(),
-          userId: user.id,
+          sellerId: user.id,
           type: "tariff",
           amount: tariff.price,
           description: `Покупка тарифа "${tariff.name}"`,
@@ -112,11 +115,11 @@ export default function SellerTariffs() {
         };
 
         const allTransactions = JSON.parse(
-          localStorage.getItem("wallet-transactions") || "[]",
+          localStorage.getItem("seller-wallet-transactions") || "[]",
         );
         allTransactions.push(transaction);
         localStorage.setItem(
-          "wallet-transactions",
+          "seller-wallet-transactions",
           JSON.stringify(allTransactions),
         );
 
@@ -291,7 +294,7 @@ export default function SellerTariffs() {
                   </span>
                 </div>
                 <Button
-                  onClick={() => navigate("/wallet")}
+                  onClick={() => navigate("/seller/wallet")}
                   variant="outline"
                   size="sm"
                   className="mt-2"

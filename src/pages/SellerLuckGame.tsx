@@ -183,6 +183,26 @@ export default function SellerLuckGame() {
       seller.balance = newBalance.toString();
       localStorage.setItem("seller-token", JSON.stringify(seller));
 
+      // Создаем транзакцию для приза
+      const transaction = {
+        id: Date.now().toString(),
+        sellerId: seller.id,
+        type: "game_prize",
+        amount: updatedTicket.prize,
+        description: `Приз из игры "Удача" - билет ${updatedTicket.ticketNumber}`,
+        createdAt: new Date().toISOString(),
+        status: "completed",
+      };
+
+      const allTransactions = JSON.parse(
+        localStorage.getItem("seller-wallet-transactions") || "[]",
+      );
+      allTransactions.push(transaction);
+      localStorage.setItem(
+        "seller-wallet-transactions",
+        JSON.stringify(allTransactions),
+      );
+
       toast({
         title: "Поздравляем! 🎉",
         description: `Вы выиграли ${updatedTicket.prize} ₽! Деньги добавлены на баланс.`,

@@ -273,6 +273,12 @@ export default function Header() {
                               <Icon name="Ticket" size={16} className="mr-2" />
                               Игры Удача 🎟️
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => navigate("/seller/wallet")}
+                            >
+                              <Icon name="Wallet" size={16} className="mr-2" />
+                              Личный кошелек 💰
+                            </DropdownMenuItem>
                           </>
                         ) : (
                           <DropdownMenuItem

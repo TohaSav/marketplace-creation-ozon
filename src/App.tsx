@@ -51,6 +51,8 @@ import SellerTariffs from "./pages/SellerTariffs";
 import SellerAdvertising from "./pages/SellerAdvertising";
 import SellerAdvertisingSuccess from "./pages/SellerAdvertisingSuccess";
 import SellerLuckGame from "./pages/SellerLuckGame";
+import SellerWallet from "./pages/SellerWallet";
+import SellerWalletSuccess from "./pages/SellerWalletSuccess";
 import Wallet from "./pages/Wallet";
 import WalletSuccess from "./pages/WalletSuccess";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -448,6 +450,22 @@ const App = () => {
                   element={
                     <Layout>
                       <SellerLuckGame />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/seller/wallet"
+                  element={
+                    <Layout>
+                      <SellerWallet />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/seller/wallet-success"
+                  element={
+                    <Layout>
+                      <SellerWalletSuccess />
                     </Layout>
                   }
                 />
