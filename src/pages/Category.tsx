@@ -20,6 +20,413 @@ const Category = () => {
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
+  // Товары по категориям
+  const productsByCategory = {
+    electronics: [
+      {
+        id: 1,
+        name: "iPhone 15 Pro",
+        price: 89990,
+        rating: 4.9,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 2,
+        name: "Samsung Galaxy S24",
+        price: 79990,
+        rating: 4.8,
+        reviews: 189,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 3,
+        name: "MacBook Air M2",
+        price: 129990,
+        rating: 4.9,
+        reviews: 145,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 4,
+        name: "iPad Pro 12.9",
+        price: 99990,
+        rating: 4.8,
+        reviews: 167,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 5,
+        name: "AirPods Pro",
+        price: 22990,
+        rating: 4.7,
+        reviews: 298,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 6,
+        name: "Sony WH-1000XM5",
+        price: 29990,
+        rating: 4.8,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+    ],
+    clothing: [
+      {
+        id: 7,
+        name: "Джинсы Levi's 501",
+        price: 8990,
+        rating: 4.6,
+        reviews: 89,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 8,
+        name: "Футболка Nike",
+        price: 2990,
+        rating: 4.5,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 9,
+        name: "Кроссовки Adidas",
+        price: 12990,
+        rating: 4.7,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 10,
+        name: "Куртка Zara",
+        price: 6990,
+        rating: 4.4,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 11,
+        name: "Платье H&M",
+        price: 3990,
+        rating: 4.3,
+        reviews: 45,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 12,
+        name: "Свитер Uniqlo",
+        price: 4990,
+        rating: 4.5,
+        reviews: 78,
+        image: "/placeholder.svg",
+      },
+    ],
+    home: [
+      {
+        id: 13,
+        name: "Пылесос Dyson V15",
+        price: 49990,
+        rating: 4.8,
+        reviews: 123,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 14,
+        name: "Мультиварка Redmond",
+        price: 8990,
+        rating: 4.6,
+        reviews: 89,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 15,
+        name: "Кофеварка DeLonghi",
+        price: 25990,
+        rating: 4.7,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 16,
+        name: "Диван-кровать IKEA",
+        price: 32990,
+        rating: 4.4,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 17,
+        name: "Стиральная машина LG",
+        price: 45990,
+        rating: 4.5,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 18,
+        name: "Микроволновка Samsung",
+        price: 12990,
+        rating: 4.3,
+        reviews: 98,
+        image: "/placeholder.svg",
+      },
+    ],
+    sport: [
+      {
+        id: 19,
+        name: "Гантели 20 кг",
+        price: 4990,
+        rating: 4.7,
+        reviews: 145,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 20,
+        name: "Беговая дорожка",
+        price: 89990,
+        rating: 4.6,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 21,
+        name: "Мяч футбольный Nike",
+        price: 2990,
+        rating: 4.8,
+        reviews: 189,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 22,
+        name: "Велосипед горный",
+        price: 45990,
+        rating: 4.5,
+        reviews: 123,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 23,
+        name: "Коврик для йоги",
+        price: 1990,
+        rating: 4.4,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 24,
+        name: "Гири 16 кг",
+        price: 3990,
+        rating: 4.6,
+        reviews: 89,
+        image: "/placeholder.svg",
+      },
+    ],
+    beauty: [
+      {
+        id: 25,
+        name: "Крем для лица L'Oreal",
+        price: 1990,
+        rating: 4.5,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 26,
+        name: "Тушь для ресниц Maybelline",
+        price: 890,
+        rating: 4.6,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 27,
+        name: "Парфюм Chanel",
+        price: 8990,
+        rating: 4.8,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 28,
+        name: "Шампунь Pantene",
+        price: 590,
+        rating: 4.3,
+        reviews: 189,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 29,
+        name: "Помада MAC",
+        price: 2990,
+        rating: 4.7,
+        reviews: 123,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 30,
+        name: "Скраб для тела",
+        price: 1290,
+        rating: 4.4,
+        reviews: 98,
+        image: "/placeholder.svg",
+      },
+    ],
+    auto: [
+      {
+        id: 31,
+        name: "Автомобильный пылесос",
+        price: 3990,
+        rating: 4.5,
+        reviews: 89,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 32,
+        name: "Моторное масло 5W-30",
+        price: 2990,
+        rating: 4.6,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 33,
+        name: "Видеорегистратор",
+        price: 8990,
+        rating: 4.4,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 34,
+        name: "Шины летние R16",
+        price: 15990,
+        rating: 4.7,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 35,
+        name: "Автосигнализация",
+        price: 12990,
+        rating: 4.3,
+        reviews: 123,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 36,
+        name: "Коврики в салон",
+        price: 1990,
+        rating: 4.5,
+        reviews: 145,
+        image: "/placeholder.svg",
+      },
+    ],
+    books: [
+      {
+        id: 37,
+        name: "Война и мир",
+        price: 1290,
+        rating: 4.9,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 38,
+        name: "Учебник по React",
+        price: 2990,
+        rating: 4.8,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 39,
+        name: "Атлас мира",
+        price: 1990,
+        rating: 4.6,
+        reviews: 89,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 40,
+        name: "Детская энциклопедия",
+        price: 1590,
+        rating: 4.7,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 41,
+        name: "Блокнот Moleskine",
+        price: 2490,
+        rating: 4.5,
+        reviews: 123,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 42,
+        name: "Словарь английского",
+        price: 990,
+        rating: 4.4,
+        reviews: 145,
+        image: "/placeholder.svg",
+      },
+    ],
+    toys: [
+      {
+        id: 43,
+        name: "Конструктор LEGO",
+        price: 4990,
+        rating: 4.8,
+        reviews: 189,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 44,
+        name: "Кукла Barbie",
+        price: 2990,
+        rating: 4.6,
+        reviews: 156,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 45,
+        name: "Машинка на радиоуправлении",
+        price: 3990,
+        rating: 4.7,
+        reviews: 123,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 46,
+        name: "Мягкая игрушка мишка",
+        price: 1990,
+        rating: 4.5,
+        reviews: 234,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 47,
+        name: "Пазл 1000 деталей",
+        price: 1290,
+        rating: 4.4,
+        reviews: 89,
+        image: "/placeholder.svg",
+      },
+      {
+        id: 48,
+        name: "Настольная игра Монополия",
+        price: 2490,
+        rating: 4.6,
+        reviews: 67,
+        image: "/placeholder.svg",
+      },
+    ],
+  };
+
+  const currentProducts =
+    productsByCategory[categorySlug as keyof typeof productsByCategory] || [];
+
   // Данные категорий
   const categories = {
     electronics: {
@@ -238,41 +645,52 @@ const Category = () => {
       {/* Products Grid */}
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 12 }).map((_, index) => (
+          {currentProducts.map((product) => (
             <Card
-              key={index}
+              key={product.id}
               className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-emerald-300"
             >
               <CardContent className="p-0">
                 <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg flex items-center justify-center">
-                  <Icon
-                    name={currentCategory.icon as any}
-                    className="w-16 h-16 text-gray-400"
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover rounded-t-lg"
                   />
                 </div>
                 <div className="p-4">
-                  <div className="h-4 bg-gray-200 rounded mb-2" />
-                  <div className="h-3 bg-gray-200 rounded w-3/4 mb-3" />
-                  <div className="flex items-center justify-between">
-                    <div className="h-6 bg-emerald-200 rounded w-20" />
+                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-2xl font-bold text-emerald-600">
+                      {product.price.toLocaleString()} ₽
+                    </span>
                     <Button
                       size="sm"
                       className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg"
+                      onClick={() => setCartCount(cartCount + 1)}
                     >
                       <Icon name="ShoppingCart" className="w-4 h-4" />
                     </Button>
                   </div>
-                  <div className="flex items-center mt-2">
+                  <div className="flex items-center">
                     <div className="flex space-x-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Icon
                           key={star}
                           name="Star"
-                          className="w-4 h-4 text-yellow-400 fill-current"
+                          className={`w-4 h-4 ${
+                            star <= Math.floor(product.rating)
+                              ? "text-yellow-400 fill-current"
+                              : "text-gray-300"
+                          }`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600 ml-2">(123)</span>
+                    <span className="text-sm text-gray-600 ml-2">
+                      {product.rating} ({product.reviews})
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -281,14 +699,37 @@ const Category = () => {
         </div>
 
         {/* Load More */}
-        <div className="text-center mt-12">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 text-lg rounded-xl"
-          >
-            Загрузить еще
-          </Button>
-        </div>
+        {currentProducts.length > 0 && (
+          <div className="text-center mt-12">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 text-lg rounded-xl"
+            >
+              Загрузить еще
+            </Button>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {currentProducts.length === 0 && (
+          <div className="text-center py-16">
+            <Icon
+              name={currentCategory.icon as any}
+              className="w-24 h-24 text-gray-300 mx-auto mb-6"
+            />
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Товары в категории "{currentCategory.name}" скоро появятся
+            </h3>
+            <p className="text-gray-600 mb-8">
+              Мы работаем над наполнением этой категории качественными товарами
+            </p>
+            <Link to="/">
+              <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-3 rounded-xl">
+                Перейти к другим категориям
+              </Button>
+            </Link>
+          </div>
+        )}
       </main>
 
       {/* Footer */}
