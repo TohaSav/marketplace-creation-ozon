@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
-import Header from "@/components/Header";
+
 import { useAuth } from "@/context/AuthContext";
 import {
   generateUniqueArticle,
@@ -31,43 +31,40 @@ export default function AddProduct() {
   // Проверяем статус продавца - разрешаем доступ только подтвержденным
   if (user?.userType === "seller" && user?.status !== "active") {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <Card className="text-center">
-            <CardHeader>
-              <div className="flex justify-center mb-4">
-                <Icon name="Lock" size={64} className="text-red-500" />
-              </div>
-              <CardTitle className="text-2xl text-red-600">
-                Доступ ограничен
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 text-lg mb-6">
-                Добавление товаров доступно только после подтверждения вашего
-                профиля администрацией.
-              </p>
-              <div className="space-y-3">
-                <Button
-                  onClick={() => navigate("/seller/dashboard")}
-                  variant="outline"
-                >
-                  <Icon name="ArrowLeft" size={16} className="mr-2" />
-                  Вернуться к кабинету
-                </Button>
-                <br />
-                <Button
-                  onClick={() => navigate("/notifications")}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <Icon name="Bell" size={16} className="mr-2" />
-                  Проверить уведомления
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <Card className="text-center">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <Icon name="Lock" size={64} className="text-red-500" />
+            </div>
+            <CardTitle className="text-2xl text-red-600">
+              Доступ ограничен
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 text-lg mb-6">
+              Добавление товаров доступно только после подтверждения вашего
+              профиля администрацией.
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => navigate("/seller/dashboard")}
+                variant="outline"
+              >
+                <Icon name="ArrowLeft" size={16} className="mr-2" />
+                Вернуться к кабинету
+              </Button>
+              <br />
+              <Button
+                onClick={() => navigate("/notifications")}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Icon name="Bell" size={16} className="mr-2" />
+                Проверить уведомления
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -169,277 +166,273 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/seller/dashboard")}
+          className="mb-4"
+        >
+          <Icon name="ArrowLeft" size={16} className="mr-2" />
+          Назад к кабинету
+        </Button>
+        <h1 className="text-3xl font-bold text-gray-900">Добавить товар</h1>
+        <p className="text-gray-600 mt-2">
+          Заполните информацию о вашем товаре
+        </p>
+      </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/seller/dashboard")}
-            className="mb-4"
-          >
-            <Icon name="ArrowLeft" size={16} className="mr-2" />
-            Назад к кабинету
-          </Button>
-          <h1 className="text-3xl font-bold text-gray-900">Добавить товар</h1>
-          <p className="text-gray-600 mt-2">
-            Заполните информацию о вашем товаре
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Информация о товаре</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Название товара *</Label>
-                  <Input
-                    id="title"
-                    type="text"
-                    value={product.title}
-                    onChange={(e) =>
-                      setProduct({ ...product, title: e.target.value })
-                    }
-                    placeholder="Введите название товара"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="price">Цена *</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={product.price}
-                    onChange={(e) =>
-                      setProduct({ ...product, price: e.target.value })
-                    }
-                    placeholder="0.00"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category">Категория *</Label>
-                  <Select
-                    value={product.category}
-                    onValueChange={(value) =>
-                      setProduct({ ...product, category: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите категорию" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="electronics">Электроника</SelectItem>
-                      <SelectItem value="clothing">Одежда</SelectItem>
-                      <SelectItem value="home">Дом и сад</SelectItem>
-                      <SelectItem value="sport">Спорт</SelectItem>
-                      <SelectItem value="beauty">Красота</SelectItem>
-                      <SelectItem value="auto">Авто</SelectItem>
-                      <SelectItem value="books">Книги</SelectItem>
-                      <SelectItem value="toys">Игрушки</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="stock">Количество на складе *</Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    value={product.stock}
-                    onChange={(e) =>
-                      setProduct({ ...product, stock: e.target.value })
-                    }
-                    placeholder="0"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Автоматически сгенерированные поля */}
-              {product.article && product.barcode && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Icon name="Zap" size={20} className="text-blue-600" />
-                    <h3 className="font-semibold text-blue-900">
-                      Автоматически сгенерировано
-                    </h3>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="article">Артикул товара</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="article"
-                          type="text"
-                          value={product.article}
-                          readOnly
-                          className="bg-gray-50"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newArticle = generateUniqueArticle(
-                              product.title,
-                              product.category,
-                            );
-                            setProduct({ ...product, article: newArticle });
-                          }}
-                          title="Сгенерировать новый артикул"
-                        >
-                          <Icon name="RefreshCcw" size={16} />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="barcode">Штрих-код (EAN-13)</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="barcode"
-                          type="text"
-                          value={formatBarcode(product.barcode)}
-                          readOnly
-                          className="bg-gray-50 font-mono text-sm"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newBarcode = generateUniqueBarcode();
-                            setProduct({ ...product, barcode: newBarcode });
-                          }}
-                          title="Сгенерировать новый штрих-код"
-                        >
-                          <Icon name="RefreshCcw" size={16} />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <Icon name="QrCode" size={24} className="text-green-600" />
-                    <div>
-                      <p className="text-sm font-medium">
-                        QR-код будет создан автоматически
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Содержит артикул и ссылку на товар
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Информация о товаре</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="description">Описание товара *</Label>
-                <Textarea
-                  id="description"
-                  value={product.description}
+                <Label htmlFor="title">Название товара *</Label>
+                <Input
+                  id="title"
+                  type="text"
+                  value={product.title}
                   onChange={(e) =>
-                    setProduct({ ...product, description: e.target.value })
+                    setProduct({ ...product, title: e.target.value })
                   }
-                  placeholder="Опишите ваш товар подробно..."
-                  rows={4}
+                  placeholder="Введите название товара"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="image">Изображение товара</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  {product.image ? (
-                    <div className="space-y-4">
-                      <img
-                        src={URL.createObjectURL(product.image)}
-                        alt="Preview"
-                        className="mx-auto h-32 w-32 object-cover rounded-lg"
+                <Label htmlFor="price">Цена *</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  value={product.price}
+                  onChange={(e) =>
+                    setProduct({ ...product, price: e.target.value })
+                  }
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Категория *</Label>
+                <Select
+                  value={product.category}
+                  onValueChange={(value) =>
+                    setProduct({ ...product, category: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите категорию" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="electronics">Электроника</SelectItem>
+                    <SelectItem value="clothing">Одежда</SelectItem>
+                    <SelectItem value="home">Дом и сад</SelectItem>
+                    <SelectItem value="sport">Спорт</SelectItem>
+                    <SelectItem value="beauty">Красота</SelectItem>
+                    <SelectItem value="auto">Авто</SelectItem>
+                    <SelectItem value="books">Книги</SelectItem>
+                    <SelectItem value="toys">Игрушки</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stock">Количество на складе *</Label>
+                <Input
+                  id="stock"
+                  type="number"
+                  value={product.stock}
+                  onChange={(e) =>
+                    setProduct({ ...product, stock: e.target.value })
+                  }
+                  placeholder="0"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Автоматически сгенерированные поля */}
+            {product.article && product.barcode && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icon name="Zap" size={20} className="text-blue-600" />
+                  <h3 className="font-semibold text-blue-900">
+                    Автоматически сгенерировано
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="article">Артикул товара</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="article"
+                        type="text"
+                        value={product.article}
+                        readOnly
+                        className="bg-gray-50"
                       />
-                      <p className="text-sm text-gray-600">
-                        {product.image.name}
-                      </p>
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setProduct({ ...product, image: null })}
+                        size="sm"
+                        onClick={() => {
+                          const newArticle = generateUniqueArticle(
+                            product.title,
+                            product.category,
+                          );
+                          setProduct({ ...product, article: newArticle });
+                        }}
+                        title="Сгенерировать новый артикул"
                       >
-                        Удалить изображение
+                        <Icon name="RefreshCcw" size={16} />
                       </Button>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <Icon
-                        name="Upload"
-                        size={48}
-                        className="mx-auto text-gray-400"
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="barcode">Штрих-код (EAN-13)</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="barcode"
+                        type="text"
+                        value={formatBarcode(product.barcode)}
+                        readOnly
+                        className="bg-gray-50 font-mono text-sm"
                       />
-                      <div>
-                        <label htmlFor="image" className="cursor-pointer">
-                          <span className="text-blue-600 hover:text-blue-700 font-medium">
-                            Нажмите для загрузки
-                          </span>
-                          <span className="text-gray-600">
-                            {" "}
-                            или перетащите файл сюда
-                          </span>
-                        </label>
-                        <input
-                          id="image"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
-                      </div>
-                      <p className="text-xs text-gray-500">
-                        PNG, JPG, GIF до 10MB
-                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newBarcode = generateUniqueBarcode();
+                          setProduct({ ...product, barcode: newBarcode });
+                        }}
+                        title="Сгенерировать новый штрих-код"
+                      >
+                        <Icon name="RefreshCcw" size={16} />
+                      </Button>
                     </div>
-                  )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                  <Icon name="QrCode" size={24} className="text-green-600" />
+                  <div>
+                    <p className="text-sm font-medium">
+                      QR-код будет создан автоматически
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Содержит артикул и ссылку на товар
+                    </p>
+                  </div>
                 </div>
               </div>
+            )}
 
-              <div className="flex justify-end space-x-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/seller/dashboard")}
-                >
-                  Отмена
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Добавление...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="Plus" size={16} className="mr-2" />
-                      Добавить товар
-                    </>
-                  )}
-                </Button>
+            <div className="space-y-2">
+              <Label htmlFor="description">Описание товара *</Label>
+              <Textarea
+                id="description"
+                value={product.description}
+                onChange={(e) =>
+                  setProduct({ ...product, description: e.target.value })
+                }
+                placeholder="Опишите ваш товар подробно..."
+                rows={4}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="image">Изображение товара</Label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                {product.image ? (
+                  <div className="space-y-4">
+                    <img
+                      src={URL.createObjectURL(product.image)}
+                      alt="Preview"
+                      className="mx-auto h-32 w-32 object-cover rounded-lg"
+                    />
+                    <p className="text-sm text-gray-600">
+                      {product.image.name}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setProduct({ ...product, image: null })}
+                    >
+                      Удалить изображение
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Icon
+                      name="Upload"
+                      size={48}
+                      className="mx-auto text-gray-400"
+                    />
+                    <div>
+                      <label htmlFor="image" className="cursor-pointer">
+                        <span className="text-blue-600 hover:text-blue-700 font-medium">
+                          Нажмите для загрузки
+                        </span>
+                        <span className="text-gray-600">
+                          {" "}
+                          или перетащите файл сюда
+                        </span>
+                      </label>
+                      <input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF до 10MB
+                    </p>
+                  </div>
+                )}
               </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+
+            <div className="flex justify-end space-x-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/seller/dashboard")}
+              >
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Добавление...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Plus" size={16} className="mr-2" />
+                    Добавить товар
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
