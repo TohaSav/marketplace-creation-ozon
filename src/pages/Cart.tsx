@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMarketplace } from "@/contexts/MarketplaceContext";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,14 +16,25 @@ import { calculateFinalAmount } from "@/utils/paymentUtils";
 export default function Cart() {
   const { cart, removeFromCart, updateCartQuantity, getTotalPrice, clearCart } =
     useMarketplace();
+  const { user } = useAuth();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wallet");
-  const [walletBalance] = useState(5420.5); // В реальном приложении получать из контекста/API
+  const [walletBalance, setWalletBalance] = useState(0);
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] =
     useState<string>("");
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const [deliveryAddress, setDeliveryAddress] =
     useState<DeliveryAddress | null>(null);
+
+  // Загружаем баланс кошелька
+  useEffect(() => {
+    if (user) {
+      const walletData = JSON.parse(
+        localStorage.getItem(`wallet-${user.id}`) || "{}",
+      );
+      setWalletBalance(walletData.balance || 0);
+    }
+  }, [user]);
 
   const totalPrice = getTotalPrice();
   const subtotalWithDelivery = totalPrice * 85 + deliveryPrice;
@@ -59,9 +71,57 @@ export default function Cart() {
       alert("Пожалуйста, укажите адрес доставки");
       return;
     }
-    // Здесь будет логика обработки платежа
-    console.log(`Оплата через ${paymentMethod} на сумму ${finalAmount * 85}`);
-    console.log(`Доставка: ${selectedDeliveryMethod}, адрес:`, deliveryAddress);
+    if (!user) {
+      alert("Войдите в аккаунт для оформления заказа");
+      return;
+    }
+
+    const orderAmount = finalAmountWithDelivery;
+
+    if (paymentMethod === "wallet") {
+      // Оплата с кошелька
+      if (walletBalance < orderAmount) {
+        alert("Недостаточно средств на кошельке");
+        return;
+      }
+
+      // Списываем средства с кошелька
+      const newBalance = walletBalance - orderAmount;
+      const walletData = { balance: newBalance };
+      localStorage.setItem(`wallet-${user.id}`, JSON.stringify(walletData));
+
+      // Создаем транзакцию списания
+      const transaction = {
+        id: Date.now().toString(),
+        userId: user.id,
+        type: "purchase",
+        amount: orderAmount,
+        description: `Покупка товаров (${totalItems} шт.)`,
+        createdAt: new Date().toISOString(),
+        status: "completed",
+      };
+
+      const allTransactions = JSON.parse(
+        localStorage.getItem("wallet-transactions") || "[]",
+      );
+      allTransactions.push(transaction);
+      localStorage.setItem(
+        "wallet-transactions",
+        JSON.stringify(allTransactions),
+      );
+
+      // Очищаем корзину и показываем успех
+      clearCart();
+      alert(`Заказ успешно оплачен с кошелька! Сумма: ${orderAmount} ₽`);
+      window.location.href = "/orders";
+    } else {
+      // Здесь будет логика для других способов оплаты (Юкасса)
+      console.log(`Оплата через ${paymentMethod} на сумму ${orderAmount}`);
+      console.log(
+        `Доставка: ${selectedDeliveryMethod}, адрес:`,
+        deliveryAddress,
+      );
+    }
   };
 
   const finalAmountWithDelivery = finalAmount * 85;

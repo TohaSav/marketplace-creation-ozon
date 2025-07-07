@@ -221,6 +221,10 @@ export default function Header() {
                           <Icon name="CreditCard" size={16} className="mr-2" />
                           Бонусная карта
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/wallet")}>
+                          <Icon name="Wallet" size={16} className="mr-2" />
+                          Личный кошелек 💳
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={startBalloonGame}>
                           <Icon name="Gamepad2" size={16} className="mr-2" />
                           Игра "Лопни шарики" 🎈

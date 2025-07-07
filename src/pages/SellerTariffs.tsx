@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,21 @@ export default function SellerTariffs() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedTariff, setSelectedTariff] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "yukassa">(
+    "yukassa",
+  );
   const yookassaActive = isYookassaActive();
+
+  // Загружаем баланс кошелька
+  useEffect(() => {
+    if (user) {
+      const walletData = JSON.parse(
+        localStorage.getItem(`wallet-${user.id}`) || "{}",
+      );
+      setWalletBalance(walletData.balance || 0);
+    }
+  }, [user]);
 
   // Проверяем что пользователь - продавец
   if (user?.userType !== "seller") {
@@ -59,16 +73,6 @@ export default function SellerTariffs() {
   }
 
   const handlePayment = async (tariffId: string) => {
-    // Проверяем активность ЮКассы
-    if (!yookassaActive) {
-      toast({
-        title: "Платежи недоступны",
-        description: "ЮКасса не настроена. Обратитесь к администратору.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
     setSelectedTariff(tariffId);
 
@@ -78,20 +82,78 @@ export default function SellerTariffs() {
         throw new Error("Тариф не найден");
       }
 
-      // Создаем платеж через ЮКассу для всех тарифов
-      const paymentData = await createPayment({
-        amount: tariff.price,
-        description: `Подписка ${tariff.name} для продавца`,
-        tariffId: tariff.id,
-        sellerId: user.id,
-        returnUrl:
-          window.location.origin +
-          "/seller/payment-success?tariff_id=" +
-          tariff.id,
-      });
+      if (paymentMethod === "wallet") {
+        // Оплата с кошелька
+        if (walletBalance < tariff.price) {
+          toast({
+            title: "Недостаточно средств",
+            description: `На кошельке ${walletBalance.toFixed(2)} ₽, а нужно ${tariff.price} ₽`,
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
 
-      // Перенаправляем на страницу оплаты ЮКассы
-      window.location.href = paymentData.confirmationUrl;
+        // Списываем средства с кошелька
+        const newBalance = walletBalance - tariff.price;
+        const walletData = { balance: newBalance };
+        localStorage.setItem(`wallet-${user.id}`, JSON.stringify(walletData));
+        setWalletBalance(newBalance);
+
+        // Создаем транзакцию списания
+        const transaction = {
+          id: Date.now().toString(),
+          userId: user.id,
+          type: "tariff",
+          amount: tariff.price,
+          description: `Покупка тарифа "${tariff.name}"`,
+          createdAt: new Date().toISOString(),
+          status: "completed",
+        };
+
+        const allTransactions = JSON.parse(
+          localStorage.getItem("wallet-transactions") || "[]",
+        );
+        allTransactions.push(transaction);
+        localStorage.setItem(
+          "wallet-transactions",
+          JSON.stringify(allTransactions),
+        );
+
+        // Активируем подписку
+        activateSubscription(user.id, tariff.id);
+
+        toast({
+          title: "Тариф активирован! 🎉",
+          description: `Тариф "${tariff.name}" успешно оплачен с кошелька`,
+        });
+
+        navigate("/seller/dashboard");
+      } else {
+        // Оплата через ЮКассу
+        if (!yookassaActive) {
+          toast({
+            title: "Платежи недоступны",
+            description: "ЮКасса не настроена. Обратитесь к администратору.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const paymentData = await createPayment({
+          amount: tariff.price,
+          description: `Подписка ${tariff.name} для продавца`,
+          tariffId: tariff.id,
+          sellerId: user.id,
+          returnUrl:
+            window.location.origin +
+            "/seller/payment-success?tariff_id=" +
+            tariff.id,
+        });
+
+        // Перенаправляем на страницу оплаты ЮКассы
+        window.location.href = paymentData.confirmationUrl;
+      }
     } catch (error) {
       console.error("Ошибка оплаты:", error);
       toast({
@@ -159,6 +221,89 @@ export default function SellerTariffs() {
           </Card>
         )}
 
+        {/* Выбор способа оплаты */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Icon name="CreditCard" size={20} />
+              Способ оплаты
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  paymentMethod === "wallet"
+                    ? "border-green-500 bg-green-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() => setPaymentMethod("wallet")}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon name="Wallet" size={24} className="text-green-600" />
+                  <div>
+                    <h3 className="font-semibold">Личный кошелек 💳</h3>
+                    <p className="text-sm text-gray-600">
+                      Баланс: {walletBalance.toFixed(2)} ₽
+                    </p>
+                  </div>
+                </div>
+                {paymentMethod === "wallet" && (
+                  <div className="mt-2 flex items-center gap-1 text-green-600">
+                    <Icon name="Check" size={16} />
+                    <span className="text-sm font-medium">Выбрано</span>
+                  </div>
+                )}
+              </div>
+
+              <div
+                className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  paymentMethod === "yukassa"
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() => setPaymentMethod("yukassa")}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon name="CreditCard" size={24} className="text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">ЮКасса</h3>
+                    <p className="text-sm text-gray-600">
+                      Карта, СБП, кошельки
+                    </p>
+                  </div>
+                </div>
+                {paymentMethod === "yukassa" && (
+                  <div className="mt-2 flex items-center gap-1 text-blue-600">
+                    <Icon name="Check" size={16} />
+                    <span className="text-sm font-medium">Выбрано</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {walletBalance < 50 && paymentMethod === "wallet" && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 text-yellow-800">
+                  <Icon name="AlertTriangle" size={16} />
+                  <span className="text-sm font-medium">
+                    Недостаточно средств на кошельке
+                  </span>
+                </div>
+                <Button
+                  onClick={() => navigate("/wallet")}
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                >
+                  <Icon name="Plus" size={14} className="mr-1" />
+                  Пополнить кошелек
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Тарифные планы */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
           {tariffPlans.map((tariff) => (
@@ -225,9 +370,14 @@ export default function SellerTariffs() {
 
                 <Button
                   onClick={() => handlePayment(tariff.id)}
-                  disabled={loading || !yookassaActive}
+                  disabled={
+                    loading ||
+                    (paymentMethod === "yukassa" && !yookassaActive) ||
+                    (paymentMethod === "wallet" && walletBalance < tariff.price)
+                  }
                   className={`w-full ${
-                    !yookassaActive
+                    (paymentMethod === "yukassa" && !yookassaActive) ||
+                    (paymentMethod === "wallet" && walletBalance < tariff.price)
                       ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
                       : tariff.id === "trial"
                         ? "bg-green-600 hover:bg-green-700"
@@ -245,10 +395,21 @@ export default function SellerTariffs() {
                       />
                       Обработка...
                     </>
-                  ) : !yookassaActive ? (
+                  ) : paymentMethod === "yukassa" && !yookassaActive ? (
                     <>
                       <Icon name="Lock" size={16} className="mr-2" />
                       Платежи недоступны
+                    </>
+                  ) : paymentMethod === "wallet" &&
+                    walletBalance < tariff.price ? (
+                    <>
+                      <Icon name="AlertCircle" size={16} className="mr-2" />
+                      Недостаточно средств
+                    </>
+                  ) : paymentMethod === "wallet" ? (
+                    <>
+                      <Icon name="Wallet" size={16} className="mr-2" />
+                      Оплатить с кошелька
                     </>
                   ) : (
                     <>

@@ -51,6 +51,8 @@ import SellerTariffs from "./pages/SellerTariffs";
 import SellerAdvertising from "./pages/SellerAdvertising";
 import SellerAdvertisingSuccess from "./pages/SellerAdvertisingSuccess";
 import SellerLuckGame from "./pages/SellerLuckGame";
+import Wallet from "./pages/Wallet";
+import WalletSuccess from "./pages/WalletSuccess";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Game from "./pages/Game";
 
@@ -298,6 +300,22 @@ const App = () => {
                   element={
                     <Layout>
                       <BonusCard />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/wallet"
+                  element={
+                    <Layout>
+                      <Wallet />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/wallet-success"
+                  element={
+                    <Layout>
+                      <WalletSuccess />
                     </Layout>
                   }
                 />
