@@ -263,6 +263,12 @@ export default function Header() {
                               />
                               Реклама
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => navigate("/seller/luck-game")}
+                            >
+                              <Icon name="Ticket" size={16} className="mr-2" />
+                              Игры Удача 🎟️
+                            </DropdownMenuItem>
                           </>
                         ) : (
                           <DropdownMenuItem

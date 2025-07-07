@@ -50,6 +50,7 @@ import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
 import SellerAdvertising from "./pages/SellerAdvertising";
 import SellerAdvertisingSuccess from "./pages/SellerAdvertisingSuccess";
+import SellerLuckGame from "./pages/SellerLuckGame";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Game from "./pages/Game";
 
@@ -421,6 +422,14 @@ const App = () => {
                   element={
                     <Layout>
                       <SellerAdvertisingSuccess />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/seller/luck-game"
+                  element={
+                    <Layout>
+                      <SellerLuckGame />
                     </Layout>
                   }
                 />
