@@ -13,7 +13,6 @@ import {
   getSellerStories,
   deleteStory,
 } from "@/utils/stories.utils";
-import { seedTestProducts } from "@/utils/seedTestData";
 
 export interface UseSellerDashboardResult {
   stats: SellerStats;
@@ -40,16 +39,44 @@ export function useSellerDashboard(): UseSellerDashboardResult {
   const [stories, setStories] = useState<Story[]>([]);
   const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
 
-  // Проверяем, является ли пользователь новым продавцом
-  const isNewSeller =
-    !user?.sellerStats ||
-    (user.sellerStats.totalSales === 0 &&
-      user.sellerStats.ordersCount === 0 &&
-      user.sellerStats.productsCount === 0);
-
   useEffect(() => {
-    if (isNewSeller) {
-      // Устанавливаем нулевые значения для нового продавца
+    if (user?.id) {
+      // Загружаем Stories продавца
+      const sellerStories = getSellerStories(user.id);
+      setStories(sellerStories);
+
+      // Загружаем только реальные товары добавленные продавцом
+      const allProducts = JSON.parse(localStorage.getItem("products") || "[]");
+      const sellerProducts = allProducts.filter(
+        (p: any) => p.sellerId === user.id,
+      );
+      setProducts(sellerProducts);
+
+      // Обновляем статистику на основе реальных товаров
+      const activeProducts = sellerProducts.filter(
+        (p: any) => p.status === "active",
+      );
+      const totalSold = sellerProducts.reduce(
+        (sum: number, p: any) => sum + (p.sold || 0),
+        0,
+      );
+      const totalRevenue = sellerProducts.reduce(
+        (sum: number, p: any) => sum + (p.sold || 0) * p.price,
+        0,
+      );
+
+      setStats({
+        totalSales: totalRevenue,
+        ordersCount: totalSold,
+        productsCount: activeProducts.length,
+        rating: user?.sellerStats?.rating || 0,
+        balance: user?.sellerStats?.balance || 0,
+      });
+
+      // Для заказов пока оставляем моковые данные, фильтруя по ID продавца
+      setOrders(MOCK_ORDERS.filter((order) => order.sellerId === user.id));
+    } else {
+      // Если пользователь не авторизован, устанавливаем пустые значения
       setStats({
         totalSales: 0,
         ordersCount: 0,
@@ -60,42 +87,8 @@ export function useSellerDashboard(): UseSellerDashboardResult {
       setProducts([]);
       setOrders([]);
       setStories([]);
-    } else if (user?.sellerStats) {
-      // Используем реальные данные пользователя если они есть
-      setStats(user.sellerStats);
-      // Фильтруем товары и заказы по ID продавца
-      setProducts(
-        MOCK_PRODUCTS.filter((product) => product.sellerId === user.id),
-      );
-      setOrders(MOCK_ORDERS.filter((order) => order.sellerId === user.id));
     }
-
-    // Загружаем Stories продавца
-    if (user?.id) {
-      const sellerStories = getSellerStories(user.id);
-      setStories(sellerStories);
-
-      // Проверяем, есть ли у продавца товары, если нет - добавляем тестовые
-      const allProducts = JSON.parse(localStorage.getItem("products") || "[]");
-      const sellerProducts = allProducts.filter(
-        (p: any) => p.sellerId === user.id,
-      );
-
-      if (sellerProducts.length === 0) {
-        seedTestProducts(user.id);
-        // Обновляем products в состоянии
-        const updatedProducts = JSON.parse(
-          localStorage.getItem("products") || "[]",
-        );
-        const newSellerProducts = updatedProducts.filter(
-          (p: any) => p.sellerId === user.id,
-        );
-        setProducts(newSellerProducts);
-      } else {
-        setProducts(sellerProducts);
-      }
-    }
-  }, [user, isNewSeller]);
+  }, [user]);
 
   const handleCreateStory = async (storyData: CreateStoryData) => {
     try {
