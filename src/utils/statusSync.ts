@@ -1,7 +1,7 @@
 export interface StatusSyncEvent {
   type: "seller_status_change";
   sellerId: number;
-  newStatus: "active" | "pending" | "blocked" | "revision";
+  newStatus: "active" | "pending" | "blocked" | "revision" | "resubmitted";
   moderationComment?: string;
   timestamp: number;
 }
@@ -106,6 +106,8 @@ class StatusSyncManager {
         return "🎉 Поздравляем! Ваш профиль одобрен";
       case "revision":
         return "📝 Требуется доработка профиля";
+      case "resubmitted":
+        return "🔄 Заявка отправлена на повторную проверку";
       case "blocked":
         return "🚫 Профиль заблокирован";
       default:
@@ -123,6 +125,8 @@ class StatusSyncManager {
           comment ||
           "Администратор запросил доработку вашего профиля. Проверьте детали в личном кабинете."
         );
+      case "resubmitted":
+        return "Ваша заявка отправлена на повторную проверку администратором. Ожидайте результат.";
       case "blocked":
         return (
           comment ||
@@ -142,11 +146,30 @@ class StatusSyncManager {
         return "success";
       case "revision":
         return "warning";
+      case "resubmitted":
+        return "info";
       case "blocked":
         return "error";
       default:
         return "info";
     }
+  }
+
+  // Обновление статуса продавца
+  updateStatus(data: {
+    sellerId: number;
+    newStatus: "active" | "pending" | "blocked" | "revision" | "resubmitted";
+    moderationComment?: string;
+  }) {
+    const event: StatusSyncEvent = {
+      type: "seller_status_change",
+      sellerId: data.sellerId,
+      newStatus: data.newStatus,
+      moderationComment: data.moderationComment,
+      timestamp: Date.now(),
+    };
+
+    this.notifyStatusChange(event);
   }
 
   // Очистка старых уведомлений (старше 30 дней)

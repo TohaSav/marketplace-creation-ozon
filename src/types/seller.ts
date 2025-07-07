@@ -5,12 +5,13 @@ export interface Seller {
   phone: string;
   shopName: string;
   registrationDate: string;
-  status: "active" | "blocked" | "pending" | "revision";
+  status: "active" | "blocked" | "pending" | "revision" | "resubmitted";
   totalOrders: number;
   revenue: number;
   rating: number;
   description: string;
   rejectionReason?: string;
+  revisionComment?: string;
 }
 
 export type SellerStatus = Seller["status"];

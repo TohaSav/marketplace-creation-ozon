@@ -20,7 +20,7 @@ interface Seller {
   email: string;
   phone: string;
   shopName: string;
-  status: "active" | "pending" | "blocked";
+  status: "active" | "pending" | "blocked" | "revision" | "resubmitted";
   joinDate: string;
   productsCount: number;
   totalSales: number;
@@ -34,6 +34,10 @@ const getStatusColor = (status: string) => {
       return "bg-yellow-100 text-yellow-800";
     case "blocked":
       return "bg-red-100 text-red-800";
+    case "revision":
+      return "bg-orange-100 text-orange-800";
+    case "resubmitted":
+      return "bg-blue-100 text-blue-800";
     default:
       return "bg-gray-100 text-gray-800";
   }
@@ -47,6 +51,10 @@ const getStatusText = (status: string) => {
       return "На модерации";
     case "blocked":
       return "Заблокирован";
+    case "revision":
+      return "На доработке";
+    case "resubmitted":
+      return "Повторно подано";
     default:
       return "Неизвестно";
   }

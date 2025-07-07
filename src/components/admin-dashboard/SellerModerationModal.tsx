@@ -187,14 +187,22 @@ export default function SellerModerationModal({
                       ? "bg-yellow-100 text-yellow-800"
                       : seller.status === "active"
                         ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
+                        : seller.status === "revision"
+                          ? "bg-orange-100 text-orange-800"
+                          : seller.status === "resubmitted"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-red-100 text-red-800"
                   }
                 >
                   {seller.status === "pending"
                     ? "На модерации"
                     : seller.status === "active"
                       ? "Активен"
-                      : "Отклонен"}
+                      : seller.status === "revision"
+                        ? "На доработке"
+                        : seller.status === "resubmitted"
+                          ? "Повторно подано"
+                          : "Отклонен"}
                 </Badge>
               </div>
             </div>
@@ -324,6 +332,35 @@ export default function SellerModerationModal({
               )}
             </div>
           </div>
+
+          {/* Информация о доработке */}
+          {seller.status === "resubmitted" && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-blue-700">
+                Повторная подача после доработки
+              </h3>
+              {seller.revisionComment && (
+                <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                  <p className="text-orange-800 font-medium mb-2">
+                    Предыдущий комментарий для доработки:
+                  </p>
+                  <p className="text-orange-700 text-sm">
+                    {seller.revisionComment}
+                  </p>
+                </div>
+              )}
+              {seller.additionalInfo && (
+                <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                  <p className="text-blue-800 font-medium mb-2">
+                    Ответ продавца:
+                  </p>
+                  <p className="text-blue-700 text-sm">
+                    {seller.additionalInfo}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Поле комментария для доработки */}
           {showCommentField && (

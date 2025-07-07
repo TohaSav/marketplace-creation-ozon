@@ -5,7 +5,7 @@ import { useSellerDashboard } from "@/hooks/useSellerDashboard";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { statusSyncManager } from "@/utils/statusSync";
 
 // Tab Components
@@ -17,9 +17,11 @@ import StoriesTab from "@/components/seller-dashboard/StoriesTab";
 import SettingsTab from "@/components/seller-dashboard/SettingsTab";
 import SubscriptionStatus from "@/components/SubscriptionStatus";
 import SellerStatusAlert from "@/components/SellerStatusAlert";
+import RevisionModal from "@/components/RevisionModal";
 
 export default function SellerDashboard() {
   const { user } = useAuth();
+  const [showRevisionModal, setShowRevisionModal] = useState(false);
 
   // Подписываемся на изменения статуса продавца
   useEffect(() => {
@@ -99,12 +101,36 @@ export default function SellerDashboard() {
               </div>
 
               {user?.status === "revision" && (
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
-                  <p className="text-yellow-800 font-medium">
-                    💭 Требуется доработка документов
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200 mb-6">
+                  <p className="text-red-800 font-medium">
+                    ⚠️ Администрация Calibre Store отправила ваш магазин на
+                    доработку
                   </p>
-                  <p className="text-yellow-700 text-sm mt-2">
-                    Проверьте уведомления для получения подробной информации
+                  <div className="mt-3 p-3 bg-white rounded border border-red-200">
+                    <p className="text-red-700 font-medium text-sm mb-2">
+                      Комментарий для доработки:
+                    </p>
+                    <p className="text-red-600 text-sm">
+                      {user.revisionComment ||
+                        "Требуется дополнительная информация"}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowRevisionModal(true)}
+                    className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    Отправить на повторную проверку
+                  </button>
+                </div>
+              )}
+
+              {user?.status === "resubmitted" && (
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+                  <p className="text-blue-800 font-medium">
+                    🔄 Повторная заявка отправлена
+                  </p>
+                  <p className="text-blue-700 text-sm mt-2">
+                    Ваша заявка находится на повторной проверке администрацией
                   </p>
                 </div>
               )}
@@ -214,6 +240,12 @@ export default function SellerDashboard() {
         isOpen={isCreateStoryOpen}
         onClose={() => setIsCreateStoryOpen(false)}
         onSubmit={handleCreateStory}
+      />
+
+      {/* Revision Modal */}
+      <RevisionModal
+        isOpen={showRevisionModal}
+        onClose={() => setShowRevisionModal(false)}
       />
     </div>
   );

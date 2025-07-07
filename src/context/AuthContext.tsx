@@ -229,8 +229,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user.id === sellerId
           ? {
               ...user,
-              status: status as "active" | "pending" | "blocked",
+              status: status as
+                | "active"
+                | "pending"
+                | "blocked"
+                | "revision"
+                | "resubmitted",
               moderationComment: comment,
+              revisionComment:
+                status === "revision" ? comment : user.revisionComment,
             }
           : user,
       );
