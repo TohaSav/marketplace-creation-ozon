@@ -11,6 +11,11 @@ export default function ProductsSection({
   title,
   products,
 }: ProductsSectionProps) {
+  // Показываем секцию только если есть товары
+  if (!products || products.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mb-12">
       <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
