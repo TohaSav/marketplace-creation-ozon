@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SellerLogin() {
   const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ export default function SellerLogin() {
   const [bik, setBik] = useState("");
   const [kpp, setKpp] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,15 +59,20 @@ export default function SellerLogin() {
             createdAt: new Date().toISOString(),
             products: [],
             earnings: 0,
+            status: "pending",
+            userType: "seller",
           };
 
           sellers.push(newSeller);
           localStorage.setItem("sellers", JSON.stringify(sellers));
           localStorage.setItem("seller-token", JSON.stringify(newSeller));
 
+          // Обновляем контекст
+          login(newSeller);
+
           toast({
             title: "Регистрация успешна",
-            description: "Добро пожаловать в кабинет продавца",
+            description: "Ожидайте одобрения администратора",
           });
           navigate("/seller/dashboard");
         }
@@ -86,6 +93,10 @@ export default function SellerLogin() {
 
       if (seller) {
         localStorage.setItem("seller-token", JSON.stringify(seller));
+
+        // Обновляем контекст
+        login(seller);
+
         toast({
           title: "Успешный вход",
           description: "Добро пожаловать в кабинет продавца",
