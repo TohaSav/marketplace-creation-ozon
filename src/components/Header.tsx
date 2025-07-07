@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Icon from "@/components/ui/icon";
-import { useStore } from "@/lib/store";
+// import { useStore } from "@/lib/store";
 import { toast } from "@/hooks/use-toast";
 import BalloonGame from "./BalloonGame";
 import SellerNotifications from "./SellerNotifications";
@@ -23,7 +23,9 @@ export default function Header() {
   const [seller, setSeller] = useState<any>(null);
   const [showBalloonGame, setShowBalloonGame] = useState(false);
 
-  const { favorites, getTotalItems } = useStore();
+  // const { favorites, getTotalItems } = useStore();
+  const favorites: any[] = [];
+  const getTotalItems = () => 0;
 
   useEffect(() => {
     const userData = localStorage.getItem("user-token");
