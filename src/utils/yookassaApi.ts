@@ -16,7 +16,7 @@ interface PaymentResponse {
 
 interface SubscriptionData {
   isActive: boolean;
-  planType: "monthly" | "yearly";
+  planType: "monthly" | "yearly" | "trial";
   planName: string;
   startDate: string;
   endDate: string;
@@ -65,25 +65,33 @@ export const verifyPayment = async (paymentId: string) => {
 // Активация подписки после успешной оплаты
 export const activateSubscription = (
   sellerId: number,
-  planType: "monthly" | "yearly",
+  planType: "monthly" | "yearly" | "trial",
 ): SubscriptionData => {
   const now = new Date();
   const endDate = new Date(now);
 
   // Устанавливаем дату окончания в зависимости от типа плана
-  if (planType === "monthly") {
+  if (planType === "trial") {
+    endDate.setDate(endDate.getDate() + 2);
+  } else if (planType === "monthly") {
     endDate.setMonth(endDate.getMonth() + 1);
   } else {
     endDate.setFullYear(endDate.getFullYear() + 1);
   }
 
+  const planNames = {
+    trial: "Пробный период",
+    monthly: "Месячная подписка",
+    yearly: "Годовая подписка",
+  };
+
   const subscription: SubscriptionData = {
     isActive: true,
     planType,
-    planName: planType === "monthly" ? "Месячная подписка" : "Годовая подписка",
+    planName: planNames[planType],
     startDate: now.toISOString(),
     endDate: endDate.toISOString(),
-    autoRenew: true,
+    autoRenew: planType !== "trial", // Пробный период не продлевается автоматически
   };
 
   // Сохраняем подписку в localStorage (в реальном приложении - в базе данных)
@@ -129,6 +137,18 @@ export const isSubscriptionActive = (
 
 // Получение информации о тарифных планах
 export const getTariffPlans = () => [
+  {
+    id: "trial",
+    name: "Пробный период",
+    price: 0,
+    duration: "2 дня",
+    features: [
+      "Добавление до 5 товаров",
+      "Базовая статистика продаж",
+      "Доступ к панели управления",
+      "Тестирование всех функций",
+    ],
+  },
   {
     id: "monthly",
     name: "Месячная подписка",

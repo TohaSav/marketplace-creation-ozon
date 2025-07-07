@@ -6,7 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
 import { useAuth } from "@/context/AuthContext";
-import { createPayment, getTariffPlans } from "@/utils/yookassaApi";
+import {
+  createPayment,
+  getTariffPlans,
+  activateSubscription,
+} from "@/utils/yookassaApi";
 
 interface TariffPlan {
   id: string;
@@ -62,7 +66,24 @@ export default function SellerTariffs() {
         throw new Error("Тариф не найден");
       }
 
-      // Создаем платеж через ЮКассу
+      // Для пробного периода активируем подписку сразу без оплаты
+      if (tariff.id === "trial") {
+        activateSubscription(user.id, "trial");
+        toast({
+          title: "Пробный период активирован!",
+          description:
+            "Вы можете пользоваться всеми функциями 2 дня бесплатно.",
+          variant: "default",
+        });
+
+        // Перенаправляем в кабинет продавца
+        setTimeout(() => {
+          navigate("/seller/dashboard");
+        }, 2000);
+        return;
+      }
+
+      // Создаем платеж через ЮКассу для платных тарифов
       const paymentData = await createPayment({
         amount: tariff.price,
         description: `Подписка ${tariff.name} для продавца`,
@@ -105,12 +126,25 @@ export default function SellerTariffs() {
         </div>
 
         {/* Тарифные планы */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
           {tariffPlans.map((tariff) => (
             <Card
               key={tariff.id}
-              className={`relative ${tariff.popular ? "ring-2 ring-purple-500 shadow-lg scale-105" : ""}`}
+              className={`relative ${
+                tariff.id === "trial"
+                  ? "ring-2 ring-green-500 shadow-lg"
+                  : tariff.popular
+                    ? "ring-2 ring-purple-500 shadow-lg scale-105"
+                    : ""
+              }`}
             >
+              {tariff.id === "trial" && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-green-500 text-white px-4 py-1">
+                    Бесплатно
+                  </Badge>
+                </div>
+              )}
               {tariff.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-purple-500 text-white px-4 py-1">
@@ -159,9 +193,11 @@ export default function SellerTariffs() {
                   onClick={() => handlePayment(tariff.id)}
                   disabled={loading}
                   className={`w-full ${
-                    tariff.popular
-                      ? "bg-purple-600 hover:bg-purple-700"
-                      : "bg-gray-800 hover:bg-gray-900"
+                    tariff.id === "trial"
+                      ? "bg-green-600 hover:bg-green-700"
+                      : tariff.popular
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : "bg-gray-800 hover:bg-gray-900"
                   }`}
                 >
                   {loading && selectedTariff === tariff.id ? (
@@ -175,8 +211,14 @@ export default function SellerTariffs() {
                     </>
                   ) : (
                     <>
-                      <Icon name="CreditCard" size={16} className="mr-2" />
-                      Выбрать и оплатить
+                      <Icon
+                        name={tariff.id === "trial" ? "Play" : "CreditCard"}
+                        size={16}
+                        className="mr-2"
+                      />
+                      {tariff.id === "trial"
+                        ? "Активировать бесплатно"
+                        : "Выбрать и оплатить"}
                     </>
                   )}
                 </Button>
