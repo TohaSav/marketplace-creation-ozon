@@ -23,11 +23,43 @@ interface SubscriptionData {
   autoRenew: boolean;
 }
 
+// Проверка активности ЮКассы
+export const isYookassaActive = (): boolean => {
+  try {
+    const activeConfig = localStorage.getItem("yookassa-active");
+    if (!activeConfig) return false;
+
+    const config = JSON.parse(activeConfig);
+    return config.enabled === true;
+  } catch (error) {
+    console.error("Ошибка проверки статуса ЮКассы:", error);
+    return false;
+  }
+};
+
+// Получение активной конфигурации ЮКассы
+export const getActiveYookassaConfig = () => {
+  try {
+    const activeConfig = localStorage.getItem("yookassa-active");
+    if (!activeConfig) return null;
+
+    return JSON.parse(activeConfig);
+  } catch (error) {
+    console.error("Ошибка получения конфигурации ЮКассы:", error);
+    return null;
+  }
+};
+
 // Создание платежа через ЮКассу
 export const createPayment = async (
   paymentData: PaymentData,
 ): Promise<PaymentResponse> => {
   try {
+    // Проверяем активность ЮКассы
+    if (!isYookassaActive()) {
+      throw new Error("ЮКасса не активирована. Обратитесь к администратору.");
+    }
+
     // Определяем базовый URL для API
     const baseUrl =
       process.env.NODE_ENV === "production"

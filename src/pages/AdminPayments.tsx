@@ -14,13 +14,22 @@ export default function AdminPayments() {
   const [showSecretKey, setShowSecretKey] = useState(false);
   const [formData, setFormData] = useState(config);
 
-  const handleSave = () => {
-    saveConfig(formData);
-    setIsEditing(false);
-    toast({
-      title: "Настройки сохранены",
-      description: "Конфигурация ЮКассы успешно обновлена",
-    });
+  const handleSave = async () => {
+    try {
+      await saveConfig(formData);
+      setIsEditing(false);
+      toast({
+        title: "Настройки сохранены",
+        description:
+          "Конфигурация ЮКассы успешно обновлена и активирована на сайте",
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка сохранения",
+        description: "Не удалось сохранить настройки ЮКассы",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleTestConnection = async () => {

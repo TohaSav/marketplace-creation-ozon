@@ -11,14 +11,20 @@ app.use(cors());
 app.use(express.json());
 
 // ЮКасса конфигурация
-const YOOKASSA_CONFIG = {
-  shopId: process.env.YOOKASSA_SHOP_ID || "YOUR_SHOP_ID",
-  secretKey: process.env.YOOKASSA_SECRET_KEY || "YOUR_SECRET_KEY",
+let YOOKASSA_CONFIG = {
+  shopId: process.env.YOOKASSA_SHOP_ID || "",
+  secretKey: process.env.YOOKASSA_SECRET_KEY || "",
   returnUrl:
     process.env.YOOKASSA_RETURN_URL ||
     "https://calibrestore.ru/seller/payment-success",
   apiUrl: "https://api.yookassa.ru/v3",
+  isConfigured: false,
 };
+
+// Проверяем конфигурацию при запуске
+YOOKASSA_CONFIG.isConfigured = !!(
+  YOOKASSA_CONFIG.shopId && YOOKASSA_CONFIG.secretKey
+);
 
 // Создание платежа через ЮКассу
 const createYookassaPayment = async (
@@ -96,6 +102,36 @@ const checkYookassaPayment = async (paymentId) => {
 
 // API Routes
 
+// Обновление конфигурации ЮКассы
+app.post("/api/yookassa/config", (req, res) => {
+  try {
+    const { shopId, secretKey, webhookUrl, testMode } = req.body;
+
+    if (!shopId || !secretKey) {
+      return res.status(400).json({ error: "shopId и secretKey обязательны" });
+    }
+
+    // Обновляем конфигурацию
+    YOOKASSA_CONFIG.shopId = shopId;
+    YOOKASSA_CONFIG.secretKey = secretKey;
+    YOOKASSA_CONFIG.isConfigured = true;
+
+    console.log("Конфигурация ЮКассы обновлена:", {
+      shopId: shopId.substring(0, 8) + "...",
+      configured: true,
+    });
+
+    res.json({
+      success: true,
+      message: "Конфигурация ЮКассы успешно обновлена",
+      isConfigured: true,
+    });
+  } catch (error) {
+    console.error("Ошибка обновления конфигурации:", error);
+    res.status(500).json({ error: "Ошибка обновления конфигурации" });
+  }
+});
+
 // Создание платежа
 app.post("/api/payments/create", async (req, res) => {
   try {
@@ -107,6 +143,10 @@ app.post("/api/payments/create", async (req, res) => {
       tariffId,
       sellerId,
     });
+
+    if (!YOOKASSA_CONFIG.isConfigured) {
+      return res.status(400).json({ error: "ЮКасса не настроена" });
+    }
 
     if (!amount || !description || !tariffId || !sellerId) {
       return res

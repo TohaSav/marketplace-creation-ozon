@@ -10,6 +10,7 @@ import {
   createPayment,
   getTariffPlans,
   activateSubscription,
+  isYookassaActive,
 } from "@/utils/yookassaApi";
 
 interface TariffPlan {
@@ -29,6 +30,7 @@ export default function SellerTariffs() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedTariff, setSelectedTariff] = useState<string | null>(null);
+  const yookassaActive = isYookassaActive();
 
   // Проверяем что пользователь - продавец
   if (user?.userType !== "seller") {
@@ -57,6 +59,16 @@ export default function SellerTariffs() {
   }
 
   const handlePayment = async (tariffId: string) => {
+    // Проверяем активность ЮКассы
+    if (!yookassaActive) {
+      toast({
+        title: "Платежи недоступны",
+        description: "ЮКасса не настроена. Обратитесь к администратору.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     setSelectedTariff(tariffId);
 
@@ -84,7 +96,10 @@ export default function SellerTariffs() {
       console.error("Ошибка оплаты:", error);
       toast({
         title: "Ошибка оплаты",
-        description: "Не удалось создать платеж. Попробуйте позже.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Не удалось создать платеж. Попробуйте позже.",
         variant: "destructive",
       });
     } finally {
@@ -107,6 +122,42 @@ export default function SellerTariffs() {
             Store.
           </p>
         </div>
+
+        {/* Статус ЮКассы */}
+        {!yookassaActive && (
+          <Card className="mb-8 border-yellow-200 bg-yellow-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-yellow-800">
+                <Icon name="AlertTriangle" size={20} className="mr-2" />
+                Платежи временно недоступны
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-yellow-700">
+                ЮКасса не настроена администратором. Платежные функции будут
+                доступны после настройки платежной системы. Обратитесь к
+                администратору для активации платежей.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {yookassaActive && (
+          <Card className="mb-8 border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-green-800">
+                <Icon name="CheckCircle" size={20} className="mr-2" />
+                Платежи активны
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-green-700">
+                ЮКасса настроена и готова к приему платежей. Вы можете безопасно
+                оплачивать тарифы.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Тарифные планы */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
@@ -174,13 +225,15 @@ export default function SellerTariffs() {
 
                 <Button
                   onClick={() => handlePayment(tariff.id)}
-                  disabled={loading}
+                  disabled={loading || !yookassaActive}
                   className={`w-full ${
-                    tariff.id === "trial"
-                      ? "bg-green-600 hover:bg-green-700"
-                      : tariff.popular
-                        ? "bg-purple-600 hover:bg-purple-700"
-                        : "bg-gray-800 hover:bg-gray-900"
+                    !yookassaActive
+                      ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
+                      : tariff.id === "trial"
+                        ? "bg-green-600 hover:bg-green-700"
+                        : tariff.popular
+                          ? "bg-purple-600 hover:bg-purple-700"
+                          : "bg-gray-800 hover:bg-gray-900"
                   }`}
                 >
                   {loading && selectedTariff === tariff.id ? (
@@ -191,6 +244,11 @@ export default function SellerTariffs() {
                         className="mr-2 animate-spin"
                       />
                       Обработка...
+                    </>
+                  ) : !yookassaActive ? (
+                    <>
+                      <Icon name="Lock" size={16} className="mr-2" />
+                      Платежи недоступны
                     </>
                   ) : (
                     <>

@@ -36,14 +36,70 @@ export const useYookassa = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const saveConfig = useCallback((newConfig: YookassaConfig) => {
+  const saveConfig = useCallback(async (newConfig: YookassaConfig) => {
     const configToSave = {
       ...newConfig,
       isConfigured: !!(newConfig.shopId && newConfig.secretKey),
     };
     setConfig(configToSave);
     localStorage.setItem(YOOKASSA_CONFIG_KEY, JSON.stringify(configToSave));
+
+    // Активируем ЮКассу на сайте если все данные заполнены
+    if (configToSave.isConfigured) {
+      await activateYookassaOnSite(configToSave);
+    }
   }, []);
+
+  // Активация ЮКассы на сайте
+  const activateYookassaOnSite = async (configData: YookassaConfig) => {
+    try {
+      // Отправляем конфигурацию на сервер
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://calibrestore.ru"
+          : "http://localhost:3001";
+
+      const response = await fetch(`${baseUrl}/api/yookassa/config`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          shopId: configData.shopId,
+          secretKey: configData.secretKey,
+          webhookUrl: configData.webhookUrl,
+          testMode: configData.testMode,
+        }),
+      });
+
+      if (response.ok) {
+        // Сохраняем активную конфигурацию для использования на сайте
+        localStorage.setItem(
+          "yookassa-active",
+          JSON.stringify({
+            enabled: true,
+            shopId: configData.shopId,
+            testMode: configData.testMode,
+            webhookUrl: configData.webhookUrl,
+            activatedAt: new Date().toISOString(),
+          }),
+        );
+
+        // Обновляем статус в админке
+        localStorage.setItem(
+          "admin-yookassa-status",
+          JSON.stringify({
+            active: true,
+            configuredAt: new Date().toISOString(),
+            testMode: configData.testMode,
+            shopId: configData.shopId,
+          }),
+        );
+      }
+    } catch (error) {
+      console.error("Ошибка активации ЮКассы:", error);
+    }
+  };
 
   const testConnection = useCallback(async () => {
     if (!config.shopId || !config.secretKey) {
