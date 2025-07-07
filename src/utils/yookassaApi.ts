@@ -28,8 +28,14 @@ export const createPayment = async (
   paymentData: PaymentData,
 ): Promise<PaymentResponse> => {
   try {
+    // Определяем базовый URL для API
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://calibrestore.ru"
+        : "http://localhost:3001";
+
     // Отправляем запрос на сервер для создания платежа через ЮКассу
-    const response = await fetch("/api/payments/create", {
+    const response = await fetch(`${baseUrl}/api/payments/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +44,8 @@ export const createPayment = async (
     });
 
     if (!response.ok) {
-      throw new Error("Ошибка создания платежа");
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Ошибка создания платежа");
     }
 
     const data = await response.json();
@@ -52,15 +59,25 @@ export const createPayment = async (
 // Проверка статуса платежа
 export const verifyPayment = async (paymentId: string) => {
   try {
-    const response = await fetch(`/api/payments/verify/${paymentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    // Определяем базовый URL для API
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://calibrestore.ru"
+        : "http://localhost:3001";
+
+    const response = await fetch(
+      `${baseUrl}/api/payments/verify/${paymentId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
-      throw new Error("Ошибка проверки платежа");
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Ошибка проверки платежа");
     }
 
     const data = await response.json();
