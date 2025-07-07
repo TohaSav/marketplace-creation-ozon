@@ -14,7 +14,7 @@ import AdminProducts from "@/pages/AdminProducts";
 import AdminOrders from "@/pages/AdminOrders";
 import AdminUsers from "@/pages/AdminUsers";
 import AdminSellers from "@/pages/AdminSellers";
-import AdminAdvertising from "@/pages/AdminAdvertising";
+import AdvertisingAdminPage from "@/pages/admin/AdvertisingAdminPage";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 import AdminChat from "@/pages/AdminChat";
 import AdminPayments from "@/pages/AdminPayments";
@@ -59,6 +59,8 @@ import SellerLuckGame from "@/pages/SellerLuckGame";
 import SellerWallet from "@/pages/SellerWallet";
 import SellerWalletSuccess from "@/pages/SellerWalletSuccess";
 import PaymentSuccess from "@/pages/PaymentSuccess";
+import AdvertisingPage from "@/pages/AdvertisingPage";
+import PaymentPage from "@/pages/PaymentPage";
 
 const AppRoutes = () => {
   return (
@@ -153,7 +155,7 @@ const AppRoutes = () => {
         path="/admin/advertising"
         element={
           <AdminProtectedRoute>
-            <AdminAdvertising />
+            <AdvertisingAdminPage />
           </AdminProtectedRoute>
         }
       />
@@ -352,6 +354,22 @@ const AppRoutes = () => {
         element={
           <Layout>
             <Game />
+          </Layout>
+        }
+      />
+      <Route
+        path="/advertising"
+        element={
+          <Layout>
+            <AdvertisingPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/payment"
+        element={
+          <Layout>
+            <PaymentPage />
           </Layout>
         }
       />
