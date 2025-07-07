@@ -113,5 +113,17 @@ export const initializeTestData = () => {
 
   localStorage.setItem("sellerCards", JSON.stringify(allCards));
 
-  return { sellers: allSellers, cards: allCards };
+  // Сохраняем товары
+  const existingProducts = JSON.parse(localStorage.getItem("products") || "[]");
+  const allProducts = [...existingProducts];
+
+  testProducts.forEach((product) => {
+    if (!allProducts.find((p) => p.id === product.id)) {
+      allProducts.push(product);
+    }
+  });
+
+  localStorage.setItem("products", JSON.stringify(allProducts));
+
+  return { sellers: allSellers, cards: allCards, products: allProducts };
 };
