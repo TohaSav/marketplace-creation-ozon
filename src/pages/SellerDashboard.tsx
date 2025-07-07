@@ -1,5 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Header from "@/components/Header";
 import CreateStoryModal from "@/components/CreateStoryModal";
 import SellerWallet from "@/components/SellerWallet";
 import { useSellerDashboard } from "@/hooks/useSellerDashboard";
@@ -40,7 +39,6 @@ export default function SellerDashboard() {
   if (user?.userType === "seller" && user?.status !== "active") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <Card className="text-center">
             <CardHeader>
@@ -108,8 +106,6 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">
