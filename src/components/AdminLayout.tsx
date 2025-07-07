@@ -18,6 +18,7 @@ const navigation = [
     href: "/admin/verification",
     icon: "CheckCircle",
   },
+  { name: "Реклама", href: "/admin/advertising", icon: "Megaphone" },
   { name: "Пополнение", href: "/admin/payments", icon: "CreditCard" },
   { name: "Чат", href: "/admin/chat", icon: "MessageCircle" },
   { name: "Аналитика", href: "/admin/analytics", icon: "BarChart3" },

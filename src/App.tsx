@@ -17,6 +17,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSellers from "./pages/AdminSellers";
+import AdminAdvertising from "./pages/AdminAdvertising";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminChat from "./pages/AdminChat";
 import AdminPayments from "./pages/AdminPayments";
@@ -48,6 +49,7 @@ import Support from "./pages/Support";
 import Notifications from "./pages/Notifications";
 import SellerTariffs from "./pages/SellerTariffs";
 import SellerAdvertising from "./pages/SellerAdvertising";
+import SellerAdvertisingSuccess from "./pages/SellerAdvertisingSuccess";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Game from "./pages/Game";
 
@@ -159,6 +161,14 @@ const App = () => {
                   element={
                     <AdminProtectedRoute>
                       <ShopVerification />
+                    </AdminProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/advertising"
+                  element={
+                    <AdminProtectedRoute>
+                      <AdminAdvertising />
                     </AdminProtectedRoute>
                   }
                 />
@@ -403,6 +413,14 @@ const App = () => {
                   element={
                     <Layout>
                       <SellerAdvertising />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/seller/advertising-success"
+                  element={
+                    <Layout>
+                      <SellerAdvertisingSuccess />
                     </Layout>
                   }
                 />

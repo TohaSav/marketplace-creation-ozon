@@ -61,20 +61,32 @@ export default function SellerAdvertising() {
         throw new Error("Не авторизован");
       }
 
+      const price = parseInt(bannerData.duration) * 100; // 100 руб за день
+
+      // Конвертируем файл в base64 для сохранения
+      const bannerBase64 = bannerData.bannerFile
+        ? await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(bannerData.bannerFile as File);
+          })
+        : null;
+
       const advertisingRequest = {
         id: Date.now(),
         sellerId: seller.id,
         sellerName: seller.name,
         shopName: bannerData.shopName,
-        bannerUrl: bannerData.bannerFile
-          ? URL.createObjectURL(bannerData.bannerFile)
-          : null,
+        bannerUrl: bannerBase64,
         description: bannerData.description,
         duration: parseInt(bannerData.duration),
         contactInfo: bannerData.contactInfo,
-        status: "pending", // pending, approved, rejected
+        status: "pending_payment", // pending_payment, active, paused, expired
         createdAt: new Date().toISOString(),
-        price: parseInt(bannerData.duration) * 100, // 100 руб за день
+        expiresAt: new Date(
+          Date.now() + parseInt(bannerData.duration) * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        price: price,
       };
 
       // Сохраняем заявку на рекламу
@@ -87,16 +99,45 @@ export default function SellerAdvertising() {
         JSON.stringify(existingRequests),
       );
 
-      toast({
-        title: "Заявка отправлена",
-        description: "Ваша заявка на размещение рекламы принята к рассмотрению",
+      // Создаем платеж через Юкассу
+      const paymentData = {
+        amount: {
+          value: price.toString(),
+          currency: "RUB",
+        },
+        confirmation: {
+          type: "redirect",
+          return_url: `${window.location.origin}/seller/advertising-success?id=${advertisingRequest.id}`,
+        },
+        description: `Размещение рекламы "${bannerData.shopName}" на ${bannerData.duration} дней`,
+        metadata: {
+          type: "advertising",
+          advertisingId: advertisingRequest.id.toString(),
+          sellerId: seller.id.toString(),
+          duration: bannerData.duration,
+        },
+      };
+
+      const response = await fetch("/api/create-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentData),
       });
 
-      navigate("/seller/dashboard");
+      const payment = await response.json();
+
+      if (payment.confirmation && payment.confirmation.confirmation_url) {
+        // Переходим на страницу оплаты
+        window.location.href = payment.confirmation.confirmation_url;
+      } else {
+        throw new Error("Не удалось создать платеж");
+      }
     } catch (error) {
       toast({
         title: "Ошибка",
-        description: "Не удалось отправить заявку на рекламу",
+        description: "Не удалось создать платеж",
         variant: "destructive",
       });
     } finally {
@@ -315,12 +356,12 @@ export default function SellerAdvertising() {
                     {loading ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Отправка...
+                        Создание платежа...
                       </>
                     ) : (
                       <>
-                        <Icon name="Send" size={16} className="mr-2" />
-                        Отправить заявку
+                        <Icon name="CreditCard" size={16} className="mr-2" />
+                        Оплатить {parseInt(bannerData.duration) * 100} ₽
                       </>
                     )}
                   </Button>
@@ -361,10 +402,10 @@ export default function SellerAdvertising() {
                   Процесс размещения:
                 </h4>
                 <ol className="text-sm text-blue-800 space-y-1">
-                  <li>1. Подача заявки</li>
-                  <li>2. Модерация (до 24 часов)</li>
-                  <li>3. Оплата после одобрения</li>
-                  <li>4. Размещение рекламы</li>
+                  <li>1. Заполнение формы</li>
+                  <li>2. Оплата через Юкассу</li>
+                  <li>3. Мгновенная публикация</li>
+                  <li>4. Размещение на главной</li>
                 </ol>
               </div>
 
