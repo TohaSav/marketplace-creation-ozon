@@ -85,6 +85,32 @@ export const createTestSellers = () => {
   return { testSellers, sellerCards };
 };
 
+// Функция для создания тестовых товаров
+export const createTestProducts = () => {
+  return [
+    {
+      id: "1",
+      title: "iPhone 14 Pro",
+      price: 79999,
+      image: "/placeholder.svg",
+      category: "electronics",
+      rating: 4.9,
+      reviews: 124,
+      sellerId: "seller1",
+    },
+    {
+      id: "2",
+      title: "Samsung Galaxy S23",
+      price: 69999,
+      image: "/placeholder.svg",
+      category: "electronics",
+      rating: 4.8,
+      reviews: 89,
+      sellerId: "seller2",
+    },
+  ];
+};
+
 // Функция для инициализации тестовых данных
 export const initializeTestData = () => {
   const { testSellers, sellerCards } = createTestSellers();

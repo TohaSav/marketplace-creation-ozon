@@ -23,7 +23,7 @@ import AdminPayments from "./pages/AdminPayments";
 import AdminDataManagement from "./pages/AdminDataManagement";
 import TradingRules from "./pages/TradingRules";
 import Commissions from "./pages/Commissions";
-import Admin from "./pages/Admin";
+
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import PersonalData from "./pages/PersonalData";
@@ -51,7 +51,6 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import Game from "./pages/Game";
 
 import ShopVerification from "./pages/admin/ShopVerification";
-import SellersManagement from "./pages/admin/SellersManagement";
 import Category from "./pages/Category";
 
 const queryClient = new QueryClient();
@@ -162,14 +161,7 @@ const App = () => {
                     </AdminProtectedRoute>
                   }
                 />
-                <Route
-                  path="/admin/sellers-management"
-                  element={
-                    <AdminProtectedRoute>
-                      <SellersManagement />
-                    </AdminProtectedRoute>
-                  }
-                />
+
                 <Route
                   path="/admin/settings"
                   element={
