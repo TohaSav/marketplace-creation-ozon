@@ -88,6 +88,7 @@ export const createTestSellers = () => {
 // Функция для инициализации тестовых данных
 export const initializeTestData = () => {
   const { testSellers, sellerCards } = createTestSellers();
+  const testProducts = createTestProducts();
 
   // Сохраняем продавцов
   const existingSellers = JSON.parse(localStorage.getItem("sellers") || "[]");
