@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 
 interface Banner {
   id: number;
-  title: string;
-  subtitle: string;
-  image: string;
-  color: string;
+  gradient: string;
 }
 
 interface HeroSectionProps {
@@ -19,15 +15,12 @@ export default function HeroSection({ banners }: HeroSectionProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [banners.length]);
 
   return (
     <div className="relative mb-12 rounded-2xl overflow-hidden shadow-2xl">
-      <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium z-10">
-        РЕКЛАМА
-      </div>
       <div className="relative h-[300px]">
         {banners.map((banner, index) => (
           <div
@@ -36,40 +29,27 @@ export default function HeroSection({ banners }: HeroSectionProps) {
               index === currentBanner ? "opacity-100" : "opacity-0"
             }`}
           >
-            <div
-              className={`absolute inset-0 bg-gradient-to-r ${banner.color} opacity-90`}
-            />
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${banner.image})` }}
-            />
+            <div className={`absolute inset-0 ${banner.gradient}`} />
             <div className="absolute inset-0 flex items-center justify-center text-white">
-              <div className="text-center space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold drop-shadow-lg">
-                  {banner.title}
+              <div className="text-center">
+                <h1 className="text-5xl md:text-7xl font-bold drop-shadow-lg tracking-wide">
+                  Реклама Магазинов
                 </h1>
-                <p className="text-xl md:text-2xl opacity-90 drop-shadow-md">
-                  {banner.subtitle}
-                </p>
-                <Button
-                  size="lg"
-                  className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-4 text-lg rounded-xl shadow-lg"
-                >
-                  Смотреть товары
-                </Button>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentBanner(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentBanner ? "bg-white" : "bg-white/50"
+            className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              index === currentBanner
+                ? "bg-white scale-110"
+                : "bg-white/50 hover:bg-white/70"
             }`}
           />
         ))}

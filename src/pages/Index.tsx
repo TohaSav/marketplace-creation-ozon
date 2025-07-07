@@ -9,43 +9,23 @@ export default function Index() {
   const banners = [
     {
       id: 1,
-      title: "Черная пятница",
-      subtitle: "Скидки до 90% на всё",
-      image:
-        "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200&h=500&fit=crop",
-      color: "from-slate-900 via-purple-900 to-slate-900",
+      gradient: "bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900",
     },
     {
       id: 2,
-      title: "Суперцены",
-      subtitle: "Топ товары от 99₽",
-      image:
-        "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=500&fit=crop",
-      color: "from-orange-400 via-red-500 to-pink-600",
+      gradient: "bg-gradient-to-r from-orange-400 via-red-500 to-pink-600",
     },
     {
       id: 3,
-      title: "Новинки техники",
-      subtitle: "iPhone 15, MacBook и многое другое",
-      image:
-        "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1200&h=500&fit=crop",
-      color: "from-blue-500 via-indigo-600 to-purple-700",
+      gradient: "bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700",
     },
     {
       id: 4,
-      title: "Быстрая доставка",
-      subtitle: "Заказ сегодня — получи завтра",
-      image:
-        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=500&fit=crop",
-      color: "from-green-400 via-emerald-500 to-teal-600",
+      gradient: "bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600",
     },
     {
       id: 5,
-      title: "Премиум бренды",
-      subtitle: "Оригинальные товары с гарантией",
-      image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=500&fit=crop",
-      color: "from-pink-400 via-purple-500 to-indigo-600",
+      gradient: "bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600",
     },
   ];
 
