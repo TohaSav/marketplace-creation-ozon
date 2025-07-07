@@ -140,6 +140,15 @@ export default function Header() {
 
               <Button
                 variant="ghost"
+                className="flex items-center space-x-2 px-2 md:px-4"
+                onClick={() => navigate("/advertising")}
+              >
+                <Icon name="Megaphone" size={20} />
+                <span className="hidden md:inline">Реклама</span>
+              </Button>
+
+              <Button
+                variant="ghost"
                 className="flex items-center space-x-2 px-2 md:px-4 relative"
                 onClick={() => {
                   if (!user) {
