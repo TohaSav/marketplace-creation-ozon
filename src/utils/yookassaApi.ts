@@ -23,39 +23,48 @@ interface SubscriptionData {
   autoRenew: boolean;
 }
 
-// Создание платежа через ЮКассу (мок для демо)
+// Создание платежа через ЮКассу
 export const createPayment = async (
   paymentData: PaymentData,
 ): Promise<PaymentResponse> => {
   try {
-    // В демо версии имитируем создание платежа
-    // В реальном приложении здесь будет API запрос к вашему серверу
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const paymentId = `payment_${Date.now()}`;
-        resolve({
-          id: paymentId,
-          status: "pending",
-          confirmationUrl: `${paymentData.returnUrl}&payment_id=${paymentId}`,
-        });
-      }, 500);
+    // Отправляем запрос на сервер для создания платежа через ЮКассу
+    const response = await fetch("/api/payments/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(paymentData),
     });
+
+    if (!response.ok) {
+      throw new Error("Ошибка создания платежа");
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Ошибка создания платежа:", error);
     throw error;
   }
 };
 
-// Проверка статуса платежа (мок для демо)
+// Проверка статуса платежа
 export const verifyPayment = async (paymentId: string) => {
   try {
-    // В демо версии всегда возвращаем успешный статус
-    // В реальном приложении здесь будет запрос к API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ status: "succeeded" });
-      }, 1000);
+    const response = await fetch(`/api/payments/verify/${paymentId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+
+    if (!response.ok) {
+      throw new Error("Ошибка проверки платежа");
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Ошибка проверки платежа:", error);
     throw error;

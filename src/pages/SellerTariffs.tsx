@@ -66,24 +66,7 @@ export default function SellerTariffs() {
         throw new Error("Тариф не найден");
       }
 
-      // Для пробного периода активируем подписку сразу без оплаты
-      if (tariff.id === "trial") {
-        activateSubscription(user.id, "trial");
-        toast({
-          title: "Пробный период активирован!",
-          description:
-            "Вы можете пользоваться всеми функциями 2 дня бесплатно.",
-          variant: "default",
-        });
-
-        // Перенаправляем в кабинет продавца
-        setTimeout(() => {
-          navigate("/seller/dashboard");
-        }, 2000);
-        return;
-      }
-
-      // Создаем платеж через ЮКассу для платных тарифов
+      // Создаем платеж через ЮКассу для всех тарифов
       const paymentData = await createPayment({
         amount: tariff.price,
         description: `Подписка ${tariff.name} для продавца`,
@@ -211,14 +194,8 @@ export default function SellerTariffs() {
                     </>
                   ) : (
                     <>
-                      <Icon
-                        name={tariff.id === "trial" ? "Play" : "CreditCard"}
-                        size={16}
-                        className="mr-2"
-                      />
-                      {tariff.id === "trial"
-                        ? "Активировать бесплатно"
-                        : "Выбрать и оплатить"}
+                      <Icon name="CreditCard" size={16} className="mr-2" />
+                      Выбрать и оплатить
                     </>
                   )}
                 </Button>

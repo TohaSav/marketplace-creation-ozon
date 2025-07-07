@@ -32,10 +32,13 @@ export default function PaymentSuccess() {
 
         if (paymentStatus.status === "succeeded") {
           // Активируем подписку
-          const subscription = activateSubscription(
-            user.id,
-            tariffId as "monthly" | "yearly",
-          );
+          const planType =
+            tariffId === "monthly"
+              ? "monthly"
+              : tariffId === "yearly"
+                ? "yearly"
+                : "trial";
+          const subscription = activateSubscription(user.id, planType);
 
           // Обновляем данные пользователя
           updateUser({ ...user, subscription });
