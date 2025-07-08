@@ -5,51 +5,71 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
-import Header from "@/components/Header";
-import { useAuth } from "@/context/AuthContext";
-import { activateSubscription, verifyPayment } from "@/utils/yookassaApi";
+import { usePayment } from "@/hooks/usePayment";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
   const [searchParams] = useSearchParams();
   const [verifying, setVerifying] = useState(true);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [subscriptionDetails, setSubscriptionDetails] = useState<any>(null);
+  const [paymentDetails, setPaymentDetails] = useState<any>(null);
+
+  const { checkPaymentStatus, getPendingPayment, clearPendingPayment } =
+    usePayment({
+      onSuccess: (paymentId) => {
+        console.log("Платеж успешно создан:", paymentId);
+      },
+      onError: (error) => {
+        console.error("Ошибка платежа:", error);
+      },
+      onStatusChange: (status) => {
+        console.log("Статус платежа изменился:", status);
+        if (status.status === "succeeded") {
+          setPaymentConfirmed(true);
+          setPaymentDetails(status);
+          clearPendingPayment();
+
+          toast({
+            title: "Оплата прошла успешно!",
+            description: "Ваш платеж был успешно обработан.",
+          });
+        }
+      },
+    });
 
   useEffect(() => {
     const processPayment = async () => {
       try {
-        const paymentId = searchParams.get("payment_id");
-        const tariffId = searchParams.get("tariff_id");
+        // Получаем paymentId из URL или из pending payment
+        let paymentId = searchParams.get("payment_id");
 
-        if (!paymentId || !tariffId || !user) {
-          throw new Error("Недостаточно данных для обработки платежа");
+        if (!paymentId) {
+          const pendingPayment = getPendingPayment();
+          paymentId = pendingPayment?.id || null;
         }
 
-        // Проверяем статус платежа
-        const paymentStatus = await verifyPayment(paymentId);
+        if (!paymentId) {
+          throw new Error("ID платежа не найден");
+        }
 
-        if (paymentStatus.status === "succeeded") {
-          // Активируем подписку
-          const planType =
-            tariffId === "monthly"
-              ? "monthly"
-              : tariffId === "yearly"
-                ? "yearly"
-                : "trial";
-          const subscription = activateSubscription(user.id, planType);
+        // Проверяем статус платежа через наш сервис
+        const paymentStatus = await checkPaymentStatus(paymentId);
 
-          // Обновляем данные пользователя
-          updateUser({ ...user, subscription });
-
+        if (paymentStatus?.status === "succeeded") {
           setPaymentConfirmed(true);
-          setSubscriptionDetails(subscription);
+          setPaymentDetails(paymentStatus);
+          clearPendingPayment();
+        } else if (
+          paymentStatus?.status === "pending" ||
+          paymentStatus?.status === "waiting_for_capture"
+        ) {
+          // Платеж еще обрабатывается
+          setPaymentConfirmed(false);
+          setPaymentDetails(paymentStatus);
 
           toast({
-            title: "Оплата прошла успешно!",
-            description:
-              "Ваша подписка активирована. Теперь вы можете добавлять товары.",
+            title: "Платеж обрабатывается",
+            description: "Пожалуйста, подождите. Платеж находится в обработке.",
           });
         } else {
           throw new Error("Платеж не был успешно завершен");
@@ -60,7 +80,7 @@ export default function PaymentSuccess() {
         toast({
           title: "Ошибка обработки платежа",
           description:
-            "Не удалось активировать подписку. Обратитесь в поддержку.",
+            "Не удалось проверить статус платежа. Обратитесь в поддержку.",
           variant: "destructive",
         });
       } finally {
@@ -69,12 +89,16 @@ export default function PaymentSuccess() {
     };
 
     processPayment();
-  }, [searchParams, user, updateUser]);
+  }, [
+    searchParams,
+    checkPaymentStatus,
+    getPendingPayment,
+    clearPendingPayment,
+  ]);
 
   if (verifying) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <Card className="text-center">
             <CardHeader>
@@ -101,7 +125,6 @@ export default function PaymentSuccess() {
   if (!paymentConfirmed) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <Card className="text-center">
             <CardHeader>
@@ -109,29 +132,34 @@ export default function PaymentSuccess() {
                 <Icon name="AlertTriangle" size={64} className="text-red-500" />
               </div>
               <CardTitle className="text-2xl text-red-600">
-                Ошибка оплаты
+                {paymentDetails?.status === "pending" ||
+                paymentDetails?.status === "waiting_for_capture"
+                  ? "Платеж обрабатывается"
+                  : "Ошибка оплаты"}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-6">
-                Не удалось подтвердить оплату. Если деньги были списаны,
-                свяжитесь с поддержкой.
+                {paymentDetails?.status === "pending" ||
+                paymentDetails?.status === "waiting_for_capture"
+                  ? "Ваш платеж находится в обработке. Пожалуйста, подождите или обновите страницу."
+                  : "Не удалось подтвердить оплату. Если деньги были списаны, свяжитесь с поддержкой."}
               </p>
               <div className="space-y-3">
                 <Button
-                  onClick={() => navigate("/seller/tariffs")}
+                  onClick={() => window.location.reload()}
                   variant="outline"
                 >
-                  <Icon name="ArrowLeft" size={16} className="mr-2" />
-                  Попробовать снова
+                  <Icon name="RefreshCw" size={16} className="mr-2" />
+                  Обновить статус
                 </Button>
                 <br />
                 <Button
-                  onClick={() => navigate("/seller/dashboard")}
+                  onClick={() => navigate("/")}
                   className="bg-gray-600 hover:bg-gray-700"
                 >
-                  <Icon name="Home" size={16} className="mr-2" />В кабинет
-                  продавца
+                  <Icon name="Home" size={16} className="mr-2" />
+                  На главную
                 </Button>
               </div>
             </CardContent>
@@ -143,8 +171,6 @@ export default function PaymentSuccess() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Успешная оплата */}
         <Card className="text-center mb-8">
@@ -155,59 +181,49 @@ export default function PaymentSuccess() {
               </div>
             </div>
             <CardTitle className="text-3xl text-green-600 mb-2">
-              Оплата прошла успешно!
+              Платеж успешно завершен!
             </CardTitle>
             <p className="text-lg text-gray-600">
-              Ваша подписка активирована. Теперь вы можете добавлять товары на
-              Calibre Store.
+              Спасибо за оплату! Ваш платеж был успешно обработан.
             </p>
           </CardHeader>
         </Card>
 
-        {/* Детали подписки */}
-        {subscriptionDetails && (
+        {/* Детали платежа */}
+        {paymentDetails && (
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Icon name="Crown" size={24} className="mr-2 text-yellow-500" />
-                Детали подписки
+                <Icon name="Receipt" size={24} className="mr-2 text-blue-500" />
+                Детали платежа
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    Тарифный план
-                  </h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">Сумма</h3>
                   <p className="text-gray-600">
-                    {subscriptionDetails.planName}
+                    {paymentDetails.amount.value}{" "}
+                    {paymentDetails.amount.currency}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-2">Статус</h3>
                   <Badge className="bg-green-500 text-white">
                     <Icon name="Check" size={14} className="mr-1" />
-                    Активна
+                    Успешно
                   </Badge>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    Дата начала
-                  </h3>
-                  <p className="text-gray-600">
-                    {new Date(subscriptionDetails.startDate).toLocaleDateString(
-                      "ru-RU",
-                    )}
-                  </p>
+                  <h3 className="font-semibold text-gray-900 mb-2">Описание</h3>
+                  <p className="text-gray-600">{paymentDetails.description}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-2">
-                    Действует до
+                    ID платежа
                   </h3>
-                  <p className="text-gray-600">
-                    {new Date(subscriptionDetails.endDate).toLocaleDateString(
-                      "ru-RU",
-                    )}
+                  <p className="text-gray-600 font-mono text-sm">
+                    {paymentDetails.id}
                   </p>
                 </div>
               </div>
@@ -215,39 +231,40 @@ export default function PaymentSuccess() {
           </Card>
         )}
 
-        {/* Возможности */}
+        {/* Информация о следующих шагах */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Icon name="Star" size={24} className="mr-2 text-purple-500" />
-              Доступные возможности
+              <Icon name="Info" size={24} className="mr-2 text-blue-500" />
+              Что дальше?
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="flex items-start">
                 <Icon
-                  name="Plus"
+                  name="Mail"
                   size={20}
                   className="text-green-500 mr-3 mt-1"
                 />
                 <div>
-                  <h3 className="font-semibold">Добавление товаров</h3>
+                  <h3 className="font-semibold">Подтверждение на email</h3>
                   <p className="text-sm text-gray-600">
-                    Неограниченное количество товаров
+                    Квитанция об оплате будет отправлена на ваш email
                   </p>
                 </div>
               </div>
               <div className="flex items-start">
                 <Icon
-                  name="BarChart3"
+                  name="Clock"
                   size={20}
                   className="text-blue-500 mr-3 mt-1"
                 />
                 <div>
-                  <h3 className="font-semibold">Аналитика продаж</h3>
+                  <h3 className="font-semibold">Обработка заказа</h3>
                   <p className="text-sm text-gray-600">
-                    Детальная статистика заказов
+                    Если это был заказ, мы начнем его обработку в ближайшее
+                    время
                   </p>
                 </div>
               </div>
@@ -258,22 +275,9 @@ export default function PaymentSuccess() {
                   className="text-purple-500 mr-3 mt-1"
                 />
                 <div>
-                  <h3 className="font-semibold">Техническая поддержка</h3>
+                  <h3 className="font-semibold">Поддержка</h3>
                   <p className="text-sm text-gray-600">
-                    Помощь в работе с платформой
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <Icon
-                  name="TrendingUp"
-                  size={20}
-                  className="text-orange-500 mr-3 mt-1"
-                />
-                <div>
-                  <h3 className="font-semibold">Продвижение товаров</h3>
-                  <p className="text-sm text-gray-600">
-                    Увеличение видимости в каталоге
+                    При возникновении вопросов обращайтесь в службу поддержки
                   </p>
                 </div>
               </div>
@@ -284,29 +288,23 @@ export default function PaymentSuccess() {
         {/* Действия */}
         <div className="text-center space-y-4">
           <Button
-            onClick={() => navigate("/seller/add-product")}
-            className="bg-purple-600 hover:bg-purple-700 text-lg px-8 py-3"
+            onClick={() => navigate("/")}
+            className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3"
             size="lg"
           >
-            <Icon name="Plus" size={20} className="mr-2" />
-            Добавить первый товар
+            <Icon name="Home" size={20} className="mr-2" />
+            Вернуться на главную
           </Button>
 
           <div className="space-x-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/seller/dashboard")}
-            >
-              <Icon name="LayoutDashboard" size={16} className="mr-2" />
-              Кабинет продавца
+            <Button variant="outline" onClick={() => navigate("/orders")}>
+              <Icon name="Package" size={16} className="mr-2" />
+              Мои заказы
             </Button>
 
-            <Button
-              variant="outline"
-              onClick={() => navigate("/seller/products")}
-            >
-              <Icon name="Package" size={16} className="mr-2" />
-              Мои товары
+            <Button variant="outline" onClick={() => navigate("/support")}>
+              <Icon name="MessageCircle" size={16} className="mr-2" />
+              Поддержка
             </Button>
           </div>
         </div>
