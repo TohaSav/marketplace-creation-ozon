@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import BalloonGame from "./BalloonGame";
 import SellerNotifications from "./SellerNotifications";
 import SellerStatusBadge from "./SellerStatusBadge";
+import NotificationSystem from "./NotificationSystem";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -127,6 +128,9 @@ export default function Header() {
 
             {/* Navigation */}
             <div className="flex items-center space-x-2 md:space-x-6">
+              {/* Real-time Notifications */}
+              <NotificationSystem />
+
               {/* Seller Notifications */}
               {user?.userType === "seller" && <SellerNotifications />}
               <Button
