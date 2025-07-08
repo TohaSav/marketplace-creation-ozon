@@ -49,8 +49,8 @@ class YooKassaService {
 
   constructor() {
     // В продакшене эти данные должны храниться в переменных окружения
-    this.shopId = process.env.VITE_YOOKASSA_SHOP_ID || "";
-    this.secretKey = process.env.VITE_YOOKASSA_SECRET_KEY || "";
+    this.shopId = import.meta.env.VITE_YOOKASSA_SHOP_ID || "";
+    this.secretKey = import.meta.env.VITE_YOOKASSA_SECRET_KEY || "";
   }
 
   private getAuthHeaders(): HeadersInit {
