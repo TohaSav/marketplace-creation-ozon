@@ -12,7 +12,8 @@ class WebSocketManager {
   private isConnected = false;
 
   constructor() {
-    this.connect();
+    // Отключаем автоматическое подключение WebSocket на время разработки
+    // this.connect();
   }
 
   private connect() {
@@ -115,12 +116,14 @@ class WebSocketManager {
 export const wsManager = new WebSocketManager();
 
 // Хук для использования WebSocket в компонентах
+import { useState, useEffect } from "react";
+
 export const useWebSocket = () => {
-  const [isConnected, setIsConnected] = React.useState(
+  const [isConnected, setIsConnected] = useState(
     wsManager.getConnectionStatus(),
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleConnect = () => setIsConnected(true);
     const handleDisconnect = () => setIsConnected(false);
 

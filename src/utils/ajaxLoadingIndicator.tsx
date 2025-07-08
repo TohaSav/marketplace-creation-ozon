@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface LoadingIndicatorProps {
   show: boolean;
@@ -65,9 +65,9 @@ class AjaxLoadingManager {
 export const ajaxLoadingManager = new AjaxLoadingManager();
 
 export const useAjaxLoading = () => {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = ajaxLoadingManager.subscribe(setLoading);
     return unsubscribe;
   }, []);
