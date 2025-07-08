@@ -5,7 +5,7 @@ export interface SellerCard {
   balance: number;
   issuedDate: string;
   cardType: "premium" | "standard" | "elite";
-  status: "active" | "blocked" | "suspended";
+  status: "active" | "blocked" | "expired";
   transactions: CardTransaction[];
   monthlyEarnings: number;
   totalEarnings: number;
