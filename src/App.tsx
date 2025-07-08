@@ -2,8 +2,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import AppProviders from "@/providers/AppProviders";
 import AppRoutes from "@/routes/AppRoutes";
 import { useAppInitialization } from "@/hooks/useAppInitialization";
-import { useAjaxNavigation } from "@/hooks/useAjaxNavigation";
-import { LoadingIndicator, useAjaxLoading } from "@/utils/ajaxLoadingIndicator";
 
 const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
   return (
@@ -28,12 +26,9 @@ const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
 
 const App = () => {
   useAppInitialization();
-  useAjaxNavigation();
-  const isLoading = useAjaxLoading();
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <LoadingIndicator show={isLoading} />
       <AppProviders>
         <AppRoutes />
       </AppProviders>

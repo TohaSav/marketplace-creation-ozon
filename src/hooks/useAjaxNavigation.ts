@@ -1,8 +1,6 @@
-import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
+// Простая версия Ajax навигации без проблемных хуков
 export const useAjaxNavigation = () => {
-  const navigate = useNavigate();
+  // Пустая реализация для совместимости
   const location = useLocation();
 
   useEffect(() => {
