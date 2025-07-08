@@ -3,7 +3,13 @@ import AppProviders from "@/providers/AppProviders";
 import AppRoutes from "@/routes/AppRoutes";
 import { useAppInitialization } from "@/hooks/useAppInitialization";
 
-const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
+const ErrorFallback = ({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="text-center p-8 bg-white rounded-lg shadow-lg">
