@@ -6,7 +6,6 @@ import {
   useEffect,
 } from "react";
 import { SellerStats } from "@/types/seller-dashboard.types";
-import { statusSyncManager } from "@/utils/statusSync";
 
 interface User {
   id: number;
@@ -253,13 +252,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Уведомляем о изменении статуса через систему синхронизации
-    statusSyncManager.notifyStatusChange({
-      type: "seller_status_change",
-      sellerId,
-      newStatus: status as "active" | "pending" | "blocked" | "revision",
-      moderationComment: comment,
-      timestamp: Date.now(),
-    });
+    // statusSyncManager.notifyStatusChange({
+    //   type: "seller_status_change",
+    //   sellerId,
+    //   newStatus: status as "active" | "pending" | "blocked" | "revision",
+    //   moderationComment: comment,
+    //   timestamp: Date.now(),
+    // });
 
     // Обновляем токен текущего пользователя если это он
     if (user?.id === sellerId) {
@@ -294,13 +293,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Уведомляем о удалении через систему синхронизации
-    statusSyncManager.notifyStatusChange({
-      type: "seller_status_change",
-      sellerId,
-      newStatus: "blocked", // Используем как маркер удаления
-      moderationComment: "Продавец удален администратором",
-      timestamp: Date.now(),
-    });
+    // statusSyncManager.notifyStatusChange({
+    //   type: "seller_status_change",
+    //   sellerId,
+    //   newStatus: "blocked", // Используем как маркер удаления
+    //   moderationComment: "Продавец удален администратором",
+    //   timestamp: Date.now(),
+    // });
   };
 
   const clearAllSellers = () => {
