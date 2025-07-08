@@ -4,6 +4,7 @@ import CategoryHeader from "@/components/category/CategoryHeader";
 import CategoryFilters from "@/components/category/CategoryFilters";
 import ProductGrid from "@/components/category/ProductGrid";
 import CategoryFooter from "@/components/category/CategoryFooter";
+import CategoryNavigation from "@/components/category/CategoryNavigation";
 import { categories } from "@/data/categories";
 import { productsByCategory } from "@/data/products";
 import { useCart } from "@/hooks/useCart";
@@ -62,6 +63,8 @@ const Category = () => {
       />
 
       <CategoryFilters sortBy={sortBy} setSortBy={setSortBy} />
+
+      <CategoryNavigation currentCategorySlug={categorySlug!} />
 
       <main className="container mx-auto px-4 py-8">
         <ProductGrid
