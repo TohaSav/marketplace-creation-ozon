@@ -2,20 +2,33 @@ import { Card, CardContent } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
 
-interface Category {
-  name: string;
-  icon: string;
-  color: string;
-  slug: string;
-}
+const categories = [
+  {
+    name: "Электроника",
+    icon: "Smartphone",
+    color: "bg-blue-500",
+    slug: "electronics",
+  },
+  { name: "Одежда", icon: "Shirt", color: "bg-pink-500", slug: "clothing" },
+  {
+    name: "Дом и сад",
+    icon: "Home",
+    color: "bg-green-500",
+    slug: "home-garden",
+  },
+  { name: "Красота", icon: "Sparkles", color: "bg-purple-500", slug: "beauty" },
+  { name: "Спорт", icon: "Dumbbell", color: "bg-orange-500", slug: "sport" },
+  { name: "Авто", icon: "Car", color: "bg-red-500", slug: "auto" },
+  { name: "Книги", icon: "Book", color: "bg-indigo-500", slug: "books" },
+  {
+    name: "Игрушки",
+    icon: "GameController2",
+    color: "bg-yellow-500",
+    slug: "toys",
+  },
+];
 
-interface CategoriesSectionProps {
-  categories: Category[];
-}
-
-export default function CategoriesSection({
-  categories,
-}: CategoriesSectionProps) {
+export default function CategoriesSection() {
   return (
     <div className="mb-12">
       <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">

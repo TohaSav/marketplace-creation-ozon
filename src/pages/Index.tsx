@@ -55,7 +55,7 @@ export default function Index() {
     <div className="container mx-auto px-4 py-8">
       <HeroSection banners={banners} />
 
-      <CategoriesSection categories={categories} />
+      <CategoriesSection />
 
       <ProductsSection title="Рекомендуемые товары" />
 

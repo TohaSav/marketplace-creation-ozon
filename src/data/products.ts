@@ -108,7 +108,7 @@ export const productsByCategory: Record<string, Product[]> = {
       image: "/placeholder.svg",
     },
   ],
-  home: [
+  "home-garden": [
     {
       id: 13,
       name: "Пылесос Dyson V15",

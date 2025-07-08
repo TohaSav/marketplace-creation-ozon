@@ -5,6 +5,7 @@ import StoriesSection from "@/components/StoriesSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
+import { Link } from "react-router-dom";
 
 interface Product {
   id: number;
@@ -133,14 +134,19 @@ const Home: React.FC = () => {
   }, []);
 
   const categories = [
-    { name: "Электроника", icon: "Smartphone", count: 12450 },
-    { name: "Одежда", icon: "Shirt", count: 8932 },
-    { name: "Дом и сад", icon: "Home", count: 6721 },
-    { name: "Красота", icon: "Sparkles", count: 4582 },
-    { name: "Спорт", icon: "Dumbbell", count: 3456 },
-    { name: "Авто", icon: "Car", count: 2341 },
-    { name: "Книги", icon: "Book", count: 1876 },
-    { name: "Игрушки", icon: "GameController2", count: 1654 },
+    {
+      name: "Электроника",
+      icon: "Smartphone",
+      count: 12450,
+      slug: "electronics",
+    },
+    { name: "Одежда", icon: "Shirt", count: 8932, slug: "clothing" },
+    { name: "Дом и сад", icon: "Home", count: 6721, slug: "home-garden" },
+    { name: "Красота", icon: "Sparkles", count: 4582, slug: "beauty" },
+    { name: "Спорт", icon: "Dumbbell", count: 3456, slug: "sport" },
+    { name: "Авто", icon: "Car", count: 2341, slug: "auto" },
+    { name: "Книги", icon: "Book", count: 1876, slug: "books" },
+    { name: "Игрушки", icon: "GameController2", count: 1654, slug: "toys" },
   ];
 
   if (loading) {
@@ -196,23 +202,24 @@ const Home: React.FC = () => {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {categories.map((category) => (
-              <Button
-                key={category.name}
-                variant="outline"
-                className="h-auto p-4 flex flex-col items-center gap-2 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
-              >
-                <Icon
-                  name={category.icon as any}
-                  size={24}
-                  className="text-indigo-600"
-                />
-                <div className="text-center">
-                  <div className="font-medium text-sm">{category.name}</div>
-                  <div className="text-xs text-gray-500">
-                    {category.count.toLocaleString()}
+              <Link key={category.name} to={`/category/${category.slug}`}>
+                <Button
+                  variant="outline"
+                  className="h-auto p-4 flex flex-col items-center gap-2 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+                >
+                  <Icon
+                    name={category.icon as any}
+                    size={24}
+                    className="text-indigo-600"
+                  />
+                  <div className="text-center">
+                    <div className="font-medium text-sm">{category.name}</div>
+                    <div className="text-xs text-gray-500">
+                      {category.count.toLocaleString()}
+                    </div>
                   </div>
-                </div>
-              </Button>
+                </Button>
+              </Link>
             ))}
           </div>
         </div>
