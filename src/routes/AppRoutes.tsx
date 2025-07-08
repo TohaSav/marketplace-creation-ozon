@@ -20,6 +20,7 @@ import AdminChat from "@/pages/AdminChat";
 import AdminPayments from "@/pages/AdminPayments";
 import AdminDataManagement from "@/pages/AdminDataManagement";
 import ShopVerification from "@/pages/admin/ShopVerification";
+import PaymentSettings from "@/pages/admin/PaymentSettings";
 
 // Общие страницы
 import TradingRules from "@/pages/TradingRules";
@@ -156,6 +157,14 @@ const AppRoutes = () => {
         element={
           <AdminProtectedRoute>
             <AdvertisingAdminPage />
+          </AdminProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/payment-settings"
+        element={
+          <AdminProtectedRoute>
+            <PaymentSettings />
           </AdminProtectedRoute>
         }
       />

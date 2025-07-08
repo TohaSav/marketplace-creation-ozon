@@ -28,6 +28,16 @@ export default function PaymentButton({
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
+    // Проверяем настройки ЮKassa
+    if (!yooKassaService.isEnabled()) {
+      toast({
+        title: "Платежи недоступны",
+        description: "ЮKassa не настроена. Обратитесь к администратору.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!amount || parseFloat(amount) <= 0) {
       toast({
         title: "Ошибка",

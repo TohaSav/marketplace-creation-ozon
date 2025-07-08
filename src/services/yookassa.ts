@@ -48,9 +48,47 @@ class YooKassaService {
   private baseUrl = "https://api.yookassa.ru/v3";
 
   constructor() {
-    // В продакшене эти данные должны храниться в переменных окружения
-    this.shopId = import.meta.env.VITE_YOOKASSA_SHOP_ID || "";
-    this.secretKey = import.meta.env.VITE_YOOKASSA_SECRET_KEY || "";
+    // Загружаем настройки из админ-панели
+    this.loadSettings();
+  }
+
+  private loadSettings() {
+    try {
+      const stored = localStorage.getItem("yookassa_settings");
+      if (stored) {
+        const settings = JSON.parse(stored);
+        this.shopId = settings.shopId || "";
+        this.secretKey = settings.secretKey || "";
+      } else {
+        // Фолбэк на переменные окружения
+        this.shopId = import.meta.env.VITE_YOOKASSA_SHOP_ID || "";
+        this.secretKey = import.meta.env.VITE_YOOKASSA_SECRET_KEY || "";
+      }
+    } catch (error) {
+      console.error("Ошибка загрузки настроек ЮKassa:", error);
+      // Фолбэк на переменные окружения
+      this.shopId = import.meta.env.VITE_YOOKASSA_SHOP_ID || "";
+      this.secretKey = import.meta.env.VITE_YOOKASSA_SECRET_KEY || "";
+    }
+  }
+
+  // Метод для обновления настроек без перезагрузки
+  public updateSettings() {
+    this.loadSettings();
+  }
+
+  // Проверка активности сервиса
+  public isEnabled(): boolean {
+    try {
+      const stored = localStorage.getItem("yookassa_settings");
+      if (stored) {
+        const settings = JSON.parse(stored);
+        return settings.enabled && !!settings.shopId && !!settings.secretKey;
+      }
+    } catch (error) {
+      console.error("Ошибка проверки настроек:", error);
+    }
+    return !!this.shopId && !!this.secretKey;
   }
 
   private getAuthHeaders(): HeadersInit {
