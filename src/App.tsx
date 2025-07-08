@@ -31,7 +31,7 @@ const ErrorFallback = ({
 };
 
 const App = () => {
-  useAppInitialization();
+  // useAppInitialization();
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
