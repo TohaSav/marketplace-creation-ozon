@@ -86,19 +86,13 @@ const mockProducts: Product[] = [
 ];
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      // Имитация загрузки данных
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setProducts(mockProducts);
-      setLoading(false);
-    };
-
-    fetchProducts();
+    // Данные уже загружены мгновенно
+    setProducts(mockProducts);
+    setLoading(false);
   }, []);
 
   const getProductsByCategory = (category: string) => {
