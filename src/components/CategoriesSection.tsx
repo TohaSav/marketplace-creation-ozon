@@ -14,10 +14,10 @@ const categories = [
     name: "Дом и сад",
     icon: "Home",
     color: "bg-green-500",
-    slug: "home-garden",
+    slug: "home",
   },
   { name: "Красота", icon: "Sparkles", color: "bg-purple-500", slug: "beauty" },
-  { name: "Спорт", icon: "Dumbbell", color: "bg-orange-500", slug: "sport" },
+  { name: "Спорт", icon: "Dumbbell", color: "bg-orange-500", slug: "sports" },
   { name: "Авто", icon: "Car", color: "bg-red-500", slug: "auto" },
   { name: "Книги", icon: "Book", color: "bg-indigo-500", slug: "books" },
   {

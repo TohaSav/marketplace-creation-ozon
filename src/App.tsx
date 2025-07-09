@@ -8,6 +8,7 @@ import { MarketplaceProvider } from "@/contexts/MarketplaceContext";
 import ScrollToTop from "@/components/ScrollToTop";
 import Layout from "@/components/Layout";
 import Index from "@/pages/Index";
+import CategoryPage from "@/pages/CategoryPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,14 @@ const App = () => {
                   element={
                     <Layout>
                       <Index />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/category/:categoryId"
+                  element={
+                    <Layout>
+                      <CategoryPage />
                     </Layout>
                   }
                 />
