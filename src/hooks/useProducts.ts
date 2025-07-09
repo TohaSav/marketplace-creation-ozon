@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export interface Product {
   id: string;
@@ -86,14 +86,8 @@ const mockProducts: Product[] = [
 ];
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // Данные уже загружены мгновенно
-    setProducts(mockProducts);
-    setLoading(false);
-  }, []);
+  const [products] = useState<Product[]>(mockProducts);
+  const [loading] = useState(false);
 
   const getProductsByCategory = (category: string) => {
     return products.filter((product) => product.category === category);

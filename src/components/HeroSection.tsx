@@ -73,7 +73,7 @@ export default function HeroSection({ banners }: HeroSectionProps) {
           return (
             <div
               key={banner.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
+              className={`absolute inset-0 ${
                 index === currentBanner ? "opacity-100" : "opacity-0"
               }`}
             >
@@ -128,7 +128,7 @@ export default function HeroSection({ banners }: HeroSectionProps) {
           <button
             key={index}
             onClick={() => setCurrentBanner(index)}
-            className={`w-4 h-4 rounded-full transition-all duration-300 ${
+            className={`w-4 h-4 rounded-full ${
               index === currentBanner
                 ? "bg-white scale-110"
                 : "bg-white/50 hover:bg-white/70"

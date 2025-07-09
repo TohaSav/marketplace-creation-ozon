@@ -98,7 +98,7 @@ export default function Header() {
             {/* Logo */}
             <div className="flex items-center">
               <div
-                className="cursor-pointer hover:opacity-90 transition-opacity"
+                className="cursor-pointer hover:opacity-90"
                 onClick={() => navigate("/")}
               >
                 <img

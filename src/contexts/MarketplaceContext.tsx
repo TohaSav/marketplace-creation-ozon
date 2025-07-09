@@ -49,23 +49,14 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Загружаем данные из localStorage при инициализации
   useEffect(() => {
-    const savedCart = localStorage.getItem("marketplace-cart");
-    const savedFavorites = localStorage.getItem("marketplace-favorites");
+    try {
+      const savedCart = localStorage.getItem("marketplace-cart");
+      const savedFavorites = localStorage.getItem("marketplace-favorites");
 
-    if (savedCart) {
-      try {
-        setCart(JSON.parse(savedCart));
-      } catch (error) {
-        console.error("Ошибка загрузки корзины:", error);
-      }
-    }
-
-    if (savedFavorites) {
-      try {
-        setFavorites(JSON.parse(savedFavorites));
-      } catch (error) {
-        console.error("Ошибка загрузки избранного:", error);
-      }
+      if (savedCart) setCart(JSON.parse(savedCart));
+      if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+    } catch (error) {
+      console.error("Ошибка загрузки данных:", error);
     }
   }, []);
 
