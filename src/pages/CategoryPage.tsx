@@ -7,7 +7,7 @@ import Icon from "@/components/ui/icon";
 
 const CategoryPage = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
-  const { products, loading } = useProducts();
+  const { products } = useProducts();
 
   const categoryProducts = products.filter(
     (product) => product.category === categoryId,
@@ -23,6 +23,8 @@ const CategoryPage = () => {
       home: "Дом и сад",
       sports: "Спорт",
       beauty: "Красота",
+      auto: "Авто",
+      toys: "Игрушки",
     };
     return categories[id as keyof typeof categories] || id;
   };
@@ -61,10 +63,7 @@ const CategoryPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {categoryProducts.map((product) => (
-              <Card
-                key={product.id}
-                className="hover:shadow-lg transition-shadow"
-              >
+              <Card key={product.id} className="hover:shadow-lg">
                 <CardHeader className="pb-3">
                   <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
                     <Icon name="Package" size={48} className="text-gray-400" />
