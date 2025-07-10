@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-12">
@@ -8,84 +6,81 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Calibre Store</h3>
             <p className="text-gray-400">
-              Современный российский маркетплейс с передовыми технологиями
+              Маркетплейс товаров от проверенных продавцов
             </p>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Покупателям</h3>
+            <h4 className="font-semibold mb-4">Покупателям</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <Link to="/how-to-order" className="hover:text-white">
+                <a href="/how-to-order" className="hover:text-white">
                   Как заказать
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/delivery" className="hover:text-white">
+                <a href="/delivery" className="hover:text-white">
                   Доставка
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-white">
-                  Возврат
-                </Link>
+                <a href="/returns" className="hover:text-white">
+                  Возврат товаров
+                </a>
               </li>
               <li>
-                <Link to="/support" className="hover:text-white">
-                  Поддержка
-                </Link>
+                <a href="/payment-methods" className="hover:text-white">
+                  Способы оплаты
+                </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Продавцам</h3>
+            <h4 className="font-semibold mb-4">Продавцам</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <Link to="/how-to-sell" className="hover:text-white">
+                <a href="/how-to-sell" className="hover:text-white">
                   Как продавать
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/commissions" className="hover:text-white">
+                <a href="/commissions" className="hover:text-white">
                   Комиссии
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/seller/tariffs" className="hover:text-white">
-                  Тарифы
-                </Link>
+                <a href="/trading-rules" className="hover:text-white">
+                  Правила торговли
+                </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Компания</h3>
+            <h4 className="font-semibold mb-4">Поддержка</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <Link to="/privacy" className="hover:text-white">
-                  Конфиденциальность
-                </Link>
+                <a href="/support" className="hover:text-white">
+                  Служба поддержки
+                </a>
               </li>
               <li>
-                <Link to="/personal-data" className="hover:text-white">
-                  Персональные данные
-                </Link>
+                <a href="/privacy" className="hover:text-white">
+                  Политика конфиденциальности
+                </a>
               </li>
               <li>
-                <a
-                  href="mailto:support@calibrestore.ru"
-                  className="hover:text-white"
-                >
-                  Контакты
+                <a href="/personal-data" className="hover:text-white">
+                  Обработка данных
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 Calibre Store. Все права защищены.</p>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; 2024 Calibre Store. Все права защищены.</p>
         </div>
       </div>
     </footer>

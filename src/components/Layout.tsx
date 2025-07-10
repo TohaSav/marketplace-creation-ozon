@@ -10,7 +10,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="min-h-screen">{children}</main>
+      <main>{children}</main>
       <Footer />
     </div>
   );

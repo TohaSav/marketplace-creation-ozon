@@ -1,67 +1,53 @@
-import HeroSection from "@/components/HeroSection";
-import CategoriesSection from "@/components/CategoriesSection";
-import ProductsSection from "@/components/ProductsSection";
-import BenefitsSection from "@/components/BenefitsSection";
-import CTASection from "@/components/CTASection";
-
 export default function Index() {
-  // Баннеры для карусели
-  const banners = [
-    {
-      id: 1,
-      gradient: "bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900",
-    },
-    {
-      id: 2,
-      gradient: "bg-gradient-to-r from-orange-400 via-red-500 to-pink-600",
-    },
-    {
-      id: 3,
-      gradient: "bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700",
-    },
-    {
-      id: 4,
-      gradient: "bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600",
-    },
-    {
-      id: 5,
-      gradient: "bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600",
-    },
-  ];
-
-  // Категории товаров
-  const categories = [
-    {
-      name: "Электроника",
-      icon: "Smartphone",
-      color: "bg-blue-500",
-      slug: "electronics",
-    },
-    { name: "Одежда", icon: "Shirt", color: "bg-pink-500", slug: "clothing" },
-    { name: "Дом и сад", icon: "Home", color: "bg-green-500", slug: "home" },
-    { name: "Спорт", icon: "Dumbbell", color: "bg-orange-500", slug: "sport" },
-    {
-      name: "Красота",
-      icon: "Sparkles",
-      color: "bg-purple-500",
-      slug: "beauty",
-    },
-    { name: "Авто", icon: "Car", color: "bg-red-500", slug: "auto" },
-    { name: "Книги", icon: "BookOpen", color: "bg-indigo-500", slug: "books" },
-    { name: "Игрушки", icon: "Gamepad2", color: "bg-yellow-500", slug: "toys" },
-  ];
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <HeroSection banners={banners} />
+      <div className="text-center py-20">
+        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+          Calibre Store
+        </h1>
+        <p className="text-xl text-gray-600 mb-8">
+          Маркетплейс товаров от проверенных продавцов
+        </p>
+        <div className="max-w-2xl mx-auto mb-12">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Поиск товаров..."
+              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <button className="absolute right-2 top-2 bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700">
+              Найти
+            </button>
+          </div>
+        </div>
 
-      <CategoriesSection />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+          <div className="bg-white p-6 rounded-lg shadow-md border">
+            <div className="w-12 h-12 bg-blue-500 rounded-lg mx-auto mb-4"></div>
+            <h3 className="font-semibold">Электроника</h3>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-md border">
+            <div className="w-12 h-12 bg-pink-500 rounded-lg mx-auto mb-4"></div>
+            <h3 className="font-semibold">Одежда</h3>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-md border">
+            <div className="w-12 h-12 bg-green-500 rounded-lg mx-auto mb-4"></div>
+            <h3 className="font-semibold">Дом и сад</h3>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-md border">
+            <div className="w-12 h-12 bg-orange-500 rounded-lg mx-auto mb-4"></div>
+            <h3 className="font-semibold">Спорт</h3>
+          </div>
+        </div>
 
-      <ProductsSection title="Рекомендуемые товары" />
-
-      <BenefitsSection />
-
-      <CTASection />
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-8 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">Готовы начать продавать?</h2>
+          <p className="mb-6">Присоединяйтесь к тысячам продавцов</p>
+          <button className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100">
+            Стать продавцом
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
