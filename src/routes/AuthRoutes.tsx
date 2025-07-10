@@ -4,48 +4,45 @@ import Layout from "@/components/Layout";
 // Страницы авторизации
 import UserLogin from "@/pages/UserLogin";
 import UserRegister from "@/pages/UserRegister";
+import SellerLogin from "@/pages/SellerLogin";
 
-// Конфигурация маршрутов авторизации
-const authRoutes = [
-  {
-    path: "/login",
-    component: UserLogin,
-    title: "Вход пользователя",
-    description: "Авторизация покупателей",
-  },
-  {
-    path: "/register",
-    component: UserRegister,
-    title: "Регистрация пользователя",
-    description: "Создание аккаунта покупателя",
-  },
-];
-
-// Обертка для Layout
-const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
-  <Layout>{children}</Layout>
-);
-
-// Генерация JSX маршрутов
-export const AuthRoutes = () => {
-  return (
-    <>
-      {authRoutes.map(({ path, component: Component }) => (
+const AuthRoutes = () => {
+  try {
+    return (
+      <>
+        {/* Авторизация пользователей */}
         <Route
-          key={path}
-          path={path}
+          path="/login"
           element={
-            <LayoutWrapper>
-              <Component />
-            </LayoutWrapper>
+            <Layout>
+              <UserLogin />
+            </Layout>
           }
         />
-      ))}
-    </>
-  );
-};
+        <Route
+          path="/register"
+          element={
+            <Layout>
+              <UserRegister />
+            </Layout>
+          }
+        />
 
-// Экспорт конфигурации для возможного переиспользования
-export { authRoutes };
+        {/* Вход/регистрация продавцов */}
+        <Route
+          path="/seller"
+          element={
+            <Layout>
+              <SellerLogin />
+            </Layout>
+          }
+        />
+      </>
+    );
+  } catch (error) {
+    console.error("AuthRoutes error:", error);
+    return null;
+  }
+};
 
 export default AuthRoutes;

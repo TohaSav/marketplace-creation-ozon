@@ -84,26 +84,21 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
 
 // Генерация JSX маршрутов
 export const PublicRoutes = () => {
-  try {
-    return (
-      <>
-        {publicRoutes.map(({ path, component: Component }) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <LayoutWrapper>
-                <Component />
-              </LayoutWrapper>
-            }
-          />
-        ))}
-      </>
-    );
-  } catch (error) {
-    console.error("PublicRoutes error:", error);
-    return null;
-  }
+  return (
+    <>
+      {publicRoutes.map(({ path, component: Component }) => (
+        <Route
+          key={path}
+          path={path}
+          element={
+            <LayoutWrapper>
+              <Component />
+            </LayoutWrapper>
+          }
+        />
+      ))}
+    </>
+  );
 };
 
 export default PublicRoutes;

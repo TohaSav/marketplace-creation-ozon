@@ -1,130 +1,113 @@
-import { Route, Navigate } from "react-router-dom";
+import { Route } from "react-router-dom";
 import AdminProtectedRoute from "@/components/AdminProtectedRoute";
 
 // Админ страницы
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
-import AdminProducts from "@/pages/AdminProducts";
-import AdminOrders from "@/pages/AdminOrders";
 import AdminUsers from "@/pages/AdminUsers";
 import AdminSellers from "@/pages/AdminSellers";
-import AdminAnalytics from "@/pages/AdminAnalytics";
-import AdminChat from "@/pages/AdminChat";
+import AdminProducts from "@/pages/AdminProducts";
+import AdminOrders from "@/pages/AdminOrders";
 import AdminPayments from "@/pages/AdminPayments";
+import AdminAdvertising from "@/pages/AdminAdvertising";
+import AdminAnalytics from "@/pages/AdminAnalytics";
 import AdminDataManagement from "@/pages/AdminDataManagement";
+import AdminChat from "@/pages/AdminChat";
 
-// Специализированные админ страницы
-import AdvertisingAdminPage from "@/pages/admin/AdvertisingAdminPage";
-import ShopVerification from "@/pages/admin/ShopVerification";
-import PaymentSettings from "@/pages/admin/PaymentSettings";
+const AdminRoutes = () => {
+  try {
+    return (
+      <>
+        {/* Авторизация админа */}
+        <Route path="/admin" element={<AdminLogin />} />
 
-// Конфигурация маршрутов
-const adminRoutes = [
-  {
-    path: "dashboard",
-    component: AdminDashboard,
-    protected: true,
-  },
-  {
-    path: "products",
-    component: AdminProducts,
-    protected: true,
-  },
-  {
-    path: "orders",
-    component: AdminOrders,
-    protected: true,
-  },
-  {
-    path: "users",
-    component: AdminUsers,
-    protected: true,
-  },
-  {
-    path: "sellers",
-    component: AdminSellers,
-    protected: true,
-  },
-  {
-    path: "analytics",
-    component: AdminAnalytics,
-    protected: true,
-  },
-  {
-    path: "payments",
-    component: AdminPayments,
-    protected: true,
-  },
-  {
-    path: "data",
-    component: AdminDataManagement,
-    protected: true,
-  },
-  {
-    path: "chat",
-    component: AdminChat,
-    protected: true,
-  },
-  {
-    path: "verification",
-    component: ShopVerification,
-    protected: true,
-  },
-  {
-    path: "advertising",
-    component: AdvertisingAdminPage,
-    protected: true,
-  },
-  {
-    path: "payment-settings",
-    component: PaymentSettings,
-    protected: true,
-  },
-  {
-    path: "settings",
-    component: AdminDashboard, // Временно перенаправляем на dashboard
-    protected: true,
-  },
-];
-
-// Компонент с защищенным маршрутом
-const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => (
-  <AdminProtectedRoute>{children}</AdminProtectedRoute>
-);
-
-// Генерация JSX маршрутов
-export const AdminRoutes = () => {
-  return (
-    <>
-      {/* Редирект с /admin на /admin/dashboard */}
-      <Route
-        path="/admin"
-        element={<Navigate to="/admin/dashboard" replace />}
-      />
-
-      {/* Страница входа (не защищена) */}
-      <Route path="/admin/login" element={<AdminLogin />} />
-
-      {/* Динамически генерируемые защищенные маршруты */}
-      {adminRoutes.map(
-        ({ path, component: Component, protected: isProtected }) => (
-          <Route
-            key={path}
-            path={`/admin/${path}`}
-            element={
-              isProtected ? (
-                <ProtectedAdminRoute>
-                  <Component />
-                </ProtectedAdminRoute>
-              ) : (
-                <Component />
-              )
-            }
-          />
-        ),
-      )}
-    </>
-  );
+        {/* Защищенные админ маршруты */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminProtectedRoute>
+              <AdminUsers />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/sellers"
+          element={
+            <AdminProtectedRoute>
+              <AdminSellers />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <AdminProtectedRoute>
+              <AdminProducts />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminProtectedRoute>
+              <AdminOrders />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payments"
+          element={
+            <AdminProtectedRoute>
+              <AdminPayments />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/advertising"
+          element={
+            <AdminProtectedRoute>
+              <AdminAdvertising />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <AdminProtectedRoute>
+              <AdminAnalytics />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/data"
+          element={
+            <AdminProtectedRoute>
+              <AdminDataManagement />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/chat"
+          element={
+            <AdminProtectedRoute>
+              <AdminChat />
+            </AdminProtectedRoute>
+          }
+        />
+      </>
+    );
+  } catch (error) {
+    console.error("AdminRoutes error:", error);
+    return null;
+  }
 };
 
 export default AdminRoutes;

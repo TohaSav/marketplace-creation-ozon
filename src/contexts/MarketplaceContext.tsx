@@ -1,15 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   image: string;
-  category: string;
-  sellerId: number;
-  shopName: string;
-  inStock: boolean;
-  discount?: number;
+  seller: string;
 }
 
 interface CartItem extends Product {
@@ -17,16 +13,17 @@ interface CartItem extends Product {
 }
 
 interface MarketplaceContextType {
-  cart: CartItem[];
   favorites: Product[];
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: number) => void;
-  updateCartQuantity: (productId: number, quantity: number) => void;
-  clearCart: () => void;
+  cart: CartItem[];
   addToFavorites: (product: Product) => void;
-  removeFromFavorites: (productId: number) => void;
-  getTotalPrice: () => number;
+  removeFromFavorites: (productId: string) => void;
+  addToCart: (product: Product, quantity?: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateCartQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
   getTotalItems: () => number;
+  getTotalPrice: () => number;
+  isFavorite: (productId: string) => boolean;
 }
 
 const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
@@ -36,7 +33,7 @@ const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
 export const useMarketplace = () => {
   const context = useContext(MarketplaceContext);
   if (!context) {
-    throw new Error("useMarketplace must be used within a MarketplaceProvider");
+    throw new Error("useMarketplace must be used within MarketplaceProvider");
   }
   return context;
 };
@@ -44,60 +41,86 @@ export const useMarketplace = () => {
 export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [favorites, setFavorites] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Загружаем данные из localStorage при инициализации
+  // Загрузка данных из localStorage при инициализации
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem("marketplace-cart");
       const savedFavorites = localStorage.getItem("marketplace-favorites");
+      const savedCart = localStorage.getItem("marketplace-cart");
 
-      if (savedCart) setCart(JSON.parse(savedCart));
-      if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+      if (savedFavorites) {
+        setFavorites(JSON.parse(savedFavorites));
+      }
+
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
     } catch (error) {
-      console.error("Ошибка загрузки данных:", error);
+      console.error("Error loading marketplace data:", error);
     }
   }, []);
 
-  // Сохраняем корзину в localStorage при изменении
+  // Сохранение избранного в localStorage
   useEffect(() => {
-    localStorage.setItem("marketplace-cart", JSON.stringify(cart));
-  }, [cart]);
-
-  // Сохраняем избранное в localStorage при изменении
-  useEffect(() => {
-    localStorage.setItem("marketplace-favorites", JSON.stringify(favorites));
+    try {
+      localStorage.setItem("marketplace-favorites", JSON.stringify(favorites));
+    } catch (error) {
+      console.error("Error saving favorites:", error);
+    }
   }, [favorites]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+  // Сохранение корзины в localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("marketplace-cart", JSON.stringify(cart));
+    } catch (error) {
+      console.error("Error saving cart:", error);
+    }
+  }, [cart]);
+
+  const addToFavorites = (product: Product) => {
+    setFavorites((prev) => {
+      if (prev.find((item) => item.id === product.id)) {
+        return prev; // Уже в избранном
+      }
+      return [...prev, product];
+    });
+  };
+
+  const removeFromFavorites = (productId: string) => {
+    setFavorites((prev) => prev.filter((item) => item.id !== productId));
+  };
+
+  const addToCart = (product: Product, quantity = 1) => {
+    setCart((prev) => {
+      const existingItem = prev.find((item) => item.id === product.id);
 
       if (existingItem) {
-        return prevCart.map((item) =>
+        return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item,
         );
-      } else {
-        return [...prevCart, { ...product, quantity }];
       }
+
+      return [...prev, { ...product, quantity }];
     });
   };
 
-  const removeFromCart = (productId: number) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  const removeFromCart = (productId: string) => {
+    setCart((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  const updateCartQuantity = (productId: number, quantity: number) => {
+  const updateCartQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }
 
-    setCart((prevCart) =>
-      prevCart.map((item) =>
+    setCart((prev) =>
+      prev.map((item) =>
         item.id === productId ? { ...item, quantity } : item,
       ),
     );
@@ -107,48 +130,30 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     setCart([]);
   };
 
-  const addToFavorites = (product: Product) => {
-    setFavorites((prevFavorites) => {
-      const isAlreadyFavorite = prevFavorites.some(
-        (item) => item.id === product.id,
-      );
-      if (!isAlreadyFavorite) {
-        return [...prevFavorites, product];
-      }
-      return prevFavorites;
-    });
-  };
-
-  const removeFromFavorites = (productId: number) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter((item) => item.id !== productId),
-    );
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => {
-      const price = item.discount
-        ? item.price * (1 - item.discount / 100)
-        : item.price;
-      return total + price * item.quantity;
-    }, 0);
-  };
-
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  const isFavorite = (productId: string) => {
+    return favorites.some((item) => item.id === productId);
+  };
+
   const value: MarketplaceContextType = {
-    cart,
     favorites,
+    cart,
+    addToFavorites,
+    removeFromFavorites,
     addToCart,
     removeFromCart,
     updateCartQuantity,
     clearCart,
-    addToFavorites,
-    removeFromFavorites,
-    getTotalPrice,
     getTotalItems,
+    getTotalPrice,
+    isFavorite,
   };
 
   return (
