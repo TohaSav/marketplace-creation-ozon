@@ -35,7 +35,38 @@ export default function Shorts() {
   const [newComment, setNewComment] = useState("");
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([]);
+  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([
+    {
+      id: "1",
+      videoUrl: "/api/placeholder/video/1",
+      thumbnail: "/api/placeholder/400/600",
+      productId: "1",
+      productName: "iPhone 15 Pro",
+      productImage: "/api/placeholder/100/100",
+      userName: "Анна Петрова",
+      userAvatar: "/api/placeholder/50/50",
+      rating: 5,
+      text: "Отличный телефон! Камера просто супер, фотографии получаются очень четкие. Рекомендую всем!",
+      likes: 234,
+      isLiked: false,
+      createdAt: "2024-01-15",
+    },
+    {
+      id: "2",
+      videoUrl: "/api/placeholder/video/2",
+      thumbnail: "/api/placeholder/400/600",
+      productId: "2",
+      productName: "Samsung Galaxy S24",
+      productImage: "/api/placeholder/100/100",
+      userName: "Михаил Сидоров",
+      userAvatar: "/api/placeholder/50/50",
+      rating: 4,
+      text: "Хороший смартфон за свои деньги. Батарея держит весь день, экран яркий.",
+      likes: 156,
+      isLiked: true,
+      createdAt: "2024-01-14",
+    },
+  ]);
 
   const handleLike = (videoId: string) => {
     setVideoReviews((prev) =>
