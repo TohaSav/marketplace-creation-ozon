@@ -21,31 +21,45 @@ import NotFound from "@/pages/NotFound";
  * - 404: обработка несуществующих маршрутов
  */
 const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Админ-панель */}
-      <AdminRoutes />
+  try {
+    return (
+      <Routes>
+        {/* Админ-панель */}
+        <AdminRoutes />
 
-      {/* Авторизация */}
-      <AuthRoutes />
+        {/* Авторизация */}
+        <AuthRoutes />
 
-      {/* Кабинет продавца */}
-      <SellerRoutes />
+        {/* Кабинет продавца */}
+        <SellerRoutes />
 
-      {/* Публичные страницы */}
-      <PublicRoutes />
+        {/* Публичные страницы */}
+        <PublicRoutes />
 
-      {/* 404 - должно быть последним */}
-      <Route
-        path="*"
-        element={
-          <Layout>
-            <NotFound />
-          </Layout>
-        }
-      />
-    </Routes>
-  );
+        {/* 404 - должно быть последним */}
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <NotFound />
+            </Layout>
+          }
+        />
+      </Routes>
+    );
+  } catch (error) {
+    console.error("AppRoutes error:", error);
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Calibre Store
+          </h1>
+          <p className="text-gray-600">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default AppRoutes;
