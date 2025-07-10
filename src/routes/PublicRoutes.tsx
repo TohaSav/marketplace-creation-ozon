@@ -42,6 +42,7 @@ const publicRoutes = [
   // Основные
   { path: "/", component: Index, exact: true },
   { path: "/category/:categorySlug", component: Category },
+  { path: "/category/:categoryId", component: Category },
 
   // Информационные
   { path: "/privacy", component: PrivacyPolicy },

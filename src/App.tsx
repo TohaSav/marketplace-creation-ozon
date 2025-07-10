@@ -6,10 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import { MarketplaceProvider } from "@/contexts/MarketplaceContext";
 import ScrollToTop from "@/components/ScrollToTop";
-import Layout from "@/components/Layout";
-import Index from "@/pages/Index";
-import CategoryPage from "@/pages/CategoryPage";
-import NotFound from "@/pages/NotFound";
+import AppRoutes from "@/routes/AppRoutes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,32 +29,7 @@ const App = () => {
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <Layout>
-                      <Index />
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/category/:categoryId"
-                  element={
-                    <Layout>
-                      <CategoryPage />
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="*"
-                  element={
-                    <Layout>
-                      <NotFound />
-                    </Layout>
-                  }
-                />
-              </Routes>
+              <AppRoutes />
             </BrowserRouter>
           </TooltipProvider>
         </MarketplaceProvider>
