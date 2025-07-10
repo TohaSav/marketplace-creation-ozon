@@ -10,23 +10,27 @@ import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 
 const Category = () => {
-  const { categorySlug } = useParams<{ categorySlug: string }>();
+  const { categorySlug, categoryId } = useParams<{
+    categorySlug?: string;
+    categoryId?: string;
+  }>();
+  const categoryKey = categorySlug || categoryId;
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("popular");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Получаем данные для текущей категории
-  const currentCategory = categories[categorySlug as keyof typeof categories];
+  const currentCategory = categories[categoryKey as keyof typeof categories];
   const currentProducts =
-    productsByCategory[categorySlug as keyof typeof productsByCategory] || [];
+    productsByCategory[categoryKey as keyof typeof productsByCategory] || [];
 
   useEffect(() => {
     setTimeout(() => {
       setProducts(currentProducts);
       setLoading(false);
     }, 500);
-  }, [categorySlug]);
+  }, [categoryKey]);
 
   // Фильтрация товаров
   const filteredProducts = products.filter((product) =>

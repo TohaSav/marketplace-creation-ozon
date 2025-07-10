@@ -28,7 +28,21 @@ export const categories: Record<string, Category> = {
     description: "Товары для дома, сада и дачи",
     gradient: "from-green-500 to-emerald-600",
   },
+  home: {
+    name: "Дом и сад",
+    icon: "Home",
+    color: "bg-green-500",
+    description: "Товары для дома, сада и дачи",
+    gradient: "from-green-500 to-emerald-600",
+  },
   sport: {
+    name: "Спорт",
+    icon: "Dumbbell",
+    color: "bg-orange-500",
+    description: "Спортивные товары и инвентарь",
+    gradient: "from-orange-500 to-red-600",
+  },
+  sports: {
     name: "Спорт",
     icon: "Dumbbell",
     color: "bg-orange-500",
