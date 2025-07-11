@@ -67,7 +67,7 @@ const Navigation = ({
       <NavButton
         icon="Package"
         label="Заказы"
-        to={isLoggedIn ? "/orders" : undefined}
+        to={isLoggedIn ? "/profile" : undefined}
         onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
         isActive={isLoggedIn}
       />
@@ -75,7 +75,7 @@ const Navigation = ({
       <NavButton
         icon="Heart"
         label="Избранное"
-        to={isLoggedIn ? "/favorites" : undefined}
+        to={isLoggedIn ? "/profile" : undefined}
         onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
         isActive={isLoggedIn}
       />
@@ -90,31 +90,43 @@ const Navigation = ({
       />
 
       <div className="relative">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
-        >
-          <Icon name="User" size={20} className="mb-1" />
-          <span className="text-xs">Войти</span>
-        </button>
+        {isLoggedIn ? (
+          <Link
+            to="/profile"
+            className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
+          >
+            <Icon name="User" size={20} className="mb-1" />
+            <span className="text-xs">Профиль</span>
+          </Link>
+        ) : (
+          <>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              <Icon name="User" size={20} className="mb-1" />
+              <span className="text-xs">Войти</span>
+            </button>
 
-        {isMenuOpen && (
-          <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
-            <div className="p-4">
-              <Link
-                to="/login"
-                className="block w-full mb-2 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Войти
-              </Link>
-              <Link
-                to="/register"
-                className="block w-full px-4 py-2 border border-gray-300 text-gray-700 text-center rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Зарегистрироваться
-              </Link>
-            </div>
-          </div>
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
+                <div className="p-4">
+                  <Link
+                    to="/login"
+                    className="block w-full mb-2 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Войти
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block w-full px-4 py-2 border border-gray-300 text-gray-700 text-center rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Зарегистрироваться
+                  </Link>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

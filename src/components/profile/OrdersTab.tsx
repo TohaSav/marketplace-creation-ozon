@@ -37,7 +37,79 @@ export default function OrdersTab({ userStats }: OrdersTabProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Здесь будут отображаться реальные заказы пользователя */}
+            {/* Пример заказов для демонстрации */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h4 className="font-medium">Заказ #12345</h4>
+                  <p className="text-sm text-gray-600">от 15 января 2024</p>
+                </div>
+                <div className="text-right">
+                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                    Доставлен
+                  </span>
+                  <p className="font-semibold mt-1">3 450 ₽</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gray-200 rounded"></div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      Смартфон Samsung Galaxy S23
+                    </p>
+                    <p className="text-xs text-gray-600">2 200 ₽</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gray-200 rounded"></div>
+                  <div>
+                    <p className="text-sm font-medium">Чехол для телефона</p>
+                    <p className="text-xs text-gray-600">1 250 ₽</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2">
+                <Button variant="outline" size="sm">
+                  Повторить заказ
+                </Button>
+                <Button variant="outline" size="sm">
+                  Детали заказа
+                </Button>
+              </div>
+            </div>
+
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h4 className="font-medium">Заказ #12346</h4>
+                  <p className="text-sm text-gray-600">от 10 января 2024</p>
+                </div>
+                <div className="text-right">
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                    В пути
+                  </span>
+                  <p className="font-semibold mt-1">1 890 ₽</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gray-200 rounded"></div>
+                  <div>
+                    <p className="text-sm font-medium">Беспроводные наушники</p>
+                    <p className="text-xs text-gray-600">1 890 ₽</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2">
+                <Button variant="outline" size="sm">
+                  Отследить заказ
+                </Button>
+                <Button variant="outline" size="sm">
+                  Детали заказа
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
