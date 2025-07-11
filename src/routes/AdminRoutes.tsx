@@ -13,6 +13,7 @@ import AdminAdvertising from "@/pages/AdminAdvertising";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 import AdminDataManagement from "@/pages/AdminDataManagement";
 import AdminChat from "@/pages/AdminChat";
+import AdminLiveChat from "@/pages/AdminLiveChat";
 
 const AdminRoutes = () => {
   try {
@@ -100,6 +101,14 @@ const AdminRoutes = () => {
           element={
             <AdminProtectedRoute>
               <AdminChat />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/live-chat"
+          element={
+            <AdminProtectedRoute>
+              <AdminLiveChat />
             </AdminProtectedRoute>
           }
         />

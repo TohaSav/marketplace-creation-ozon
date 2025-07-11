@@ -1,65 +1,27 @@
-import Header from "@/components/Header";
-import { Button } from "@/components/ui/button";
-import Icon from "@/components/ui/icon";
 import { useState, useEffect, useRef } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
+import Icon from "@/components/ui/icon";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useChat } from "@/hooks/useChat";
 
 interface Message {
   id: string;
   text: string;
-  sender: "user" | "support";
+  sender: "user" | "admin";
   timestamp: Date;
-  status?: "sending" | "sent" | "read";
-}
-
-interface SupportTicket {
-  id: string;
-  subject: string;
-  status: "open" | "pending" | "resolved";
-  lastMessage: string;
-  timestamp: Date;
-  unreadCount: number;
+  status: "sent" | "delivered" | "read";
 }
 
 export default function Support() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      text: "Здравствуйте! Я Анна, ваш помощник по поддержке. Чем могу помочь?",
-      sender: "support",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
-      status: "sent",
-    },
-  ]);
-
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
-  const [tickets, setTickets] = useState<SupportTicket[]>([
-    {
-      id: "T001",
-      subject: "Проблема с заказом #12345",
-      status: "open",
-      lastMessage: "Заказ не пришел в указанный срок",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      unreadCount: 1,
-    },
-    {
-      id: "T002",
-      subject: "Вопрос по возврату",
-      status: "resolved",
-      lastMessage: "Спасибо за помощь!",
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      unreadCount: 0,
-    },
-  ]);
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"chat" | "tickets">("chat");
+  const { sendMessage, isLoading } = useChat();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -69,85 +31,57 @@ export default function Support() {
     scrollToBottom();
   }, [messages]);
 
-  const sendMessage = () => {
+  useEffect(() => {
+    // Имитация начального сообщения от администратора
+    const initialMessage: Message = {
+      id: "1",
+      text: "Здравствуйте! Как дела? Чем могу помочь? 😊",
+      sender: "admin",
+      timestamp: new Date(),
+      status: "read",
+    };
+    setMessages([initialMessage]);
+  }, []);
+
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const userMessage: Message = {
+    const message: Message = {
       id: Date.now().toString(),
       text: newMessage,
       sender: "user",
       timestamp: new Date(),
-      status: "sending",
+      status: "sent",
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, message]);
     setNewMessage("");
-    setIsTyping(true);
 
-    // Имитируем отправку сообщения
+    // Имитация отправки сообщения
+    await sendMessage(newMessage);
+
+    // Имитация ответа администратора
     setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === userMessage.id ? { ...msg, status: "sent" } : msg,
-        ),
-      );
-    }, 1000);
-
-    // Имитируем ответ поддержки
-    setTimeout(
-      () => {
+      setIsTyping(true);
+      setTimeout(() => {
         setIsTyping(false);
-        const supportMessage: Message = {
+        const adminResponse: Message = {
           id: (Date.now() + 1).toString(),
-          text: getAutoReply(newMessage),
-          sender: "support",
+          text: "Спасибо за ваше сообщение! Мы рассмотрим вашу проблему и свяжемся с вами в ближайшее время.",
+          sender: "admin",
           timestamp: new Date(),
-          status: "sent",
+          status: "read",
         };
-        setMessages((prev) => [...prev, supportMessage]);
-
-        // Уведомление о новом сообщении
-        addNotification(
-          "Новое сообщение от поддержки",
-          supportMessage.text.slice(0, 50) + "...",
-        );
-      },
-      2000 + Math.random() * 2000,
-    );
+        setMessages((prev) => [...prev, adminResponse]);
+      }, 2000);
+    }, 1000);
   };
 
-  const getAutoReply = (userMessage: string): string => {
-    const msg = userMessage.toLowerCase();
-    if (msg.includes("заказ") || msg.includes("доставка")) {
-      return "Понял вас! Для проверки статуса заказа укажите, пожалуйста, номер заказа. Я сразу все проверю для вас.";
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
-    if (msg.includes("возврат") || msg.includes("вернуть")) {
-      return "Конечно помогу с возвратом! Расскажите подробнее о проблеме с товаром. Мы решим этот вопрос максимально быстро.";
-    }
-    if (msg.includes("оплата") || msg.includes("деньги")) {
-      return "Я помогу разобраться с вопросом по оплате. Опишите, пожалуйста, ситуацию подробнее.";
-    }
-    return "Спасибо за обращение! Передаю ваш вопрос специалисту. В ближайшее время с вами свяжется наш эксперт.";
-  };
-
-  const addNotification = (title: string, message: string) => {
-    // Добавляем уведомление в localStorage для страницы уведомлений
-    const notifications = JSON.parse(
-      localStorage.getItem("notifications") || "[]",
-    );
-    const newNotification = {
-      id: Date.now().toString(),
-      title,
-      message,
-      type: "support",
-      timestamp: new Date().toISOString(),
-      read: false,
-    };
-    notifications.unshift(newNotification);
-    localStorage.setItem(
-      "notifications",
-      JSON.stringify(notifications.slice(0, 100)),
-    ); // Храним последние 100
   };
 
   const formatTime = (date: Date) => {
@@ -157,242 +91,212 @@ export default function Support() {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case "open":
-        return "bg-green-100 text-green-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "resolved":
-        return "bg-gray-100 text-gray-800";
+      case "sent":
+        return <Icon name="Check" size={14} className="text-gray-400" />;
+      case "delivered":
+        return <Icon name="CheckCheck" size={14} className="text-gray-400" />;
+      case "read":
+        return <Icon name="CheckCheck" size={14} className="text-blue-500" />;
       default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "open":
-        return "Открыт";
-      case "pending":
-        return "В ожидании";
-      case "resolved":
-        return "Решен";
-      default:
-        return status;
+        return null;
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Центр поддержки
-          </h1>
-          <p className="text-gray-600">Мы здесь, чтобы помочь вам 24/7</p>
-        </div>
-
-        {/* Status Bar */}
-        <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-3 h-3 rounded-full ${isOnline ? "bg-green-500" : "bg-gray-400"}`}
-              ></div>
-              <span className="font-medium">
-                {isOnline ? "Поддержка онлайн" : "Поддержка оффлайн"}
-              </span>
-              <span className="text-sm text-gray-500">
-                Среднее время ответа: 2 мин
-              </span>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-[80vh] flex flex-col">
+          {/* Header */}
+          <div className="bg-green-600 text-white p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src="/api/placeholder/40/40" />
+                <AvatarFallback className="bg-green-700 text-white">
+                  <Icon name="Headphones" size={20} />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="font-semibold">Поддержка Calibre Store</h1>
+                <div className="flex items-center space-x-2 text-sm">
+                  <div
+                    className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-300" : "bg-gray-300"}`}
+                  />
+                  <span className="text-green-100">
+                    {isOnline ? "онлайн" : "офлайн"}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center space-x-2">
               <Button
-                variant={activeTab === "chat" ? "default" : "outline"}
+                variant="ghost"
                 size="sm"
-                onClick={() => setActiveTab("chat")}
+                className="text-white hover:bg-green-700"
               >
-                <Icon name="MessageCircle" size={16} className="mr-2" />
-                Чат
+                <Icon name="Phone" size={16} />
               </Button>
               <Button
-                variant={activeTab === "tickets" ? "default" : "outline"}
+                variant="ghost"
                 size="sm"
-                onClick={() => setActiveTab("tickets")}
+                className="text-white hover:bg-green-700"
               >
-                <Icon name="Ticket" size={16} className="mr-2" />
-                Тикеты
+                <Icon name="Video" size={16} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-green-700"
+              >
+                <Icon name="MoreVertical" size={16} />
               </Button>
             </div>
           </div>
-        </div>
 
-        {activeTab === "chat" && (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            {/* Chat Messages */}
-            <ScrollArea className="h-96 p-4">
-              <div className="space-y-4">
-                {messages.map((message) => (
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                    message.sender === "user"
+                      ? "bg-green-500 text-white"
+                      : "bg-white text-gray-800 shadow-sm"
+                  }`}
+                >
+                  <p className="text-sm">{message.text}</p>
                   <div
-                    key={message.id}
-                    className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex items-center justify-end space-x-1 mt-1 text-xs ${
+                      message.sender === "user"
+                        ? "text-green-100"
+                        : "text-gray-500"
+                    }`}
                   >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.sender === "user"
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-900"
-                      }`}
-                    >
-                      <p className="text-sm">{message.text}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs opacity-70">
-                          {formatTime(message.timestamp)}
-                        </span>
-                        {message.sender === "user" && message.status && (
-                          <Icon
-                            name={message.status === "sent" ? "Check" : "Clock"}
-                            size={12}
-                            className="opacity-70"
-                          />
-                        )}
-                      </div>
-                    </div>
+                    <span>{formatTime(message.timestamp)}</span>
+                    {message.sender === "user" && getStatusIcon(message.status)}
                   </div>
-                ))}
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-100 px-4 py-2 rounded-lg">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div
-                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "0.1s" }}
-                        ></div>
-                        <div
-                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "0.2s" }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
+                </div>
               </div>
-            </ScrollArea>
+            ))}
 
-            {/* Chat Input */}
-            <div className="border-t p-4">
-              <div className="flex gap-2">
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-white text-gray-800 shadow-sm px-4 py-2 rounded-lg max-w-xs">
+                  <div className="flex items-center space-x-1">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div
+                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.1s" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-500 ml-2">
+                      печатает...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <div className="bg-white border-t p-4">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-500 hover:bg-gray-100"
+              >
+                <Icon name="Paperclip" size={16} />
+              </Button>
+              <div className="flex-1 relative">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Напишите ваше сообщение..."
-                  onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                  className="flex-1"
+                  onKeyPress={handleKeyPress}
+                  placeholder="Напишите сообщение..."
+                  className="pr-12"
+                  disabled={isLoading}
                 />
-                <Button onClick={sendMessage} disabled={!newMessage.trim()}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-500 hover:bg-gray-100"
+                >
+                  <Icon name="Smile" size={16} />
+                </Button>
+              </div>
+              <Button
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim() || isLoading}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {isLoading ? (
+                  <Icon name="Loader2" size={16} className="animate-spin" />
+                ) : (
                   <Icon name="Send" size={16} />
-                </Button>
-              </div>
+                )}
+              </Button>
             </div>
           </div>
-        )}
-
-        {activeTab === "tickets" && (
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Ваши обращения</h2>
-                <Button size="sm">
-                  <Icon name="Plus" size={16} className="mr-2" />
-                  Новое обращение
-                </Button>
-              </div>
-
-              <div className="space-y-4">
-                {tickets.map((ticket) => (
-                  <div
-                    key={ticket.id}
-                    className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-medium">{ticket.subject}</h3>
-                        <Badge className={getStatusColor(ticket.status)}>
-                          {getStatusText(ticket.status)}
-                        </Badge>
-                        {ticket.unreadCount > 0 && (
-                          <Badge variant="destructive">
-                            {ticket.unreadCount} новых
-                          </Badge>
-                        )}
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        #{ticket.id}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {ticket.lastMessage}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {ticket.timestamp.toLocaleString("ru-RU")}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg p-6 text-center shadow-sm">
-            <Icon
-              name="BookOpen"
-              className="mx-auto mb-3 text-blue-600"
-              size={32}
-            />
-            <h3 className="font-semibold mb-2">База знаний</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Ответы на часто задаваемые вопросы
-            </p>
-            <Button variant="outline" size="sm">
-              Открыть
-            </Button>
-          </div>
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center">
+                <Icon
+                  name="MessageSquare"
+                  size={16}
+                  className="mr-2 text-blue-500"
+                />
+                Частые вопросы
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600">
+                Найдите ответы на самые популярные вопросы
+              </p>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white rounded-lg p-6 text-center shadow-sm">
-            <Icon
-              name="Phone"
-              className="mx-auto mb-3 text-green-600"
-              size={32}
-            />
-            <h3 className="font-semibold mb-2">Горячая линия</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              8 800 555-35-35 (бесплатно)
-            </p>
-            <Button variant="outline" size="sm">
-              Позвонить
-            </Button>
-          </div>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center">
+                <Icon name="Mail" size={16} className="mr-2 text-green-500" />
+                Написать email
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600">
+                Отправьте подробное описание проблемы
+              </p>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white rounded-lg p-6 text-center shadow-sm">
-            <Icon
-              name="Mail"
-              className="mx-auto mb-3 text-purple-600"
-              size={32}
-            />
-            <h3 className="font-semibold mb-2">Email поддержка</h3>
-            <p className="text-sm text-gray-600 mb-4">support@example.com</p>
-            <Button variant="outline" size="sm">
-              Написать
-            </Button>
-          </div>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center">
+                <Icon name="Phone" size={16} className="mr-2 text-purple-500" />
+                Заказать звонок
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-gray-600">
+                Мы перезвоним вам в удобное время
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
