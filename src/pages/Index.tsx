@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { useProductStore } from "@/store/productStore";
+import ProductCard from "@/components/ProductCard";
+import EmptyState from "@/components/EmptyState";
 
 export default function Index() {
+  const { getFeaturedProducts } = useProductStore();
+  const featuredProducts = getFeaturedProducts(8);
+
   return (
     <div className="bg-gradient-light min-h-screen">
       {/* Banner Section */}
@@ -158,48 +164,21 @@ export default function Index() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Популярные товары
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="aspect-square bg-gray-200 rounded-t-lg flex items-center justify-center">
-                  <span className="text-gray-500">Фото товара</span>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    Товар {item}
-                  </h3>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className="w-4 h-4 fill-current"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-500">4.5 (128)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-gray-900">
-                      ₽1 290
-                    </span>
-                    <span className="text-sm text-gray-500 line-through">
-                      ₽1 890
-                    </span>
-                  </div>
-                  <button className="w-full mt-4 bg-gradient-primary text-white py-2 rounded-lg hover:opacity-90 transition-all duration-300 shadow-md">
-                    В корзину
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon="Package"
+              title="Пока нет товаров"
+              description="Товары появятся здесь после того, как продавцы их добавят"
+              actionText="Стать продавцом"
+              actionLink="/seller/register"
+            />
+          )}
         </div>
 
         {/* Features Section */}
