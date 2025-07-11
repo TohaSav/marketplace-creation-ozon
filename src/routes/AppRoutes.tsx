@@ -24,16 +24,16 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Админ-панель */}
-      <AdminRoutes />
+      {AdminRoutes()}
 
       {/* Авторизация */}
-      <AuthRoutes />
+      {AuthRoutes()}
 
       {/* Кабинет продавца */}
-      <SellerRoutes />
+      {SellerRoutes()}
 
       {/* Публичные страницы */}
-      <PublicRoutes />
+      {PublicRoutes()}
 
       {/* 404 - должно быть последним */}
       <Route
