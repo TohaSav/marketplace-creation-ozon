@@ -15,7 +15,7 @@ export default function AdminAnalytics() {
   const totalRevenue = salesData.reduce((sum, item) => sum + item.sales, 0);
   const totalOrders = salesData.reduce((sum, item) => sum + item.orders, 0);
   const totalUsers = salesData.reduce((sum, item) => sum + item.users, 0);
-  const avgOrderValue = totalRevenue / totalOrders;
+  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   return (
     <AdminLayout>
