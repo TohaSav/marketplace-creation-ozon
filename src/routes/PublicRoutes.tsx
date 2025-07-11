@@ -24,6 +24,7 @@ import PaymentMethods from "@/pages/PaymentMethods";
 import Delivery from "@/pages/Delivery";
 import Returns from "@/pages/Returns";
 import About from "@/pages/About";
+import Careers from "@/pages/Careers";
 
 // Пользовательские страницы
 import Favorites from "@/pages/Favorites";
@@ -72,6 +73,7 @@ const publicRoutes = [
   { path: "/delivery", component: Delivery },
   { path: "/returns", component: Returns },
   { path: "/about", component: About },
+  { path: "/careers", component: Careers },
   { path: "/trading-rules", component: TradingRules },
   { path: "/commissions", component: Commissions },
 
