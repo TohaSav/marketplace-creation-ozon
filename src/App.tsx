@@ -26,7 +26,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Раздел в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -47,7 +47,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Раздел в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -68,7 +68,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Раздел в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -89,7 +89,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Раздел в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -110,7 +110,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -131,7 +131,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -152,7 +152,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -173,7 +173,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -194,7 +194,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -215,7 +215,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -236,7 +236,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -257,7 +257,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -278,7 +278,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -299,7 +299,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -320,7 +320,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -341,7 +341,7 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -362,7 +362,112 @@ const App = () => {
                   <p className="text-gray-600 mb-8">Страница в разработке</p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  >
+                    На главную
+                  </Link>
+                </div>
+              </div>
+            </Layout>
+          }
+        />
+        <Route
+          path="/beauty"
+          element={
+            <Layout>
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Красота
+                  </h1>
+                  <p className="text-gray-600 mb-8">Раздел в разработке</p>
+                  <Link
+                    to="/"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  >
+                    На главную
+                  </Link>
+                </div>
+              </div>
+            </Layout>
+          }
+        />
+        <Route
+          path="/books"
+          element={
+            <Layout>
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Книги
+                  </h1>
+                  <p className="text-gray-600 mb-8">Раздел в разработке</p>
+                  <Link
+                    to="/"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  >
+                    На главную
+                  </Link>
+                </div>
+              </div>
+            </Layout>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <Layout>
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Заказы
+                  </h1>
+                  <p className="text-gray-600 mb-8">Страница в разработке</p>
+                  <Link
+                    to="/"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  >
+                    На главную
+                  </Link>
+                </div>
+              </div>
+            </Layout>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <Layout>
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Избранное
+                  </h1>
+                  <p className="text-gray-600 mb-8">Страница в разработке</p>
+                  <Link
+                    to="/"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+                  >
+                    На главную
+                  </Link>
+                </div>
+              </div>
+            </Layout>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <Layout>
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    Корзина
+                  </h1>
+                  <p className="text-gray-600 mb-8">Страница в разработке</p>
+                  <Link
+                    to="/"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
@@ -385,7 +490,7 @@ const App = () => {
                   </p>
                   <Link
                     to="/"
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                   >
                     На главную
                   </Link>
