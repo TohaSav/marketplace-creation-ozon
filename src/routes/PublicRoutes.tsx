@@ -26,6 +26,7 @@ import Returns from "@/pages/Returns";
 import About from "@/pages/About";
 import Careers from "@/pages/Careers";
 import Contacts from "@/pages/Contacts";
+import Warranty from "@/pages/Warranty";
 
 // Пользовательские страницы
 import Favorites from "@/pages/Favorites";
@@ -76,6 +77,7 @@ const publicRoutes = [
   { path: "/about", component: About },
   { path: "/careers", component: Careers },
   { path: "/contacts", component: Contacts },
+  { path: "/warranty", component: Warranty },
   { path: "/trading-rules", component: TradingRules },
   { path: "/commissions", component: Commissions },
 
