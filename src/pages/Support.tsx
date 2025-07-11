@@ -1,57 +1,56 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useChat } from "@/hooks/useChat";
-import { useChatStore } from "@/store/chatStore";
+
+interface Message {
+  id: string;
+  text: string;
+  sender: "user" | "admin";
+  timestamp: Date;
+  status: "sent" | "delivered" | "read";
+}
 
 export default function Support() {
   const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
-  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const { sendUserMessage, createNewUserChat, getChatMessages, isLoading } =
-    useChat();
-  const { currentUserId, setCurrentUserId } = useChatStore();
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    // Генерируем уникальный ID для пользователя при первом посещении
-    if (!currentUserId) {
-      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      setCurrentUserId(userId);
-
-      // Создаем новый чат для пользователя
-      const chatId = createNewUserChat(userId, "Гость");
-      setCurrentChatId(chatId);
-    } else {
-      // Находим существующий чат пользователя
-      const chatId = createNewUserChat(currentUserId, "Гость");
-      setCurrentChatId(chatId);
-    }
-  }, [currentUserId, setCurrentUserId, createNewUserChat]);
-
-  // Получаем сообщения для текущего чата
-  const messages = currentChatId ? getChatMessages(currentChatId) : [];
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    // Отправляем сообщение от пользователя
-    await sendUserMessage(newMessage);
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: newMessage,
+      sender: "user",
+      timestamp: new Date(),
+      status: "sent",
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
     setNewMessage("");
+    setIsLoading(true);
+
+    // Симуляция ответа поддержки
+    setTimeout(() => {
+      setIsTyping(true);
+      setTimeout(() => {
+        const adminMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: "Спасибо за обращение! Мы рассмотрим ваш вопрос и свяжемся с вами в ближайшее время.",
+          sender: "admin",
+          timestamp: new Date(),
+          status: "sent",
+        };
+        setMessages((prev) => [...prev, adminMessage]);
+        setIsTyping(false);
+        setIsLoading(false);
+      }, 2000);
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -196,7 +195,6 @@ export default function Support() {
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
