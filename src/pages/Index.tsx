@@ -264,22 +264,6 @@ export default function Index() {
             <p className="text-gray-600">Множество способов оплаты на выбор</p>
           </div>
         </div>
-
-        {/* CTA Section */}
-        <div className="bg-gradient-accent rounded-lg p-8 text-white text-center shadow-2xl">
-          <h2 className="text-3xl font-bold mb-4">
-            Хотите продавать на Calibre Store?
-          </h2>
-          <p className="text-xl mb-6 opacity-90">
-            Присоединяйтесь к тысячам продавцов и расширяйте свой бизнес
-          </p>
-          <Link
-            to="/seller"
-            className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg"
-          >
-            Стать продавцом
-          </Link>
-        </div>
       </div>
     </div>
   );
