@@ -17,16 +17,16 @@ const Home: React.FC = () => {
     {
       name: "Электроника",
       icon: "Smartphone",
-      count: 12450,
+      count: 0,
       slug: "electronics",
     },
-    { name: "Одежда", icon: "Shirt", count: 8932, slug: "clothing" },
-    { name: "Дом и сад", icon: "Home", count: 6721, slug: "home-garden" },
-    { name: "Красота", icon: "Sparkles", count: 4582, slug: "beauty" },
-    { name: "Спорт", icon: "Dumbbell", count: 3456, slug: "sport" },
-    { name: "Авто", icon: "Car", count: 2341, slug: "auto" },
-    { name: "Книги", icon: "Book", count: 1876, slug: "books" },
-    { name: "Игрушки", icon: "GameController2", count: 1654, slug: "toys" },
+    { name: "Одежда", icon: "Shirt", count: 0, slug: "clothing" },
+    { name: "Дом и сад", icon: "Home", count: 0, slug: "home-garden" },
+    { name: "Красота", icon: "Sparkles", count: 0, slug: "beauty" },
+    { name: "Спорт", icon: "Dumbbell", count: 0, slug: "sport" },
+    { name: "Авто", icon: "Car", count: 0, slug: "auto" },
+    { name: "Книги", icon: "Book", count: 0, slug: "books" },
+    { name: "Игрушки", icon: "GameController2", count: 0, slug: "toys" },
   ];
 
   return (

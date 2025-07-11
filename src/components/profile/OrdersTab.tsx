@@ -37,7 +37,7 @@ export default function OrdersTab({ userStats }: OrdersTabProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Пример заказов для демонстрации */}
+            {/* Здесь будут отображаться реальные заказы пользователя */}
             <div className="border rounded-lg p-4 bg-gray-50">
               <div className="flex justify-between items-start mb-3">
                 <div>
