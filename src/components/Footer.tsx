@@ -6,7 +6,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <div className="text-2xl font-bold text-blue-400 mb-4">OZON</div>
+            <div className="flex items-center mb-4">
+              <img
+                src="https://cdn.poehali.dev/files/439eeaf0-e4f0-494b-bdca-ecdf6dc2eb86.png"
+                alt="Calibre Store"
+                className="h-12 w-auto"
+              />
+            </div>
             <p className="text-gray-400 mb-4">
               Интернет-магазин с миллионами товаров для всей семьи
             </p>
