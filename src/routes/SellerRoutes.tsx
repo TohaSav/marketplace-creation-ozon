@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 
 // Страницы продавца
 import SellerDashboard from "@/pages/SellerDashboard";
+import SellerRegister from "@/pages/SellerRegister";
 import AddProduct from "@/pages/AddProduct";
 import SellerAdvertising from "@/pages/SellerAdvertising";
 import SellerAdvertisingSuccess from "@/pages/SellerAdvertisingSuccess";
@@ -15,6 +16,16 @@ const SellerRoutes = () => {
   try {
     return (
       <>
+        {/* Регистрация продавца */}
+        <Route
+          path="/seller/register"
+          element={
+            <Layout>
+              <SellerRegister />
+            </Layout>
+          }
+        />
+
         {/* Кабинет продавца */}
         <Route
           path="/seller/dashboard"

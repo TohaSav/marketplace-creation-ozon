@@ -193,7 +193,7 @@ export default function Header() {
                   <hr />
                   <div className="p-2">
                     <Link
-                      to="/seller"
+                      to="/seller/register"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       Стать продавцом
