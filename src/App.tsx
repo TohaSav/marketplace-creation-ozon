@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import Index from "@/pages/Index";
 
@@ -26,12 +26,12 @@ const App = () => {
                   <p className="text-gray-600 mb-8">
                     Запрашиваемая страница не существует
                   </p>
-                  <a
-                    href="/"
+                  <Link
+                    to="/"
                     className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
                   >
                     На главную
-                  </a>
+                  </Link>
                 </div>
               </div>
             </Layout>

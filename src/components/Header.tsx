@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,13 +10,13 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="cursor-pointer hover:opacity-90">
+            <Link to="/" className="cursor-pointer hover:opacity-90">
               <img
                 src="https://cdn.poehali.dev/files/1d929307-708e-49a3-831d-3bdf359b605d.png"
                 alt="Calibre Store"
                 className="h-8 w-auto sm:h-10 md:h-12 lg:h-14"
               />
-            </div>
+            </Link>
           </div>
 
           {/* Search */}
@@ -52,25 +53,25 @@ export default function Header() {
 
               {isMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50">
-                  <a
-                    href="/login"
+                  <Link
+                    to="/login"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Войти как покупатель
-                  </a>
-                  <a
-                    href="/register"
+                  </Link>
+                  <Link
+                    to="/register"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Регистрация покупателя
-                  </a>
+                  </Link>
                   <hr className="my-1" />
-                  <a
-                    href="/seller"
+                  <Link
+                    to="/seller"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     Стать продавцом
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>

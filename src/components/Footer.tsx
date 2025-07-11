@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-12">
@@ -14,24 +16,24 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Покупателям</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="/how-to-order" className="hover:text-white">
+                <Link to="/how-to-order" className="hover:text-white">
                   Как заказать
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/delivery" className="hover:text-white">
+                <Link to="/delivery" className="hover:text-white">
                   Доставка
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/returns" className="hover:text-white">
+                <Link to="/returns" className="hover:text-white">
                   Возврат товаров
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/payment-methods" className="hover:text-white">
+                <Link to="/payment-methods" className="hover:text-white">
                   Способы оплаты
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -40,19 +42,19 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Продавцам</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="/how-to-sell" className="hover:text-white">
+                <Link to="/how-to-sell" className="hover:text-white">
                   Как продавать
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/commissions" className="hover:text-white">
+                <Link to="/commissions" className="hover:text-white">
                   Комиссии
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/trading-rules" className="hover:text-white">
+                <Link to="/trading-rules" className="hover:text-white">
                   Правила торговли
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -61,19 +63,19 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Поддержка</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="/support" className="hover:text-white">
+                <Link to="/support" className="hover:text-white">
                   Служба поддержки
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy" className="hover:text-white">
+                <Link to="/privacy" className="hover:text-white">
                   Политика конфиденциальности
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/personal-data" className="hover:text-white">
+                <Link to="/personal-data" className="hover:text-white">
                   Обработка данных
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
