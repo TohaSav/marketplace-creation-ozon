@@ -24,7 +24,7 @@ const TopBar = ({
               to="/seller/register"
               className="text-gray-600 hover:text-blue-600 transition-colors hidden sm:block"
             >
-              Продавайте на Calibre Store
+              Продавцам
             </Link>
             <Link
               to="/seller/register"
