@@ -100,21 +100,17 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
 
 // Генерация JSX маршрутов
 export const PublicRoutes = () => {
-  return (
-    <>
-      {publicRoutes.map(({ path, component: Component }) => (
-        <Route
-          key={path}
-          path={path}
-          element={
-            <LayoutWrapper>
-              <Component />
-            </LayoutWrapper>
-          }
-        />
-      ))}
-    </>
-  );
+  return publicRoutes.map(({ path, component: Component }) => (
+    <Route
+      key={path}
+      path={path}
+      element={
+        <LayoutWrapper>
+          <Component />
+        </LayoutWrapper>
+      }
+    />
+  ));
 };
 
 export default PublicRoutes;
