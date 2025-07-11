@@ -15,6 +15,44 @@ export interface Advertisement {
   views: number;
 }
 
+export interface AdvertisingBanner {
+  id: number;
+  sellerId: string;
+  sellerName: string;
+  shopName: string;
+  bannerUrl: string;
+  description: string;
+  duration: number;
+  contactInfo: string;
+  status: BannerStatus;
+  createdAt: string;
+  expiresAt: string;
+  price: number;
+}
+
+export type BannerStatus = "active" | "paused" | "expired" | "pending_payment";
+
+export interface BannerStats {
+  total: number;
+  active: number;
+  paused: number;
+  expired: number;
+  pending: number;
+  totalRevenue: number;
+}
+
+export interface BannerFilters {
+  searchTerm: string;
+  statusFilter: string;
+}
+
+export interface BannerActions {
+  onPause: (id: number) => void;
+  onResume: (id: number) => void;
+  onDelete: (id: number) => void;
+  onView: (banner: AdvertisingBanner) => void;
+}
+
 export interface CreateAdvertisementData {
   title: string;
   description: string;
