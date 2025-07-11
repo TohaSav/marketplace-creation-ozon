@@ -110,7 +110,7 @@ export default function Footer() {
                   to="/seller"
                   className="hover:text-white transition-colors"
                 >
-                  Продавать на OZON
+                  Продавать на Calibre
                 </Link>
               </li>
               <li>
