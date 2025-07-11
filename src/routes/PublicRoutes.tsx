@@ -44,6 +44,7 @@ import Support from "@/pages/Support";
 import Notifications from "@/pages/Notifications";
 import PaymentPage from "@/pages/PaymentPage";
 import PaymentSuccess from "@/pages/PaymentSuccess";
+import Seller from "@/pages/Seller";
 
 // Конфигурация публичных маршрутов
 const publicRoutes = [
@@ -91,6 +92,7 @@ const publicRoutes = [
   { path: "/notifications", component: Notifications },
   { path: "/payment", component: PaymentPage },
   { path: "/payment-success", component: PaymentSuccess },
+  { path: "/seller", component: Seller },
 ];
 
 // Обертка для Layout
