@@ -164,7 +164,7 @@ export default function Footer() {
                   to="/careers"
                   className="hover:text-white transition-colors"
                 >
-                  Работа в OZON
+                  Работа в Calibre
                 </Link>
               </li>
               <li>
