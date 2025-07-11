@@ -25,6 +25,7 @@ import Delivery from "@/pages/Delivery";
 import Returns from "@/pages/Returns";
 import About from "@/pages/About";
 import Careers from "@/pages/Careers";
+import Contacts from "@/pages/Contacts";
 
 // Пользовательские страницы
 import Favorites from "@/pages/Favorites";
@@ -74,6 +75,7 @@ const publicRoutes = [
   { path: "/returns", component: Returns },
   { path: "/about", component: About },
   { path: "/careers", component: Careers },
+  { path: "/contacts", component: Contacts },
   { path: "/trading-rules", component: TradingRules },
   { path: "/commissions", component: Commissions },
 
