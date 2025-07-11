@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -47,8 +48,11 @@ export default function Header() {
           </div>
 
           {/* Catalog Button */}
-          <div className="flex items-center space-x-4">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <div className="flex items-center space-x-4 relative">
+            <button
+              onClick={() => setIsCatalogOpen(!isCatalogOpen)}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -64,6 +68,74 @@ export default function Header() {
               </svg>
               <span className="font-medium">Каталог</span>
             </button>
+
+            {/* Catalog Dropdown */}
+            {isCatalogOpen && (
+              <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="py-2">
+                  <Link
+                    to="/electronics"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsCatalogOpen(false)}
+                  >
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                      📱
+                    </div>
+                    <span>Электроника</span>
+                  </Link>
+                  <Link
+                    to="/clothing"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsCatalogOpen(false)}
+                  >
+                    <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                      👕
+                    </div>
+                    <span>Одежда</span>
+                  </Link>
+                  <Link
+                    to="/home-garden"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsCatalogOpen(false)}
+                  >
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                      🏠
+                    </div>
+                    <span>Дом и сад</span>
+                  </Link>
+                  <Link
+                    to="/sport"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsCatalogOpen(false)}
+                  >
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                      ⚽
+                    </div>
+                    <span>Спорт</span>
+                  </Link>
+                  <Link
+                    to="/beauty"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsCatalogOpen(false)}
+                  >
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                      💄
+                    </div>
+                    <span>Красота</span>
+                  </Link>
+                  <Link
+                    to="/books"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsCatalogOpen(false)}
+                  >
+                    <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
+                      📚
+                    </div>
+                    <span>Книги</span>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Search */}
