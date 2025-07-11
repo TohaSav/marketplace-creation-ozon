@@ -42,7 +42,12 @@ const TopBar = ({
 
           {/* Mobile: Compact city selector */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <span className="text-gray-600 hidden sm:block">Пункты выдачи</span>
+            <div className="relative hidden sm:block">
+              <span className="text-gray-600">Пункты выдачи</span>
+              <div className="absolute inset-0 bg-gray-200 bg-opacity-80 rounded-sm flex items-center justify-center">
+                <span className="text-xs text-gray-700 font-medium">Скоро</span>
+              </div>
+            </div>
             <CitySelector
               city={city}
               showDropdown={showCityDropdown}
