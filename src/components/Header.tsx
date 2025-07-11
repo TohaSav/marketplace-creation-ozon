@@ -5,6 +5,9 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
+  // Проверяем, авторизован ли пользователь
+  const isLoggedIn = localStorage.getItem("user-token") !== null;
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       {/* Top Bar */}
@@ -166,68 +169,137 @@ export default function Header() {
 
           {/* Navigation */}
           <div className="flex items-center space-x-6">
-            <Link
-              to="/orders"
-              className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              <svg
-                className="w-5 h-5 mb-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {isLoggedIn ? (
+              <Link
+                to="/orders"
+                className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-              <span className="text-xs">Заказы</span>
-            </Link>
+                <svg
+                  className="w-5 h-5 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+                <span className="text-xs">Заказы</span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="flex flex-col items-center text-gray-400 cursor-not-allowed"
+              >
+                <svg
+                  className="w-5 h-5 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+                <span className="text-xs">Заказы</span>
+              </button>
+            )}
 
-            <Link
-              to="/favorites"
-              className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              <svg
-                className="w-5 h-5 mb-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {isLoggedIn ? (
+              <Link
+                to="/favorites"
+                className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-              <span className="text-xs">Избранное</span>
-            </Link>
+                <svg
+                  className="w-5 h-5 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                <span className="text-xs">Избранное</span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="flex flex-col items-center text-gray-400 cursor-not-allowed"
+              >
+                <svg
+                  className="w-5 h-5 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                <span className="text-xs">Избранное</span>
+              </button>
+            )}
 
-            <Link
-              to="/cart"
-              className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors relative"
-            >
-              <svg
-                className="w-5 h-5 mb-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {isLoggedIn ? (
+              <Link
+                to="/cart"
+                className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors relative"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10v6a1 1 0 001 1h9a1 1 0 001-1v-6m-4-6v6m-2-6v6m-2-6v6"
-                />
-              </svg>
-              <span className="text-xs">Корзина</span>
-              <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
-              </div>
-            </Link>
+                <svg
+                  className="w-5 h-5 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10v6a1 1 0 001 1h9a1 1 0 001-1v-6m-4-6v6m-2-6v6m-2-6v6"
+                  />
+                </svg>
+                <span className="text-xs">Корзина</span>
+                <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  0
+                </div>
+              </Link>
+            ) : (
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="flex flex-col items-center text-gray-400 cursor-not-allowed relative"
+              >
+                <svg
+                  className="w-5 h-5 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10v6a1 1 0 001 1h9a1 1 0 001-1v-6m-4-6v6m-2-6v6m-2-6v6"
+                  />
+                </svg>
+                <span className="text-xs">Корзина</span>
+                <div className="absolute -top-1 -right-1 bg-gray-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  0
+                </div>
+              </button>
+            )}
 
             <div className="relative">
               <button
