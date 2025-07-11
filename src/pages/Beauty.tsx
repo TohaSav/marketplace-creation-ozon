@@ -1,5 +1,13 @@
-import PlaceholderPage from "@/components/PlaceholderPage";
+import CategoryTemplate from "@/components/CategoryTemplate";
 
 export default function Beauty() {
-  return <PlaceholderPage title="Красота" subtitle="Раздел в разработке" />;
+  return (
+    <CategoryTemplate
+      categoryKey="beauty"
+      title="Красота"
+      description="Косметика, парфюмерия и товары для красоты"
+      emptyIcon="Sparkles"
+      showFilters={true}
+    />
+  );
 }

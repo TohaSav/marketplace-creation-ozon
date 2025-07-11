@@ -1,5 +1,12 @@
-import PlaceholderPage from "@/components/PlaceholderPage";
+import CategoryTemplate from "@/components/CategoryTemplate";
 
 export default function Books() {
-  return <PlaceholderPage title="Книги" subtitle="Раздел в разработке" />;
+  return (
+    <CategoryTemplate
+      categoryKey="books"
+      title="Книги"
+      description="Художественная литература, учебники и справочники"
+      emptyIcon="Book"
+    />
+  );
 }

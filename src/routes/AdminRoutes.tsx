@@ -20,6 +20,7 @@ const AdminRoutes = () => {
       <>
         {/* Авторизация админа */}
         <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* Защищенные админ маршруты */}
         <Route

@@ -1,5 +1,12 @@
-import PlaceholderPage from "@/components/PlaceholderPage";
+import CategoryTemplate from "@/components/CategoryTemplate";
 
 export default function Sport() {
-  return <PlaceholderPage title="Спорт" subtitle="Раздел в разработке" />;
+  return (
+    <CategoryTemplate
+      categoryKey="sport"
+      title="Спорт"
+      description="Спортивные товары, экипировка и товары для активного отдыха"
+      emptyIcon="Dumbbell"
+    />
+  );
 }

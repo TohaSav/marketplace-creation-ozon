@@ -2,10 +2,21 @@ import { Link } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
+import { useCart } from "@/hooks/useCart";
 
 export default function Index() {
   const { getFeaturedProducts } = useProductStore();
   const featuredProducts = getFeaturedProducts(8);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: parseInt(product.id),
+      name: product.name,
+      price: product.price,
+      image: product.image,
+    });
+  };
 
   return (
     <div className="bg-gradient-light min-h-screen">
@@ -167,7 +178,11 @@ export default function Index() {
           {featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </div>
           ) : (
