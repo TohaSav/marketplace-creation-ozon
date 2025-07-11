@@ -54,7 +54,7 @@ export default function Header() {
           <div className="flex items-center space-x-4 relative">
             <button
               onClick={() => setIsCatalogOpen(!isCatalogOpen)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg"
             >
               <svg
                 className="w-4 h-4"
@@ -147,9 +147,9 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Искать на Ozon"
-                className="w-full pl-4 pr-12 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:ring-0 text-sm"
+                className="w-full pl-4 pr-12 py-3 rounded-lg border-2 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm"
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-primary text-white p-2 rounded-md hover:opacity-90 transition-all duration-300 shadow-md">
                 <svg
                   className="w-4 h-4"
                   fill="none"

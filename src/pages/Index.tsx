@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 export default function Index() {
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gradient-light min-h-screen">
       {/* Banner Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600">
+      <div className="bg-gradient-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center text-white">
             <h1 className="text-3xl md:text-5xl font-bold mb-4">
@@ -24,9 +24,9 @@ export default function Index() {
             to="/electronics"
             className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow text-center group"
           >
-            <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+            <div className="w-16 h-16 bg-gradient-to-br from-brand-primary/10 to-brand-secondary/10 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:from-brand-primary/20 group-hover:to-brand-secondary/20 transition-all duration-300">
               <svg
-                className="w-8 h-8 text-blue-600"
+                className="w-8 h-8 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -46,9 +46,9 @@ export default function Index() {
             to="/clothing"
             className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow text-center group"
           >
-            <div className="w-16 h-16 bg-pink-100 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:bg-pink-200 transition-colors">
+            <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-brand-accent/10 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:from-pink-200 group-hover:to-brand-accent/20 transition-all duration-300">
               <svg
-                className="w-8 h-8 text-pink-600"
+                className="w-8 h-8 text-accent"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -68,7 +68,7 @@ export default function Index() {
             to="/home-garden"
             className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow text-center group"
           >
-            <div className="w-16 h-16 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:from-green-200 group-hover:to-emerald-200 transition-all duration-300">
               <svg
                 className="w-8 h-8 text-green-600"
                 fill="none"
@@ -193,7 +193,7 @@ export default function Index() {
                       ₽1 890
                     </span>
                   </div>
-                  <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  <button className="w-full mt-4 bg-gradient-primary text-white py-2 rounded-lg hover:opacity-90 transition-all duration-300 shadow-md">
                     В корзину
                   </button>
                 </div>
@@ -274,14 +274,16 @@ export default function Index() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-8 text-white text-center">
-          <h2 className="text-3xl font-bold mb-4">Хотите продавать на OZON?</h2>
+        <div className="bg-gradient-accent rounded-lg p-8 text-white text-center shadow-2xl">
+          <h2 className="text-3xl font-bold mb-4">
+            Хотите продавать на Calibre Store?
+          </h2>
           <p className="text-xl mb-6 opacity-90">
             Присоединяйтесь к тысячам продавцов и расширяйте свой бизнес
           </p>
           <Link
             to="/seller"
-            className="inline-block bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+            className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg"
           >
             Стать продавцом
           </Link>
