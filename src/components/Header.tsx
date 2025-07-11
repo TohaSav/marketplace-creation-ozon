@@ -27,11 +27,43 @@ export default function Header() {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           try {
-            const response = await fetch(
-              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=ru`,
-            );
-            const data = await response.json();
-            const detectedCity = data.city || data.locality || "Москва";
+            // Используем несколько API для более точного определения города
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // Пробуем первый API
+            let detectedCity = "Москва";
+
+            try {
+              const response = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ru`,
+              );
+              const data = await response.json();
+              detectedCity =
+                data.city ||
+                data.locality ||
+                data.principalSubdivision ||
+                "Москва";
+            } catch (error) {
+              // Пробуем альтернативный API
+              try {
+                const response2 = await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ru`,
+                );
+                const data2 = await response2.json();
+                detectedCity =
+                  data2.address?.city ||
+                  data2.address?.town ||
+                  data2.address?.village ||
+                  "Москва";
+              } catch (error2) {
+                console.error(
+                  "Ошибка определения города через второй API:",
+                  error2,
+                );
+              }
+            }
+
             setCity(detectedCity);
             localStorage.setItem("user-city", detectedCity);
             localStorage.setItem("location-requested", "true");
@@ -46,6 +78,11 @@ export default function Header() {
           console.error("Ошибка геолокации:", error);
           localStorage.setItem("location-requested", "true");
           setShowLocationRequest(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         },
       );
     } else {
