@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icon from "@/components/ui/icon";
 import { useChat } from "@/hooks/useChat";
-import { useChatStore } from "@/store/chatStore";
 
 export default function AdminLiveChat() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
