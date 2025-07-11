@@ -103,6 +103,22 @@ const AdminRoutes = () => {
             </AdminProtectedRoute>
           }
         />
+        <Route
+          path="/admin/settings"
+          element={
+            <AdminProtectedRoute>
+              <AdminDataManagement />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/verification"
+          element={
+            <AdminProtectedRoute>
+              <AdminSellers />
+            </AdminProtectedRoute>
+          }
+        />
       </>
     );
   } catch (error) {

@@ -1,4 +1,15 @@
-import type { User } from "@/context/AuthContext";
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  userType: "user" | "seller";
+  shopName?: string;
+  status?: "active" | "pending" | "blocked";
+  joinDate?: string;
+  isSeller?: boolean;
+  balance?: number;
+}
 import type { AdminUser } from "@/types/admin-user.types";
 
 export const transformAuthUserToAdminUser = (user: User): AdminUser => ({
