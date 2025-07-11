@@ -190,8 +190,6 @@ export default function Index() {
               icon="Package"
               title="Пока нет товаров"
               description="Товары появятся здесь после того, как продавцы их добавят"
-              actionText="Стать продавцом"
-              actionLink="/seller/register"
             />
           )}
         </div>

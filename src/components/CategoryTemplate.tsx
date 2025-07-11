@@ -127,8 +127,6 @@ export default function CategoryTemplate({
                 ? "Попробуйте изменить поисковый запрос"
                 : "Товары появятся здесь после того, как продавцы их добавят"
             }
-            actionText="Стать продавцом"
-            actionLink="/seller/register"
           />
         )}
       </div>
