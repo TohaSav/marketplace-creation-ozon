@@ -111,13 +111,6 @@ export default function Support() {
                 size="sm"
                 className="text-white hover:bg-green-700"
               >
-                <Icon name="Phone" size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-green-700"
-              >
                 <Icon name="Video" size={16} />
               </Button>
               <Button
