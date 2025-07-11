@@ -6,6 +6,107 @@ export default function Header() {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [city, setCity] = useState("Москва");
   const [showLocationRequest, setShowLocationRequest] = useState(false);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+
+  // Крупные города России
+  const russianCities = [
+    "Москва",
+    "Санкт-Петербург",
+    "Новосибирск",
+    "Екатеринбург",
+    "Казань",
+    "Нижний Новгород",
+    "Челябинск",
+    "Самара",
+    "Омск",
+    "Ростов-на-Дону",
+    "Уфа",
+    "Красноярск",
+    "Воронеж",
+    "Пермь",
+    "Волгоград",
+    "Краснодар",
+    "Саратов",
+    "Тюмень",
+    "Тольятти",
+    "Ижевск",
+    "Барнаул",
+    "Ульяновск",
+    "Иркутск",
+    "Хабаровск",
+    "Ярославль",
+    "Владивосток",
+    "Махачкала",
+    "Томск",
+    "Оренбург",
+    "Кемерово",
+    "Новокузнецк",
+    "Рязань",
+    "Пенза",
+    "Астрахань",
+    "Липецк",
+    "Тула",
+    "Киров",
+    "Чебоксары",
+    "Калининград",
+    "Брянск",
+    "Курск",
+    "Иваново",
+    "Магнитогорск",
+    "Тверь",
+    "Ставрополь",
+    "Симферополь",
+    "Белгород",
+    "Архангельск",
+    "Владимир",
+    "Сочи",
+    "Курган",
+    "Смоленск",
+    "Калуга",
+    "Чита",
+    "Орел",
+    "Волжский",
+    "Череповец",
+    "Владикавказ",
+    "Мурманск",
+    "Сургут",
+    "Вологда",
+    "Тамбов",
+    "Стерлитамак",
+    "Грозный",
+    "Якутск",
+    "Кострома",
+    "Комсомольск-на-Амуре",
+    "Петрозаводск",
+    "Таганрог",
+    "Нижний Тагил",
+    "Братск",
+    "Дзержинск",
+    "Сыктывкар",
+    "Орск",
+    "Ангарск",
+    "Балашиха",
+    "Благовещенск",
+    "Прокопьевск",
+    "Химки",
+    "Псков",
+    "Бийск",
+    "Энгельс",
+    "Рыбинск",
+    "Балаково",
+    "Северодвинск",
+    "Армавир",
+    "Подольск",
+    "Королев",
+    "Южно-Сахалинск",
+    "Петропавловск-Камчатский",
+    "Норильск",
+  ];
+
+  const filteredCities = russianCities.filter((cityName) =>
+    cityName.toLowerCase().includes(citySearch.toLowerCase()),
+  );
 
   // Проверяем, авторизован ли пользователь
   const isLoggedIn = localStorage.getItem("user-token") !== null;
@@ -21,6 +122,23 @@ export default function Header() {
       setShowLocationRequest(true);
     }
   }, []);
+
+  // Закрытие выпадающего меню при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showCityDropdown && event.target instanceof Element) {
+        const target = event.target as Element;
+        if (!target.closest(".city-dropdown")) {
+          setShowCityDropdown(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCityDropdown]);
 
   const requestLocation = () => {
     if (navigator.geolocation) {
@@ -96,6 +214,13 @@ export default function Header() {
     setShowLocationRequest(false);
   };
 
+  const selectCity = (selectedCity: string) => {
+    setCity(selectedCity);
+    localStorage.setItem("user-city", selectedCity);
+    setShowCityDropdown(false);
+    setCitySearch("");
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       {/* Top Bar */}
@@ -118,7 +243,57 @@ export default function Header() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-gray-600">Пункты выдачи</span>
-              <span className="text-gray-600">{city}</span>
+              <div className="relative city-dropdown">
+                <button
+                  onClick={() => setShowCityDropdown(!showCityDropdown)}
+                  className="text-gray-600 hover:text-blue-600 transition-colors flex items-center space-x-1"
+                >
+                  <span>{city}</span>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {showCityDropdown && (
+                  <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="p-3 border-b border-gray-200">
+                      <input
+                        type="text"
+                        placeholder="Поиск города..."
+                        value={citySearch}
+                        onChange={(e) => setCitySearch(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="max-h-60 overflow-y-auto">
+                      {filteredCities.map((cityName) => (
+                        <button
+                          key={cityName}
+                          onClick={() => selectCity(cityName)}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
+                        >
+                          {cityName}
+                        </button>
+                      ))}
+                      {filteredCities.length === 0 && (
+                        <div className="px-4 py-2 text-gray-500">
+                          Город не найден
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
