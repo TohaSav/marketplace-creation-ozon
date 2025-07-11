@@ -22,7 +22,7 @@ export default function Header() {
                 Продавайте на Calibre Store
               </Link>
               <Link
-                to="/help"
+                to="/support"
                 className="text-gray-600 hover:text-blue-600 transition-colors"
               >
                 Помощь
