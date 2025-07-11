@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 const SellerRegister = () => {
@@ -14,6 +14,8 @@ const SellerRegister = () => {
     businessType: "",
     agreement: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -26,9 +28,69 @@ const SellerRegister = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Регистрация продавца:", formData);
+    setIsLoading(true);
+
+    // Валидация
+    if (
+      !formData.companyName ||
+      !formData.inn ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.contactPerson ||
+      !formData.password
+    ) {
+      alert("Пожалуйста, заполните все обязательные поля");
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Пароли не совпадают");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.agreement) {
+      alert("Необходимо согласиться с условиями использования");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Имитация регистрации
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Сохраняем данные продавца в localStorage
+      const sellerData = {
+        id: Date.now().toString(),
+        companyName: formData.companyName,
+        inn: formData.inn,
+        email: formData.email,
+        phone: formData.phone,
+        contactPerson: formData.contactPerson,
+        businessType: formData.businessType,
+        registrationDate: new Date().toLocaleDateString("ru-RU"),
+        avatar: "/api/placeholder/100/100",
+        totalRevenue: 0,
+        totalOrders: 0,
+        productsCount: 0,
+        isLoggedIn: true,
+        userType: "seller",
+      };
+
+      localStorage.setItem("seller", JSON.stringify(sellerData));
+      localStorage.setItem("isSellerLoggedIn", "true");
+
+      // Автоматический переход в кабинет продавца
+      navigate("/seller/dashboard", { replace: true });
+    } catch (error) {
+      console.error("Ошибка регистрации:", error);
+      alert("Произошла ошибка при регистрации. Попробуйте еще раз.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -250,9 +312,17 @@ const SellerRegister = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Зарегистрироваться как продавец
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Регистрация...
+                </div>
+              ) : (
+                "Зарегистрироваться как продавец"
+              )}
             </button>
           </div>
         </form>
