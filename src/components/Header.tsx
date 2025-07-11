@@ -1,12 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+  const [city, setCity] = useState("Москва");
+  const [showLocationRequest, setShowLocationRequest] = useState(false);
 
   // Проверяем, авторизован ли пользователь
   const isLoggedIn = localStorage.getItem("user-token") !== null;
+
+  // Определение города по геолокации
+  useEffect(() => {
+    const savedCity = localStorage.getItem("user-city");
+    const locationRequested = localStorage.getItem("location-requested");
+
+    if (savedCity) {
+      setCity(savedCity);
+    } else if (!locationRequested) {
+      setShowLocationRequest(true);
+    }
+  }, []);
+
+  const requestLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const response = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=ru`,
+            );
+            const data = await response.json();
+            const detectedCity = data.city || data.locality || "Москва";
+            setCity(detectedCity);
+            localStorage.setItem("user-city", detectedCity);
+            localStorage.setItem("location-requested", "true");
+            setShowLocationRequest(false);
+          } catch (error) {
+            console.error("Ошибка определения города:", error);
+            localStorage.setItem("location-requested", "true");
+            setShowLocationRequest(false);
+          }
+        },
+        (error) => {
+          console.error("Ошибка геолокации:", error);
+          localStorage.setItem("location-requested", "true");
+          setShowLocationRequest(false);
+        },
+      );
+    } else {
+      localStorage.setItem("location-requested", "true");
+      setShowLocationRequest(false);
+    }
+  };
+
+  const declineLocation = () => {
+    localStorage.setItem("location-requested", "true");
+    setShowLocationRequest(false);
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -30,7 +81,7 @@ export default function Header() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-gray-600">Пункты выдачи</span>
-              <span className="text-gray-600">Москва</span>
+              <span className="text-gray-600">{city}</span>
             </div>
           </div>
         </div>
@@ -344,6 +395,54 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* Location Request Modal */}
+      {showLocationRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div className="flex items-center mb-4">
+              <svg
+                className="w-6 h-6 text-blue-600 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <h3 className="text-lg font-semibold">Определить ваш город?</h3>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Мы можем определить ваш город автоматически, чтобы показать
+              актуальные цены и условия доставки.
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={requestLocation}
+                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Разрешить
+              </button>
+              <button
+                onClick={declineLocation}
+                className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Отказаться
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
