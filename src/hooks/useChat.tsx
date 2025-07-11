@@ -1,92 +1,59 @@
-import { useState, useEffect } from "react";
-
-interface ChatMessage {
-  id: string;
-  text: string;
-  sender: "user" | "admin";
-  timestamp: Date;
-  status: "sent" | "delivered" | "read";
-}
-
-interface ChatSession {
-  id: string;
-  userId: string;
-  userName: string;
-  messages: ChatMessage[];
-  status: "active" | "waiting" | "closed";
-  lastActivity: Date;
-}
+import { useState } from "react";
+import { useChatStore } from "@/store/chatStore";
 
 export const useChat = () => {
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Имитация WebSocket подключения
-  useEffect(() => {
-    // Здесь будет реальное подключение к WebSocket
-    console.log("Chat connection established");
-
-    // Имитация получения сообщений
-    const interval = setInterval(() => {
-      // Имитация новых сообщений от пользователей
-      const randomMessages = [
-        "Здравствуйте! Нужна помощь с заказом",
-        "Как вернуть товар?",
-        "Проблема с оплатой",
-        "Когда будет доставка?",
-        "Спасибо за помощь!",
-      ];
-
-      // Случайно добавляем новые сообщения
-      if (Math.random() > 0.95) {
-        const newMessage: ChatMessage = {
-          id: Date.now().toString(),
-          text: randomMessages[
-            Math.floor(Math.random() * randomMessages.length)
-          ],
-          sender: "user",
-          timestamp: new Date(),
-          status: "sent",
-        };
-
-        // Добавляем в localStorage для демонстрации
-        const existingChats = JSON.parse(
-          localStorage.getItem("liveChats") || "[]",
-        );
-        const updatedChats = [...existingChats, newMessage];
-        localStorage.setItem("liveChats", JSON.stringify(updatedChats));
-      }
-    }, 10000); // Каждые 10 секунд
-
-    return () => clearInterval(interval);
-  }, []);
+  const {
+    messages,
+    chatRooms,
+    currentUserId,
+    addMessage,
+    markMessageAsRead,
+    getMessagesByChatId,
+    createChatRoom,
+    updateChatRoom,
+    deleteChatRoom,
+    getChatRoomById,
+    getOrCreateUserChat,
+    setCurrentUserId,
+    setConnectionStatus,
+  } = useChatStore();
 
   const sendMessage = async (
     message: string,
     chatId?: string,
+    sender: "user" | "admin" = "admin",
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Имитация отправки сообщения через API
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Определяем чат ID
+      let targetChatId = chatId;
+      if (!targetChatId && currentUserId) {
+        // Создаем или получаем чат для текущего пользователя
+        targetChatId = getOrCreateUserChat(currentUserId, "Гость");
+      }
 
-      const newMessage: ChatMessage = {
-        id: Date.now().toString(),
+      if (!targetChatId) {
+        throw new Error("Не удалось определить чат");
+      }
+
+      // Добавляем сообщение в хранилище
+      const messageId = addMessage({
         text: message,
-        sender: "admin",
-        timestamp: new Date(),
+        sender,
         status: "sent",
-      };
+        chatId: targetChatId,
+      });
 
-      // Сохраняем в localStorage для демонстрации
-      const existingChats = JSON.parse(
-        localStorage.getItem("liveChats") || "[]",
-      );
-      const updatedChats = [...existingChats, newMessage];
-      localStorage.setItem("liveChats", JSON.stringify(updatedChats));
+      // Имитация отправки (можно заменить на реальный API)
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // Отмечаем как доставленное
+      markMessageAsRead(messageId);
 
       return true;
     } catch (err) {
@@ -99,44 +66,32 @@ export const useChat = () => {
     }
   };
 
-  const createChatSession = async (
-    userId: string,
-    userName: string,
-  ): Promise<string | null> => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const sessionId = Date.now().toString();
-      const newSession: ChatSession = {
-        id: sessionId,
-        userId,
-        userName,
-        messages: [],
-        status: "active",
-        lastActivity: new Date(),
-      };
-
-      setChatSessions((prev) => [...prev, newSession]);
-      return sessionId;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка создания чата");
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
+  const sendUserMessage = async (message: string): Promise<boolean> => {
+    return sendMessage(message, undefined, "user");
   };
 
-  const closeChatSession = async (sessionId: string): Promise<boolean> => {
+  const sendAdminMessage = async (
+    message: string,
+    chatId: string,
+  ): Promise<boolean> => {
+    return sendMessage(message, chatId, "admin");
+  };
+
+  const createNewUserChat = (userId: string, userName: string): string => {
+    setCurrentUserId(userId);
+    return getOrCreateUserChat(userId, userName);
+  };
+
+  const getChatMessages = (chatId: string) => {
+    return getMessagesByChatId(chatId);
+  };
+
+  const closeChat = async (chatId: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      setChatSessions((prev) =>
-        prev.map((session) =>
-          session.id === sessionId ? { ...session, status: "closed" } : session,
-        ),
-      );
+      updateChatRoom(chatId, { status: "closed" });
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ошибка закрытия чата");
@@ -146,14 +101,12 @@ export const useChat = () => {
     }
   };
 
-  const deleteChatSession = async (sessionId: string): Promise<boolean> => {
+  const deleteChat = async (chatId: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      setChatSessions((prev) =>
-        prev.filter((session) => session.id !== sessionId),
-      );
+      deleteChatRoom(chatId);
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ошибка удаления чата");
@@ -163,82 +116,47 @@ export const useChat = () => {
     }
   };
 
-  const getChatHistory = async (sessionId: string): Promise<ChatMessage[]> => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Имитация получения истории чата
-      const session = chatSessions.find((s) => s.id === sessionId);
-      return session?.messages || [];
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка получения истории");
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const markAsRead = async (
-    sessionId: string,
-    messageId: string,
-  ): Promise<boolean> => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      setChatSessions((prev) =>
-        prev.map((session) =>
-          session.id === sessionId
-            ? {
-                ...session,
-                messages: session.messages.map((msg) =>
-                  msg.id === messageId ? { ...msg, status: "read" } : msg,
-                ),
-              }
-            : session,
-        ),
-      );
-      return true;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка отметки прочтения");
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+  const markChatAsRead = (chatId: string) => {
+    updateChatRoom(chatId, { unreadCount: 0 });
   };
 
   const getActiveChatCount = (): number => {
-    return chatSessions.filter((session) => session.status === "active").length;
+    return chatRooms.filter((room) => room.status === "active").length;
   };
 
   const getWaitingChatCount = (): number => {
-    return chatSessions.filter((session) => session.status === "waiting")
-      .length;
+    return chatRooms.filter((room) => room.status === "waiting").length;
   };
 
   const getUnreadMessageCount = (): number => {
-    return chatSessions.reduce((total, session) => {
-      return (
-        total +
-        session.messages.filter(
-          (msg) => msg.sender === "user" && msg.status !== "read",
-        ).length
-      );
-    }, 0);
+    return chatRooms.reduce((total, room) => total + room.unreadCount, 0);
   };
 
   return {
-    chatSessions,
+    // Данные
+    messages,
+    chatRooms,
+    currentUserId,
+
+    // Методы для сообщений
     sendMessage,
-    createChatSession,
-    closeChatSession,
-    deleteChatSession,
-    getChatHistory,
-    markAsRead,
+    sendUserMessage,
+    sendAdminMessage,
+    getChatMessages,
+
+    // Методы для чатов
+    createNewUserChat,
+    closeChat,
+    deleteChat,
+    markChatAsRead,
+    getChatRoomById,
+
+    // Статистика
     getActiveChatCount,
     getWaitingChatCount,
     getUnreadMessageCount,
+
+    // Состояние
     isLoading,
     error,
   };

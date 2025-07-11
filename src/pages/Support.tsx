@@ -6,75 +6,52 @@ import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useChat } from "@/hooks/useChat";
-
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "admin";
-  timestamp: Date;
-  status: "sent" | "delivered" | "read";
-}
+import { useChatStore } from "@/store/chatStore";
 
 export default function Support() {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, isLoading } = useChat();
+
+  const { sendUserMessage, createNewUserChat, getChatMessages, isLoading } =
+    useChat();
+  const { currentUserId, setCurrentUserId } = useChatStore();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    // Генерируем уникальный ID для пользователя при первом посещении
+    if (!currentUserId) {
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setCurrentUserId(userId);
+
+      // Создаем новый чат для пользователя
+      const chatId = createNewUserChat(userId, "Гость");
+      setCurrentChatId(chatId);
+    } else {
+      // Находим существующий чат пользователя
+      const chatId = createNewUserChat(currentUserId, "Гость");
+      setCurrentChatId(chatId);
+    }
+  }, [currentUserId, setCurrentUserId, createNewUserChat]);
+
+  // Получаем сообщения для текущего чата
+  const messages = currentChatId ? getChatMessages(currentChatId) : [];
 
   useEffect(() => {
-    // Имитация начального сообщения от администратора
-    const initialMessage: Message = {
-      id: "1",
-      text: "Здравствуйте! Как дела? Чем могу помочь? 😊",
-      sender: "admin",
-      timestamp: new Date(),
-      status: "read",
-    };
-    setMessages([initialMessage]);
-  }, []);
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const message: Message = {
-      id: Date.now().toString(),
-      text: newMessage,
-      sender: "user",
-      timestamp: new Date(),
-      status: "sent",
-    };
-
-    setMessages((prev) => [...prev, message]);
+    // Отправляем сообщение от пользователя
+    await sendUserMessage(newMessage);
     setNewMessage("");
-
-    // Имитация отправки сообщения
-    await sendMessage(newMessage);
-
-    // Имитация ответа администратора
-    setTimeout(() => {
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        const adminResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          text: "Спасибо за ваше сообщение! Мы рассмотрим вашу проблему и свяжемся с вами в ближайшее время.",
-          sender: "admin",
-          timestamp: new Date(),
-          status: "read",
-        };
-        setMessages((prev) => [...prev, adminResponse]);
-      }, 2000);
-    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -156,6 +133,20 @@ export default function Support() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            {messages.length === 0 && (
+              <div className="text-center py-8">
+                <Icon
+                  name="MessageCircle"
+                  size={48}
+                  className="mx-auto text-gray-400 mb-4"
+                />
+                <p className="text-gray-600">Начните диалог с поддержкой</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Напишите свой вопрос ниже
+                </p>
+              </div>
+            )}
+
             {messages.map((message) => (
               <div
                 key={message.id}

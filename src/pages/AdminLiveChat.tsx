@@ -8,97 +8,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Icon from "@/components/ui/icon";
 import { useChat } from "@/hooks/useChat";
-
-interface ChatMessage {
-  id: string;
-  text: string;
-  sender: "user" | "admin";
-  timestamp: Date;
-  status: "sent" | "delivered" | "read";
-}
-
-interface ChatRoom {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar?: string;
-  lastMessage: string;
-  lastMessageTime: Date;
-  unreadCount: number;
-  status: "active" | "waiting" | "closed";
-  messages: ChatMessage[];
-}
+import { useChatStore } from "@/store/chatStore";
 
 export default function AdminLiveChat() {
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([
-    {
-      id: "1",
-      userId: "user_123",
-      userName: "Анна Иванова",
-      userAvatar: "/api/placeholder/40/40",
-      lastMessage: "Здравствуйте! У меня проблема с заказом",
-      lastMessageTime: new Date(Date.now() - 5 * 60 * 1000),
-      unreadCount: 2,
-      status: "waiting",
-      messages: [
-        {
-          id: "1",
-          text: "Здравствуйте! У меня проблема с заказом",
-          sender: "user",
-          timestamp: new Date(Date.now() - 5 * 60 * 1000),
-          status: "delivered",
-        },
-        {
-          id: "2",
-          text: "Заказ #12345 не пришел в указанное время",
-          sender: "user",
-          timestamp: new Date(Date.now() - 4 * 60 * 1000),
-          status: "delivered",
-        },
-      ],
-    },
-    {
-      id: "2",
-      userId: "user_456",
-      userName: "Петр Сидоров",
-      userAvatar: "/api/placeholder/40/40",
-      lastMessage: "Спасибо за помощь!",
-      lastMessageTime: new Date(Date.now() - 30 * 60 * 1000),
-      unreadCount: 0,
-      status: "closed",
-      messages: [
-        {
-          id: "1",
-          text: "Как вернуть товар?",
-          sender: "user",
-          timestamp: new Date(Date.now() - 45 * 60 * 1000),
-          status: "read",
-        },
-        {
-          id: "2",
-          text: "Для возврата товара нужно заполнить форму на сайте",
-          sender: "admin",
-          timestamp: new Date(Date.now() - 40 * 60 * 1000),
-          status: "read",
-        },
-        {
-          id: "3",
-          text: "Спасибо за помощь!",
-          sender: "user",
-          timestamp: new Date(Date.now() - 30 * 60 * 1000),
-          status: "read",
-        },
-      ],
-    },
-  ]);
-
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { sendMessage, isLoading } = useChat();
+
+  const {
+    chatRooms,
+    sendAdminMessage,
+    getChatMessages,
+    closeChat,
+    deleteChat,
+    markChatAsRead,
+    getWaitingChatCount,
+    isLoading,
+  } = useChat();
 
   const selectedChat = chatRooms.find((chat) => chat.id === selectedChatId);
+  const messages = selectedChatId ? getChatMessages(selectedChatId) : [];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -106,35 +36,13 @@ export default function AdminLiveChat() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [selectedChat?.messages]);
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChatId) return;
 
-    const message: ChatMessage = {
-      id: Date.now().toString(),
-      text: newMessage,
-      sender: "admin",
-      timestamp: new Date(),
-      status: "sent",
-    };
-
-    // Добавляем сообщение в чат
-    setChatRooms((prev) =>
-      prev.map((room) =>
-        room.id === selectedChatId
-          ? {
-              ...room,
-              messages: [...room.messages, message],
-              lastMessage: newMessage,
-              lastMessageTime: new Date(),
-            }
-          : room,
-      ),
-    );
-
+    await sendAdminMessage(newMessage, selectedChatId);
     setNewMessage("");
-    await sendMessage(newMessage);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -188,24 +96,17 @@ export default function AdminLiveChat() {
     }
   };
 
-  const markAsRead = (chatId: string) => {
-    setChatRooms((prev) =>
-      prev.map((room) =>
-        room.id === chatId ? { ...room, unreadCount: 0 } : room,
-      ),
-    );
+  const handleChatSelect = (chatId: string) => {
+    setSelectedChatId(chatId);
+    markChatAsRead(chatId);
   };
 
-  const closeChat = (chatId: string) => {
-    setChatRooms((prev) =>
-      prev.map((room) =>
-        room.id === chatId ? { ...room, status: "closed" } : room,
-      ),
-    );
+  const handleCloseChat = async (chatId: string) => {
+    await closeChat(chatId);
   };
 
-  const deleteChat = (chatId: string) => {
-    setChatRooms((prev) => prev.filter((room) => room.id !== chatId));
+  const handleDeleteChat = async (chatId: string) => {
+    await deleteChat(chatId);
     if (selectedChatId === chatId) {
       setSelectedChatId(null);
     }
@@ -225,8 +126,7 @@ export default function AdminLiveChat() {
               Онлайн
             </Badge>
             <span className="text-sm text-gray-500">
-              {chatRooms.filter((room) => room.status === "waiting").length}{" "}
-              ожидают ответа
+              {getWaitingChatCount()} ожидают ответа
             </span>
           </div>
         </div>
@@ -242,59 +142,73 @@ export default function AdminLiveChat() {
             </CardHeader>
             <CardContent className="p-0">
               <ScrollArea className="h-[500px]">
-                <div className="space-y-1">
-                  {chatRooms.map((room) => (
-                    <div
-                      key={room.id}
-                      onClick={() => {
-                        setSelectedChatId(room.id);
-                        markAsRead(room.id);
-                      }}
-                      className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
-                        selectedChatId === room.id
-                          ? "bg-blue-50 border-blue-200"
-                          : ""
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="relative">
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage src={room.userAvatar} />
-                            <AvatarFallback className="bg-gray-200">
-                              {room.userName.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div
-                            className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full ${getStatusColor(room.status)}`}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <p className="font-medium text-gray-900 truncate">
-                              {room.userName}
-                            </p>
-                            <span className="text-xs text-gray-500">
-                              {formatTime(room.lastMessageTime)}
-                            </span>
+                {chatRooms.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Icon
+                      name="MessageSquare"
+                      size={48}
+                      className="mx-auto text-gray-400 mb-4"
+                    />
+                    <p className="text-gray-600">Пока нет чатов</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Чаты появятся здесь, когда пользователи начнут писать в
+                      поддержку
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {chatRooms.map((room) => (
+                      <div
+                        key={room.id}
+                        onClick={() => handleChatSelect(room.id)}
+                        className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
+                          selectedChatId === room.id
+                            ? "bg-blue-50 border-blue-200"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="relative">
+                            <Avatar className="w-10 h-10">
+                              <AvatarFallback className="bg-gray-200">
+                                {room.userName.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div
+                              className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full ${getStatusColor(room.status)}`}
+                            />
                           </div>
-                          <p className="text-sm text-gray-600 truncate">
-                            {room.lastMessage}
-                          </p>
-                          <div className="flex items-center justify-between mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              {getStatusText(room.status)}
-                            </Badge>
-                            {room.unreadCount > 0 && (
-                              <Badge variant="destructive" className="text-xs">
-                                {room.unreadCount}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-gray-900 truncate">
+                                {room.userName}
+                              </p>
+                              <span className="text-xs text-gray-500">
+                                {formatTime(room.lastMessageTime)}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 truncate">
+                              {room.lastMessage || "Новый чат"}
+                            </p>
+                            <div className="flex items-center justify-between mt-1">
+                              <Badge variant="outline" className="text-xs">
+                                {getStatusText(room.status)}
                               </Badge>
-                            )}
+                              {room.unreadCount > 0 && (
+                                <Badge
+                                  variant="destructive"
+                                  className="text-xs"
+                                >
+                                  {room.unreadCount}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </ScrollArea>
             </CardContent>
           </Card>
@@ -306,7 +220,6 @@ export default function AdminLiveChat() {
                 <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-10 h-10">
-                      <AvatarImage src={selectedChat.userAvatar} />
                       <AvatarFallback className="bg-gray-200">
                         {selectedChat.userName.charAt(0)}
                       </AvatarFallback>
@@ -322,7 +235,7 @@ export default function AdminLiveChat() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => closeChat(selectedChat.id)}
+                      onClick={() => handleCloseChat(selectedChat.id)}
                     >
                       <Icon name="CheckCircle" size={16} className="mr-1" />
                       Закрыть
@@ -330,7 +243,7 @@ export default function AdminLiveChat() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => deleteChat(selectedChat.id)}
+                      onClick={() => handleDeleteChat(selectedChat.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Icon name="Trash2" size={16} />
@@ -341,42 +254,53 @@ export default function AdminLiveChat() {
                 <CardContent className="p-0">
                   <ScrollArea className="h-[400px] p-4">
                     <div className="space-y-4">
-                      {selectedChat.messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${
-                            message.sender === "admin"
-                              ? "justify-end"
-                              : "justify-start"
-                          }`}
-                        >
+                      {messages.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Icon
+                            name="MessageCircle"
+                            size={48}
+                            className="mx-auto text-gray-400 mb-4"
+                          />
+                          <p className="text-gray-600">Пока нет сообщений</p>
+                        </div>
+                      ) : (
+                        messages.map((message) => (
                           <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            key={message.id}
+                            className={`flex ${
                               message.sender === "admin"
-                                ? "bg-blue-600 text-white"
-                                : "bg-gray-100 text-gray-900"
+                                ? "justify-end"
+                                : "justify-start"
                             }`}
                           >
-                            <p className="text-sm">{message.text}</p>
-                            <div className="flex items-center justify-end space-x-1 mt-1">
-                              <span className="text-xs opacity-70">
-                                {formatTime(message.timestamp)}
-                              </span>
-                              {message.sender === "admin" && (
-                                <Icon
-                                  name={
-                                    message.status === "read"
-                                      ? "CheckCheck"
-                                      : "Check"
-                                  }
-                                  size={12}
-                                  className="opacity-70"
-                                />
-                              )}
+                            <div
+                              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                                message.sender === "admin"
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-gray-100 text-gray-900"
+                              }`}
+                            >
+                              <p className="text-sm">{message.text}</p>
+                              <div className="flex items-center justify-end space-x-1 mt-1">
+                                <span className="text-xs opacity-70">
+                                  {formatTime(message.timestamp)}
+                                </span>
+                                {message.sender === "admin" && (
+                                  <Icon
+                                    name={
+                                      message.status === "read"
+                                        ? "CheckCheck"
+                                        : "Check"
+                                    }
+                                    size={12}
+                                    className="opacity-70"
+                                  />
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
 
                       {isTyping && (
                         <div className="flex justify-start">
