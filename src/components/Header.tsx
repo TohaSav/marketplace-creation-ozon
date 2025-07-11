@@ -15,7 +15,7 @@ export default function Header() {
                 to="/seller"
                 className="text-gray-600 hover:text-blue-600 transition-colors"
               >
-                Продавайте на OZON
+                Продавайте на Calibre Store
               </Link>
               <Link
                 to="/help"
