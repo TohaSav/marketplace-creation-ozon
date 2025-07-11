@@ -1,12 +1,9 @@
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 export default function Delivery() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
+    <div>
       <div className="container mx-auto px-4 py-8 lg:py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
