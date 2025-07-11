@@ -14,51 +14,29 @@ export default function PaymentSuccess() {
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
 
-  const { checkPaymentStatus, getPendingPayment, clearPendingPayment } =
-    usePayment({
-      onSuccess: (paymentId) => {
-        console.log("Платеж успешно создан:", paymentId);
-      },
-      onError: (error) => {
-        console.error("Ошибка платежа:", error);
-      },
-      onStatusChange: (status) => {
-        console.log("Статус платежа изменился:", status);
-        if (status.status === "succeeded") {
-          setPaymentConfirmed(true);
-          setPaymentDetails(status);
-          clearPendingPayment();
-
-          toast({
-            title: "Оплата прошла успешно!",
-            description: "Ваш платеж был успешно обработан.",
-          });
-        }
-      },
-    });
+  const { verifyPayment } = usePayment();
 
   useEffect(() => {
     const processPayment = async () => {
       try {
-        // Получаем paymentId из URL или из pending payment
-        let paymentId = searchParams.get("payment_id");
-
-        if (!paymentId) {
-          const pendingPayment = getPendingPayment();
-          paymentId = pendingPayment?.id || null;
-        }
+        // Получаем paymentId из URL
+        const paymentId = searchParams.get("payment_id");
 
         if (!paymentId) {
           throw new Error("ID платежа не найден");
         }
 
         // Проверяем статус платежа через наш сервис
-        const paymentStatus = await checkPaymentStatus(paymentId);
+        const paymentStatus = await verifyPayment(paymentId);
 
         if (paymentStatus?.status === "succeeded") {
           setPaymentConfirmed(true);
           setPaymentDetails(paymentStatus);
-          clearPendingPayment();
+
+          toast({
+            title: "Оплата прошла успешно!",
+            description: "Ваш платеж был успешно обработан.",
+          });
         } else if (
           paymentStatus?.status === "pending" ||
           paymentStatus?.status === "waiting_for_capture"
@@ -89,12 +67,7 @@ export default function PaymentSuccess() {
     };
 
     processPayment();
-  }, [
-    searchParams,
-    checkPaymentStatus,
-    getPendingPayment,
-    clearPendingPayment,
-  ]);
+  }, [searchParams, verifyPayment]);
 
   if (verifying) {
     return (

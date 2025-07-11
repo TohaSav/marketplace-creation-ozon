@@ -9,14 +9,21 @@ import { useYookassa } from "@/hooks/useYookassa";
 import { toast } from "@/hooks/use-toast";
 
 export default function AdminPayments() {
-  const { config, isLoading, saveConfig, testConnection } = useYookassa();
+  const { getConfig, updateConfig, testConnection, isLoading } = useYookassa();
   const [isEditing, setIsEditing] = useState(false);
   const [showSecretKey, setShowSecretKey] = useState(false);
-  const [formData, setFormData] = useState(config);
+  const [config, setConfig] = useState(null);
+  const [formData, setFormData] = useState({
+    shopId: "",
+    secretKey: "",
+    isTestMode: true,
+  });
 
   const handleSave = async () => {
     try {
-      await saveConfig(formData);
+      await updateConfig(formData);
+      const newConfig = await getConfig();
+      setConfig(newConfig);
       setIsEditing(false);
       toast({
         title: "Настройки сохранены",
