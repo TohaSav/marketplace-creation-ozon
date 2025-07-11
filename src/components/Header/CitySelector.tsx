@@ -55,17 +55,17 @@ const CitySelector = ({
       </button>
 
       {showDropdown && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div className="absolute top-full right-0 mt-2 w-72 sm:w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           <div className="p-3 border-b border-gray-200">
             <input
               type="text"
               placeholder="Поиск города..."
               value={citySearch}
               onChange={(e) => setCitySearch(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-48 sm:max-h-60 overflow-y-auto">
             {filteredCities.map((cityName) => (
               <button
                 key={cityName}
