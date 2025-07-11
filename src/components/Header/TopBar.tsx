@@ -21,16 +21,28 @@ const TopBar = ({
           {/* Mobile: Show only essential links */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
+              to="/about"
+              className="text-gray-600 hover:text-blue-600 transition-colors hidden sm:block"
+            >
+              О нас
+            </Link>
+            <Link
+              to="/warranty"
+              className="text-gray-600 hover:text-blue-600 transition-colors hidden sm:block"
+            >
+              Гарантия
+            </Link>
+            <Link
+              to="/delivery"
+              className="text-gray-600 hover:text-blue-600 transition-colors hidden sm:block"
+            >
+              Доставка
+            </Link>
+            <Link
               to="/seller/register"
               className="text-gray-600 hover:text-blue-600 transition-colors hidden sm:block"
             >
               Продавцам
-            </Link>
-            <Link
-              to="/seller/register"
-              className="text-gray-600 hover:text-blue-600 transition-colors sm:hidden"
-            >
-              Продавать
             </Link>
             <Link
               to="/support"
