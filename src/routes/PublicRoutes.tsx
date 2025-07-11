@@ -5,6 +5,14 @@ import Layout from "@/components/Layout";
 import Index from "@/pages/Index";
 import Category from "@/pages/Category";
 
+// Категории товаров
+import Electronics from "@/pages/Electronics";
+import Clothing from "@/pages/Clothing";
+import HomeGarden from "@/pages/HomeGarden";
+import Sport from "@/pages/Sport";
+import Beauty from "@/pages/Beauty";
+import Books from "@/pages/Books";
+
 // Информационные страницы
 import TradingRules from "@/pages/TradingRules";
 import Commissions from "@/pages/Commissions";
@@ -43,6 +51,14 @@ const publicRoutes = [
   { path: "/", component: Index, exact: true },
   { path: "/category/:categorySlug", component: Category },
   { path: "/category/:categoryId", component: Category },
+
+  // Категории товаров
+  { path: "/electronics", component: Electronics },
+  { path: "/clothing", component: Clothing },
+  { path: "/home-garden", component: HomeGarden },
+  { path: "/sport", component: Sport },
+  { path: "/beauty", component: Beauty },
+  { path: "/books", component: Books },
 
   // Информационные
   { path: "/privacy", component: PrivacyPolicy },
