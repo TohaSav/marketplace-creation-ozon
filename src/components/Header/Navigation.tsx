@@ -158,6 +158,14 @@ const Navigation = ({
                     <Icon name="Heart" size={16} className="mr-2" />
                     Избранное
                   </Link>
+                  <Link
+                    to="/bonus-card"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                  >
+                    <Icon name="CreditCard" size={16} className="mr-2" />
+                    Бонусная карта
+                  </Link>
                   <div className="border-t border-gray-100 mt-1 pt-1">
                     <button
                       onClick={handleLogout}
