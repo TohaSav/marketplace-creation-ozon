@@ -96,7 +96,7 @@ const Navigation = ({
       <NavButton
         icon="Heart"
         label="Избранное"
-        to={isLoggedIn ? "/profile" : undefined}
+        to={isLoggedIn ? "/favorites" : undefined}
         onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
         isActive={isLoggedIn}
       />
