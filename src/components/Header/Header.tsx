@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "@/hooks/useLocation";
+import { useAuth } from "@/context/AuthContext";
 import TopBar from "./TopBar";
 import Logo from "./Logo";
 import CatalogButton from "./CatalogButton";
@@ -20,8 +21,12 @@ const Header = () => {
     selectCity,
   } = useLocation();
 
+  const { user } = useAuth();
   // Проверяем, авторизован ли пользователь
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isLoggedIn =
+    !!user ||
+    localStorage.getItem("user-token") ||
+    localStorage.getItem("seller-token");
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
