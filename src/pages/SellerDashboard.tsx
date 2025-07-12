@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
 import { statusSyncManager } from "@/utils/statusSync";
+import SubscriptionModal from "@/components/SubscriptionModal";
+import SubscriptionStatusCard from "@/components/SubscriptionStatusCard";
+import { useSubscription } from "@/hooks/useSubscription";
 
 // Tab Components
 import StatsGrid from "@/components/seller-dashboard/StatsGrid";
@@ -22,6 +25,18 @@ import RevisionModal from "@/components/RevisionModal";
 export default function SellerDashboard() {
   const { user } = useAuth();
   const [showRevisionModal, setShowRevisionModal] = useState(false);
+  const { shouldShowSubscriptionModal, activateSubscription } =
+    useSubscription();
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
+  // Проверяем необходимость показа модального окна подписки
+  useEffect(() => {
+    if (user?.userType === "seller" && user?.status === "active") {
+      if (shouldShowSubscriptionModal()) {
+        setShowSubscriptionModal(true);
+      }
+    }
+  }, [user, shouldShowSubscriptionModal]);
 
   // Подписываемся на изменения статуса продавца
   useEffect(() => {
@@ -82,6 +97,17 @@ export default function SellerDashboard() {
     handleMessageCustomer,
     handleEditProfile,
   } = useSellerDashboard();
+
+  // Обработка подписки на тариф
+  const handleSubscribe = async (planId: string) => {
+    try {
+      await activateSubscription(planId);
+      setShowSubscriptionModal(false);
+    } catch (error) {
+      console.error("Ошибка активации подписки:", error);
+      throw error;
+    }
+  };
 
   // Проверяем статус продавца - блокируем все кроме уведомлений
   if (user?.userType === "seller" && user?.status !== "active") {
@@ -195,7 +221,7 @@ export default function SellerDashboard() {
 
         {/* Subscription Status */}
         <div className="mb-8">
-          <SubscriptionStatus />
+          <SubscriptionStatusCard />
         </div>
 
         {/* Tabs */}
@@ -259,6 +285,13 @@ export default function SellerDashboard() {
       <RevisionModal
         isOpen={showRevisionModal}
         onClose={() => setShowRevisionModal(false)}
+      />
+
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        onSubscribe={handleSubscribe}
       />
     </div>
   );

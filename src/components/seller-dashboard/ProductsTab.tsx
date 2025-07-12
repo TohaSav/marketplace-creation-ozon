@@ -8,8 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types/seller-dashboard.types";
 import ProductRow from "./ProductRow";
+import { useSubscription } from "@/hooks/useSubscription";
+import { toast } from "@/hooks/use-toast";
 
 interface ProductsTabProps {
   products: Product[];
@@ -24,19 +27,63 @@ export default function ProductsTab({
   onEditProduct,
   onDeleteProduct,
 }: ProductsTabProps) {
+  const { subscriptionStatus, canAddProduct } = useSubscription();
+
+  const handleAddProduct = () => {
+    const result = canAddProduct();
+    if (!result.allowed) {
+      toast({
+        title: "Невозможно добавить товар",
+        description: result.reason,
+        variant: "destructive",
+      });
+      return;
+    }
+    onAddProduct?.();
+  };
+
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Мои товары</CardTitle>
+          <div className="flex items-center gap-3">
+            <CardTitle>Мои товары</CardTitle>
+            {subscriptionStatus && (
+              <Badge variant="outline" className="text-xs">
+                {subscriptionStatus.productsUsed} /{" "}
+                {subscriptionStatus.maxProducts === -1
+                  ? "∞"
+                  : subscriptionStatus.maxProducts}
+              </Badge>
+            )}
+          </div>
           <Button
             className="bg-purple-600 hover:bg-purple-700"
-            onClick={onAddProduct}
+            onClick={handleAddProduct}
+            disabled={!subscriptionStatus?.canAddProducts}
           >
             <Icon name="Plus" size={16} className="mr-2" />
             Добавить товар
           </Button>
         </div>
+
+        {subscriptionStatus && !subscriptionStatus.canAddProducts && (
+          <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+            <div className="flex items-center gap-2 text-orange-800">
+              <Icon name="AlertTriangle" size={16} />
+              <span className="text-sm font-medium">
+                {subscriptionStatus.maxProducts !== -1 &&
+                subscriptionStatus.productsUsed >=
+                  subscriptionStatus.maxProducts
+                  ? `Достигнут лимит товаров (${subscriptionStatus.maxProducts})`
+                  : "Подписка неактивна"}
+              </span>
+            </div>
+            <p className="text-sm text-orange-700 mt-1">
+              Обновите тарифный план для добавления новых товаров
+            </p>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         {products.length === 0 ? (

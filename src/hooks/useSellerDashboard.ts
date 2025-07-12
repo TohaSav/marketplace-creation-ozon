@@ -13,6 +13,9 @@ import {
   getSellerStories,
   deleteStory,
 } from "@/utils/stories.utils";
+import { useSubscription } from "@/hooks/useSubscription";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export interface UseSellerDashboardResult {
   stats: SellerStats;
@@ -33,6 +36,8 @@ export interface UseSellerDashboardResult {
 
 export function useSellerDashboard(): UseSellerDashboardResult {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { canAddProduct } = useSubscription();
   const [stats, setStats] = useState<SellerStats>(MOCK_STATS);
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
@@ -116,8 +121,19 @@ export function useSellerDashboard(): UseSellerDashboardResult {
   };
 
   const handleAddProduct = () => {
-    // В реальном приложении здесь будет навигация на страницу добавления товара
-    console.log("Добавление нового товара");
+    // Проверяем возможность добавления товара
+    const result = canAddProduct();
+    if (!result.allowed) {
+      toast({
+        title: "Невозможно добавить товар",
+        description: result.reason,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Переходим на страницу добавления товара
+    navigate("/add-product");
   };
 
   const handleEditProduct = (productId: number) => {

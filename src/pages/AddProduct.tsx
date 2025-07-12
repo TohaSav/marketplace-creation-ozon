@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
 
 import { useAuth } from "@/context/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   generateUniqueArticle,
   generateUniqueBarcode,
@@ -26,7 +27,47 @@ import {
 export default function AddProduct() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { canAddProduct, subscriptionStatus, refreshSubscription } =
+    useSubscription();
   const [loading, setLoading] = useState(false);
+
+  // Проверяем подписку
+  const productCheck = canAddProduct();
+  if (!productCheck.allowed) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <Card className="text-center border-red-200 bg-red-50">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <Icon name="AlertTriangle" size={64} className="text-red-500" />
+            </div>
+            <CardTitle className="text-2xl text-red-600">
+              Невозможно добавить товар
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-700 text-lg mb-6">{productCheck.reason}</p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => navigate("/seller/tariffs")}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                <Icon name="CreditCard" size={16} className="mr-2" />
+                Выбрать тариф
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/seller/dashboard")}
+              >
+                <Icon name="ArrowLeft" size={16} className="mr-2" />
+                Вернуться в кабинет
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Проверяем статус продавца - разрешаем доступ только подтвержденным
   if (user?.userType === "seller" && user?.status !== "active") {
@@ -148,6 +189,9 @@ export default function AddProduct() {
       const updatedSeller = updatedSellers.find((s: any) => s.id === seller.id);
       localStorage.setItem("seller-token", JSON.stringify(updatedSeller));
 
+      // Обновляем статистику подписки
+      refreshSubscription();
+
       toast({
         title: "Товар добавлен",
         description: "Ваш товар успешно добавлен в каталог",
@@ -181,6 +225,39 @@ export default function AddProduct() {
           Заполните информацию о вашем товаре
         </p>
       </div>
+
+      {/* Информация о подписке */}
+      {subscriptionStatus && (
+        <Card className="mb-6 bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Icon name="Info" size={20} className="text-blue-600" />
+                <div>
+                  <h3 className="font-semibold text-blue-900">
+                    Тариф "{subscriptionStatus.planName}"
+                  </h3>
+                  <p className="text-sm text-blue-700">
+                    Использовано товаров: {subscriptionStatus.productsUsed} /{" "}
+                    {subscriptionStatus.maxProducts === -1
+                      ? "∞"
+                      : subscriptionStatus.maxProducts}
+                  </p>
+                </div>
+              </div>
+              {subscriptionStatus.maxProducts !== -1 && (
+                <div className="text-right">
+                  <div className="text-lg font-bold text-blue-900">
+                    {subscriptionStatus.maxProducts -
+                      subscriptionStatus.productsUsed}
+                  </div>
+                  <div className="text-sm text-blue-700">товаров осталось</div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
