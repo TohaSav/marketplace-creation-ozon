@@ -88,7 +88,7 @@ const Navigation = ({
       <NavButton
         icon="Package"
         label="Заказы"
-        to={isLoggedIn ? "/profile" : undefined}
+        to={isLoggedIn ? "/orders" : undefined}
         onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
         isActive={isLoggedIn}
       />
