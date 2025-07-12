@@ -18,7 +18,7 @@ export default function OrdersTab({ userStats }: OrdersTabProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {userStats.ordersCount === 0 ? (
+        {false ? (
           <div className="text-center py-12">
             <Icon
               name="Package"
@@ -37,8 +37,8 @@ export default function OrdersTab({ userStats }: OrdersTabProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Здесь будут отображаться реальные заказы пользователя */}
-            <div className="border rounded-lg p-4 bg-gray-50">
+            {/* Мокап заказов для демонстрации */}
+            <div className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h4 className="font-medium">Заказ #12345</h4>
@@ -79,7 +79,7 @@ export default function OrdersTab({ userStats }: OrdersTabProps) {
               </div>
             </div>
 
-            <div className="border rounded-lg p-4 bg-gray-50">
+            <div className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h4 className="font-medium">Заказ #12346</h4>
