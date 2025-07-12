@@ -14,6 +14,8 @@ import AdminAnalytics from "@/pages/AdminAnalytics";
 import AdminDataManagement from "@/pages/AdminDataManagement";
 import AdminChat from "@/pages/AdminChat";
 import AdminLiveChat from "@/pages/AdminLiveChat";
+import ShopVerification from "@/pages/admin/ShopVerification";
+import AdminSettings from "@/pages/AdminSettings";
 
 const AdminRoutes = () => {
   try {
@@ -116,7 +118,7 @@ const AdminRoutes = () => {
           path="/admin/settings"
           element={
             <AdminProtectedRoute>
-              <AdminDataManagement />
+              <AdminSettings />
             </AdminProtectedRoute>
           }
         />
@@ -124,7 +126,7 @@ const AdminRoutes = () => {
           path="/admin/verification"
           element={
             <AdminProtectedRoute>
-              <AdminSellers />
+              <ShopVerification />
             </AdminProtectedRoute>
           }
         />
