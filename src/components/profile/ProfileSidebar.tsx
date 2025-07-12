@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,15 +22,53 @@ export default function ProfileSidebar({
 }: ProfileSidebarProps) {
   const [showCoverUpload, setShowCoverUpload] = useState(false);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  // Загружаем сохраненные изображения при инициализации
+  useEffect(() => {
+    const savedCover = localStorage.getItem(`cover_${user.id}`);
+    const savedAvatar = localStorage.getItem(`avatar_${user.id}`);
+    if (savedCover) setCoverImage(savedCover);
+    if (savedAvatar) setAvatarImage(savedAvatar);
+  }, [user.id]);
 
   const handleCoverUpload = () => {
-    // Логика загрузки обложки
-    console.log("Загрузка обложки");
+    coverInputRef.current?.click();
+  };
+
+  const handleCoverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setCoverImage(result);
+        localStorage.setItem(`cover_${user.id}`, result);
+        setShowCoverUpload(false);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAvatarUpload = () => {
-    // Логика загрузки аватара
-    console.log("Загрузка аватара");
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setAvatarImage(result);
+        localStorage.setItem(`avatar_${user.id}`, result);
+        setShowAvatarUpload(false);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -39,9 +77,23 @@ export default function ProfileSidebar({
       <Card className="mb-6 overflow-hidden">
         {/* Обложка */}
         <div
-          className="h-32 bg-gradient-to-r from-blue-500 to-purple-600 relative cursor-pointer group"
+          className="h-32 relative cursor-pointer group"
+          style={{
+            backgroundImage: coverImage
+              ? `url(${coverImage})`
+              : "linear-gradient(to right, #3b82f6, #8b5cf6)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
           onClick={() => setShowCoverUpload(!showCoverUpload)}
         >
+          <input
+            ref={coverInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleCoverChange}
+          />
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <Icon name="Camera" size={24} className="text-white" />
@@ -70,13 +122,28 @@ export default function ProfileSidebar({
               className="relative group cursor-pointer"
               onClick={() => setShowAvatarUpload(!showAvatarUpload)}
             >
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
               <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                <AvatarFallback className="bg-blue-100 text-blue-700 text-2xl font-semibold">
-                  {user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
+                {avatarImage ? (
+                  <img
+                    src={avatarImage}
+                    alt="Avatar"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <AvatarFallback className="bg-blue-100 text-blue-700 text-2xl font-semibold">
+                    {user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                )}
               </Avatar>
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center rounded-full">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
