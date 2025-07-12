@@ -23,6 +23,17 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [balance, setBalance] = useState(0);
+  const [walletNumber] = useState(() => {
+    // Генерируем уникальный номер кошелька на основе userId
+    if (!user?.id) return "0000 0000 00";
+    const userId = user.id;
+    const hash = userId.split("").reduce((a, b) => {
+      a = (a << 5) - a + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    const uniqueNumber = Math.abs(hash).toString().padStart(10, "0");
+    return `${uniqueNumber.slice(0, 4)} ${uniqueNumber.slice(4, 8)} ${uniqueNumber.slice(8)}`;
+  });
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
   const [depositAmount, setDepositAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -227,6 +238,30 @@ export default function Wallet() {
                 <p className="text-sm text-gray-600">Доступно для трат</p>
               </div>
 
+              <div className="border-t pt-4">
+                <p className="text-sm text-gray-500 mb-1">Номер кошелька</p>
+                <div className="flex items-center gap-2">
+                  <code className="text-base font-mono bg-gray-100 px-2 py-1 rounded flex-1 text-center">
+                    {walletNumber}
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        walletNumber.replace(/\s/g, ""),
+                      );
+                      toast({
+                        title: "Скопировано",
+                        description: "Номер кошелька скопирован в буфер обмена",
+                      });
+                    }}
+                  >
+                    <Icon name="Copy" size={14} />
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-4">
                 <Button
                   onClick={() => setShowDepositForm(!showDepositForm)}
@@ -319,14 +354,17 @@ export default function Wallet() {
               </div>
 
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">
-                  Возможности кошелька:
-                </h4>
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon name="Percent" size={16} className="text-blue-600" />
+                  <h4 className="font-semibold text-blue-900">
+                    Скидка 5% при оплате кошельком!
+                  </h4>
+                </div>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Оплата покупок</li>
-                  <li>• Оплата тарифов магазина</li>
-                  <li>• Мгновенные переводы</li>
-                  <li>• Безопасные платежи</li>
+                  <li>• Скидка 5% на все товары</li>
+                  <li>• Мгновенная оплата</li>
+                  <li>• Безопасные платежи через ЮKassa</li>
+                  <li>• История всех операций</li>
                 </ul>
               </div>
             </CardContent>

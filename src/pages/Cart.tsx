@@ -5,8 +5,16 @@ import { useBonusSystem } from "@/hooks/useBonusSystem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
+import {
+  applyWalletDiscount,
+  getWalletBalance,
+  canPayWithWallet,
+  updateWalletBalance,
+  saveWalletTransaction,
+} from "@/utils/walletDiscount";
 
 export default function Cart() {
   const { user } = useAuth();
@@ -20,10 +28,15 @@ export default function Cart() {
   };
 
   const [cart, setCart] = useState(getUserCart());
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "wallet">("card");
+  const [walletBalance, setWalletBalance] = useState(0);
 
   // Обновляем корзину при изменении пользователя
   useEffect(() => {
     setCart(getUserCart());
+    if (user) {
+      setWalletBalance(getWalletBalance(user.id));
+    }
   }, [user]);
 
   const removeFromCart = (productId: string) => {
@@ -63,6 +76,19 @@ export default function Cart() {
     );
   };
 
+  const getPriceWithDiscount = () => {
+    const total = getTotalPrice();
+    if (paymentMethod === "wallet") {
+      return applyWalletDiscount(total);
+    }
+    return {
+      originalAmount: total,
+      discountAmount: 0,
+      finalAmount: total,
+      discountPercent: 0,
+    };
+  };
+
   const totalItems = cart.reduce(
     (sum: number, item: any) => sum + item.quantity,
     0,
@@ -74,8 +100,20 @@ export default function Cart() {
       return;
     }
 
-    const totalAmount = getTotalPrice();
+    const priceInfo = getPriceWithDiscount();
+    const finalAmount = priceInfo.finalAmount;
     const orderId = `order_${Date.now()}`;
+
+    // Проверяем возможность оплаты кошельком
+    if (
+      paymentMethod === "wallet" &&
+      !canPayWithWallet(walletBalance, finalAmount)
+    ) {
+      alert(
+        `Недостаточно средств на кошельке. Нужно: ${finalAmount.toLocaleString()} ₽, доступно: ${walletBalance.toLocaleString()} ₽`,
+      );
+      return;
+    }
 
     // Создаем заказ
     const order = {
@@ -83,7 +121,10 @@ export default function Cart() {
       date: new Date().toLocaleDateString("ru-RU"),
       status: "processing",
       statusText: "В обработке",
-      total: totalAmount,
+      total: finalAmount,
+      originalTotal: priceInfo.originalAmount,
+      discount: priceInfo.discountAmount,
+      paymentMethod: paymentMethod,
       items: cart.map((item: any) => ({
         name: item.title,
         price: item.price,
@@ -99,17 +140,38 @@ export default function Cart() {
     orders.push(order);
     localStorage.setItem(`orders_${user.id}`, JSON.stringify(orders));
 
+    // Обрабатываем оплату кошельком
+    if (paymentMethod === "wallet") {
+      // Списываем средства с кошелька
+      updateWalletBalance(user.id, -finalAmount);
+
+      // Сохраняем транзакцию
+      saveWalletTransaction(user.id, {
+        id: `txn_${Date.now()}`,
+        type: "payment",
+        amount: -finalAmount,
+        description: `Оплата заказа #${orderId}`,
+        status: "completed",
+      });
+
+      // Обновляем баланс в состоянии
+      setWalletBalance((prev) => prev - finalAmount);
+    }
+
     // Начисляем бонусы
-    const bonusResult = earnBonuses(orderId, totalAmount);
+    const bonusResult = earnBonuses(orderId, priceInfo.originalAmount);
 
     // Очищаем корзину
     localStorage.setItem(`cart_${user.id}`, JSON.stringify([]));
     setCart([]);
 
     // Показываем уведомление об успешном заказе
-    alert(
-      `Заказ оформлен успешно!\n\nНомер заказа: ${orderId}\nСумма: ${totalAmount.toLocaleString()} ₽\n\nНачислено бонусов: ${bonusResult.bonusAmount} (+${bonusResult.bonusPercentage}%)`,
-    );
+    const message =
+      paymentMethod === "wallet"
+        ? `Заказ оформлен успешно!\n\nНомер заказа: ${orderId}\nОригинальная сумма: ${priceInfo.originalAmount.toLocaleString()} ₽\nСкидка кошелька (5%): -${priceInfo.discountAmount.toLocaleString()} ₽\nК оплате: ${finalAmount.toLocaleString()} ₽\n\nНачислено бонусов: ${bonusResult.bonusAmount} (+${bonusResult.bonusPercentage}%)`
+        : `Заказ оформлен успешно!\n\nНомер заказа: ${orderId}\nСумма: ${finalAmount.toLocaleString()} ₽\n\nНачислено бонусов: ${bonusResult.bonusAmount} (+${bonusResult.bonusPercentage}%)`;
+
+    alert(message);
   };
 
   if (!user) {
@@ -277,19 +339,129 @@ export default function Cart() {
                   </div>
                 ))}
 
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-lg font-semibold">Итого:</span>
-                    <span className="text-xl font-bold text-blue-600">
-                      {getTotalPrice().toLocaleString()} ₽
-                    </span>
+                <div className="border-t pt-4 space-y-4">
+                  {/* Выбор способа оплаты */}
+                  <div>
+                    <h3 className="font-medium text-gray-900 mb-3">
+                      Способ оплаты
+                    </h3>
+                    <div className="space-y-2">
+                      <div
+                        className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                          paymentMethod === "card"
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                        onClick={() => setPaymentMethod("card")}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon
+                            name="CreditCard"
+                            size={20}
+                            className="text-gray-600"
+                          />
+                          <span className="font-medium">Банковская карта</span>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                          paymentMethod === "wallet"
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                        onClick={() => setPaymentMethod("wallet")}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Icon
+                              name="Wallet"
+                              size={20}
+                              className="text-gray-600"
+                            />
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">Кошелёк</span>
+                                <Badge variant="secondary" className="text-xs">
+                                  -5%
+                                </Badge>
+                              </div>
+                              <span className="text-sm text-gray-600">
+                                Баланс: {walletBalance.toLocaleString()} ₽
+                              </span>
+                            </div>
+                          </div>
+                          {paymentMethod === "wallet" &&
+                            !canPayWithWallet(
+                              walletBalance,
+                              getPriceWithDiscount().finalAmount,
+                            ) && (
+                              <Badge variant="destructive" className="text-xs">
+                                Недостаточно средств
+                              </Badge>
+                            )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <Button className="w-full" size="lg" onClick={handleCheckout}>
-                    <Icon name="CreditCard" size={20} className="mr-2" />
-                    Оформить заказ
+
+                  {/* Итоговая сумма */}
+                  <div className="space-y-2">
+                    {paymentMethod === "wallet" &&
+                      getPriceWithDiscount().discountAmount > 0 && (
+                        <>
+                          <div className="flex justify-between items-center text-gray-600">
+                            <span>Сумма заказа:</span>
+                            <span>
+                              {getPriceWithDiscount().originalAmount.toLocaleString()}{" "}
+                              ₽
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-green-600">
+                            <span>Скидка кошелька (5%):</span>
+                            <span>
+                              -
+                              {getPriceWithDiscount().discountAmount.toLocaleString()}{" "}
+                              ₽
+                            </span>
+                          </div>
+                          <div className="border-t pt-2"></div>
+                        </>
+                      )}
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold">К оплате:</span>
+                      <span className="text-xl font-bold text-blue-600">
+                        {getPriceWithDiscount().finalAmount.toLocaleString()} ₽
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={handleCheckout}
+                    disabled={
+                      paymentMethod === "wallet" &&
+                      !canPayWithWallet(
+                        walletBalance,
+                        getPriceWithDiscount().finalAmount,
+                      )
+                    }
+                  >
+                    <Icon
+                      name={
+                        paymentMethod === "wallet" ? "Wallet" : "CreditCard"
+                      }
+                      size={20}
+                      className="mr-2"
+                    />
+                    {paymentMethod === "wallet"
+                      ? "Оплатить кошельком"
+                      : "Оформить заказ"}
                   </Button>
+
                   <Link to="/">
-                    <Button variant="outline" className="w-full mt-2">
+                    <Button variant="outline" className="w-full">
                       <Icon name="ArrowLeft" size={16} className="mr-2" />
                       Продолжить покупки
                     </Button>
