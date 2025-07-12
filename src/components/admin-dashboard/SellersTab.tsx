@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SellerModerationModal from "@/components/admin-dashboard/SellerModerationModal";
 
 interface Seller {
@@ -61,9 +61,14 @@ const getStatusText = (status: string) => {
 };
 
 export default function SellersTab() {
-  const { sellers } = useAuth();
+  const { sellers, reloadUsers } = useAuth();
   const [selectedSeller, setSelectedSeller] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Перезагружаем данные продавцов при монтировании компонента
+  useEffect(() => {
+    reloadUsers();
+  }, [reloadUsers]);
 
   // Отображаем только зарегистрированных продавцов
   const allSellers = sellers.map((seller) => ({

@@ -46,6 +46,7 @@ interface AuthContextType {
   ) => Promise<void>;
   deleteSeller: (sellerId: number) => Promise<void>;
   clearAllSellers: () => void;
+  reloadUsers: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -105,6 +106,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>(loadUsersFromStorage());
 
+  // Перезагружаем пользователей из localStorage
+  const reloadUsers = () => {
+    setAllUsers(loadUsersFromStorage());
+  };
+
   // Загружаем текущего пользователя при инициализации
   useEffect(() => {
     const userToken = localStorage.getItem("user-token");
@@ -142,11 +148,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
           console.error("Ошибка синхронизации данных пользователя:", error);
         }
+      } else if (event.key === "sellers" || event.key === "users") {
+        // Перезагружаем всех пользователей при изменении данных
+        reloadUsers();
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Обновляем данные при монтировании компонента
+  useEffect(() => {
+    reloadUsers();
   }, []);
 
   const users = allUsers.filter((u) => u.userType === "user");
@@ -334,6 +348,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateSellerStatus,
         deleteSeller,
         clearAllSellers,
+        reloadUsers,
       }}
     >
       {children}
