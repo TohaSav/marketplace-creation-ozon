@@ -1,25 +1,85 @@
-import { useState } from "react";
-import { useChatStore } from "@/store/chatStore";
+import { useState, useEffect } from "react";
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  sender: "user" | "admin";
+  timestamp: Date;
+  status: "sent" | "delivered" | "read";
+  chatId: string;
+}
+
+interface ChatRoom {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  lastMessage: string;
+  lastMessageTime: Date;
+  unreadCount: number;
+  status: "active" | "waiting" | "closed";
+}
 
 export const useChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  const {
-    messages,
-    chatRooms,
-    currentUserId,
-    addMessage,
-    markMessageAsRead,
-    getMessagesByChatId,
-    createChatRoom,
-    updateChatRoom,
-    deleteChatRoom,
-    getChatRoomById,
-    getOrCreateUserChat,
-    setCurrentUserId,
-    setConnectionStatus,
-  } = useChatStore();
+  // Загружаем данные из localStorage при инициализации
+  useEffect(() => {
+    const savedMessages = localStorage.getItem("chat-messages");
+    const savedRooms = localStorage.getItem("chat-rooms");
+
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
+    if (savedRooms) {
+      setChatRooms(JSON.parse(savedRooms));
+    }
+  }, []);
+
+  // Сохраняем данные в localStorage при изменении
+  const saveToStorage = (newMessages: ChatMessage[], newRooms: ChatRoom[]) => {
+    localStorage.setItem("chat-messages", JSON.stringify(newMessages));
+    localStorage.setItem("chat-rooms", JSON.stringify(newRooms));
+  };
+
+  const addMessage = (
+    messageData: Omit<ChatMessage, "id" | "timestamp">,
+  ): string => {
+    const message: ChatMessage = {
+      ...messageData,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date(),
+    };
+
+    const newMessages = [...messages, message];
+    setMessages(newMessages);
+
+    // Обновляем последнее сообщение в чате
+    const chatRoom = chatRooms.find((room) => room.id === message.chatId);
+    if (chatRoom) {
+      const updatedRooms = chatRooms.map((room) =>
+        room.id === message.chatId
+          ? {
+              ...room,
+              lastMessage: message.text,
+              lastMessageTime: message.timestamp,
+              unreadCount:
+                message.sender === "user"
+                  ? room.unreadCount + 1
+                  : room.unreadCount,
+            }
+          : room,
+      );
+      setChatRooms(updatedRooms);
+      saveToStorage(newMessages, updatedRooms);
+    }
+
+    return message.id;
+  };
 
   const sendMessage = async (
     message: string,
@@ -42,7 +102,7 @@ export const useChat = () => {
       }
 
       // Добавляем сообщение в хранилище
-      const messageId = addMessage({
+      addMessage({
         text: message,
         sender,
         status: "sent",
@@ -51,9 +111,6 @@ export const useChat = () => {
 
       // Имитация отправки (можно заменить на реальный API)
       await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Отмечаем как доставленное
-      markMessageAsRead(messageId);
 
       return true;
     } catch (err) {
@@ -77,13 +134,69 @@ export const useChat = () => {
     return sendMessage(message, chatId, "admin");
   };
 
+  const createChatRoom = (
+    userId: string,
+    userName: string,
+    userEmail?: string,
+  ): string => {
+    const chatId = `chat_${userId}_${Date.now()}`;
+    const newChatRoom: ChatRoom = {
+      id: chatId,
+      userId,
+      userName,
+      userEmail,
+      lastMessage: "",
+      lastMessageTime: new Date(),
+      unreadCount: 0,
+      status: "active",
+    };
+
+    const newRooms = [...chatRooms, newChatRoom];
+    setChatRooms(newRooms);
+    saveToStorage(messages, newRooms);
+
+    return chatId;
+  };
+
+  const getOrCreateUserChat = (
+    userId: string,
+    userName: string,
+    userEmail?: string,
+  ): string => {
+    const existingChat = chatRooms.find((room) => room.userId === userId);
+    if (existingChat) {
+      return existingChat.id;
+    }
+    return createChatRoom(userId, userName, userEmail);
+  };
+
   const createNewUserChat = (userId: string, userName: string): string => {
     setCurrentUserId(userId);
     return getOrCreateUserChat(userId, userName);
   };
 
   const getChatMessages = (chatId: string) => {
-    return getMessagesByChatId(chatId);
+    return messages.filter((msg) => msg.chatId === chatId);
+  };
+
+  const updateChatRoom = (chatId: string, updates: Partial<ChatRoom>) => {
+    const updatedRooms = chatRooms.map((room) =>
+      room.id === chatId ? { ...room, ...updates } : room,
+    );
+    setChatRooms(updatedRooms);
+    saveToStorage(messages, updatedRooms);
+  };
+
+  const deleteChatRoom = (chatId: string) => {
+    const updatedRooms = chatRooms.filter((room) => room.id !== chatId);
+    const updatedMessages = messages.filter((msg) => msg.chatId !== chatId);
+    setChatRooms(updatedRooms);
+    setMessages(updatedMessages);
+    saveToStorage(updatedMessages, updatedRooms);
+  };
+
+  const getChatRoomById = (chatId: string) => {
+    return chatRooms.find((room) => room.id === chatId);
   };
 
   const closeChat = async (chatId: string): Promise<boolean> => {
