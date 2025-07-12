@@ -174,6 +174,14 @@ const Navigation = ({
                     <Icon name="Wallet" size={16} className="mr-2" />
                     Кошелёк
                   </Link>
+                  <Link
+                    to="/returns"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                  >
+                    <Icon name="RotateCcw" size={16} className="mr-2" />
+                    Возврат товара
+                  </Link>
                   <div className="border-t border-gray-100 mt-1 pt-1">
                     <button
                       onClick={handleLogout}
