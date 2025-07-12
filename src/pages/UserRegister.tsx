@@ -65,7 +65,7 @@ export default function UserRegister() {
         description: `Добро пожаловать, ${newUser.name}!`,
       });
 
-      navigate("/");
+      navigate("/profile");
     } catch (error) {
       toast({
         title: "Ошибка регистрации",

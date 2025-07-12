@@ -30,7 +30,7 @@ export default function UserLogin() {
           title: "Добро пожаловать!",
           description: `Привет, ${user.name}! Хороших покупок!`,
         });
-        navigate("/");
+        navigate("/profile");
       } else {
         toast({
           title: "Ошибка входа",
