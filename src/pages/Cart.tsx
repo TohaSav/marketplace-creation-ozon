@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { useBonusSystem } from "@/hooks/useBonusSystem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import Header from "@/components/Header";
 
 export default function Cart() {
   const { user } = useAuth();
+  const { earnBonuses } = useBonusSystem();
 
   // Получаем корзину пользователя из localStorage
   const getUserCart = () => {
@@ -73,10 +75,11 @@ export default function Cart() {
     }
 
     const totalAmount = getTotalPrice();
+    const orderId = `order_${Date.now()}`;
 
     // Создаем заказ
     const order = {
-      id: `#${Date.now()}`,
+      id: orderId,
       date: new Date().toLocaleDateString("ru-RU"),
       status: "processing",
       statusText: "В обработке",
@@ -85,6 +88,7 @@ export default function Cart() {
         name: item.title,
         price: item.price,
         quantity: item.quantity,
+        total: item.price * item.quantity,
       })),
     };
 
@@ -95,11 +99,17 @@ export default function Cart() {
     orders.push(order);
     localStorage.setItem(`orders_${user.id}`, JSON.stringify(orders));
 
-    // Очищаем корзину
-    clearCart();
+    // Начисляем бонусы
+    const bonusResult = earnBonuses(orderId, totalAmount);
 
-    alert("Заказ успешно оформлен!");
-    window.location.href = "/orders";
+    // Очищаем корзину
+    localStorage.setItem(`cart_${user.id}`, JSON.stringify([]));
+    setCart([]);
+
+    // Показываем уведомление об успешном заказе
+    alert(
+      `Заказ оформлен успешно!\n\nНомер заказа: ${orderId}\nСумма: ${totalAmount.toLocaleString()} ₽\n\nНачислено бонусов: ${bonusResult.bonusAmount} (+${bonusResult.bonusPercentage}%)`,
+    );
   };
 
   if (!user) {
