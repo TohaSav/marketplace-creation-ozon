@@ -64,7 +64,7 @@ export default function ProfileSidebar({
           )}
         </div>
 
-        <CardContent className="p-6 -mt-12 relative">
+        <CardContent className="p-6 -mt-8 relative">
           <div className="flex items-start space-x-4 mb-4">
             <div
               className="relative group cursor-pointer"
