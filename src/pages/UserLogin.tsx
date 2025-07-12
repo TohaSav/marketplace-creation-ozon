@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ export default function UserLogin() {
 
       if (user) {
         localStorage.setItem("user-token", JSON.stringify(user));
+        login(user);
         toast({
           title: "Добро пожаловать!",
           description: `Привет, ${user.name}! Хороших покупок!`,
