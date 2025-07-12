@@ -1,51 +1,52 @@
 import { useState, useEffect } from "react";
-import { useMarketplace } from "@/contexts/MarketplaceContext";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/Header";
-import PaymentMethodSelector from "@/components/payment/PaymentMethodSelector";
-import OrderSummary from "@/components/payment/OrderSummary";
-import DeliverySelector from "@/components/cart/DeliverySelector";
-import { PaymentMethod } from "@/types/payment";
-import { DeliveryAddress } from "@/types/delivery";
-import { calculateFinalAmount } from "@/utils/paymentUtils";
 
 export default function Cart() {
-  const { cart, removeFromCart, updateCartQuantity, getTotalPrice, clearCart } =
-    useMarketplace();
   const { user } = useAuth();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wallet");
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] =
-    useState<string>("");
-  const [deliveryPrice, setDeliveryPrice] = useState(0);
-  const [deliveryAddress, setDeliveryAddress] =
-    useState<DeliveryAddress | null>(null);
+  // Получаем корзину пользователя из localStorage
+  const getUserCart = () => {
+    if (!user) return [];
+    const cart = JSON.parse(localStorage.getItem(`cart_${user.id}`) || "[]");
+    return cart;
+  };
 
-  // Загружаем баланс кошелька
+  const [cart, setCart] = useState(getUserCart());
+
+  // Обновляем корзину при изменении пользователя
   useEffect(() => {
-    if (user) {
-      const walletData = JSON.parse(
-        localStorage.getItem(`wallet-${user.id}`) || "{}",
-      );
-      setWalletBalance(walletData.balance || 0);
-    }
+    setCart(getUserCart());
   }, [user]);
 
-  const totalPrice = getTotalPrice();
-  const subtotalWithDelivery = totalPrice * 85 + deliveryPrice;
-  const finalAmount = calculateFinalAmount(
-    subtotalWithDelivery / 85,
-    paymentMethod,
-  );
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalWeight = cart.reduce((sum, item) => sum + item.quantity * 0.5, 0); // Примерный вес 0.5кг за товар
+  const removeFromCart = (productId: string) => {
+    if (!user) return;
+    const updatedCart = cart.filter((item: any) => item.id !== productId);
+    localStorage.setItem(`cart_${user.id}`, JSON.stringify(updatedCart));
+    setCart(updatedCart);
+  };
 
-  const handleQuantityChange = (productId: number, newQuantity: number) => {
+  const updateCartQuantity = (productId: string, newQuantity: number) => {
+    if (!user) return;
+    const updatedCart = cart.map((item: any) =>
+      item.id === productId ? { ...item, quantity: newQuantity } : item,
+    );
+    localStorage.setItem(`cart_${user.id}`, JSON.stringify(updatedCart));
+    setCart(updatedCart);
+  };
+
+  const clearCart = () => {
+    if (!user) return;
+    localStorage.setItem(`cart_${user.id}`, JSON.stringify([]));
+    setCart([]);
+  };
+
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) {
       removeFromCart(productId);
     } else {
@@ -53,106 +54,79 @@ export default function Cart() {
     }
   };
 
-  const handleDeliveryMethodSelect = (methodId: string, price: number) => {
-    setSelectedDeliveryMethod(methodId);
-    setDeliveryPrice(price);
+  const getTotalPrice = () => {
+    return cart.reduce(
+      (sum: number, item: any) => sum + item.price * item.quantity,
+      0,
+    );
   };
 
-  const handleAddressChange = (address: DeliveryAddress) => {
-    setDeliveryAddress(address);
-  };
+  const totalItems = cart.reduce(
+    (sum: number, item: any) => sum + item.quantity,
+    0,
+  );
 
-  const handlePayment = () => {
-    if (!selectedDeliveryMethod) {
-      alert("Пожалуйста, выберите способ доставки");
-      return;
-    }
-    if (!deliveryAddress) {
-      alert("Пожалуйста, укажите адрес доставки");
-      return;
-    }
+  const handleCheckout = () => {
     if (!user) {
       alert("Войдите в аккаунт для оформления заказа");
       return;
     }
 
-    const orderAmount = finalAmountWithDelivery;
+    const totalAmount = getTotalPrice();
 
-    if (paymentMethod === "wallet") {
-      // Оплата с кошелька
-      if (walletBalance < orderAmount) {
-        alert("Недостаточно средств на кошельке");
-        return;
-      }
+    // Создаем заказ
+    const order = {
+      id: `#${Date.now()}`,
+      date: new Date().toLocaleDateString("ru-RU"),
+      status: "processing",
+      statusText: "В обработке",
+      total: totalAmount,
+      items: cart.map((item: any) => ({
+        name: item.title,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+    };
 
-      // Списываем средства с кошелька
-      const newBalance = walletBalance - orderAmount;
-      const walletData = { balance: newBalance };
-      localStorage.setItem(`wallet-${user.id}`, JSON.stringify(walletData));
+    // Сохраняем заказ
+    const orders = JSON.parse(
+      localStorage.getItem(`orders_${user.id}`) || "[]",
+    );
+    orders.push(order);
+    localStorage.setItem(`orders_${user.id}`, JSON.stringify(orders));
 
-      // Создаем транзакцию списания
-      const transaction = {
-        id: Date.now().toString(),
-        userId: user.id,
-        type: "purchase",
-        amount: orderAmount,
-        description: `Покупка товаров (${totalItems} шт.)`,
-        createdAt: new Date().toISOString(),
-        status: "completed",
-      };
+    // Очищаем корзину
+    clearCart();
 
-      const allTransactions = JSON.parse(
-        localStorage.getItem("wallet-transactions") || "[]",
-      );
-      allTransactions.push(transaction);
-      localStorage.setItem(
-        "wallet-transactions",
-        JSON.stringify(allTransactions),
-      );
-
-      // Очищаем корзину и показываем успех
-      clearCart();
-      alert(`Заказ успешно оплачен с кошелька! Сумма: ${orderAmount} ₽`);
-      window.location.href = "/orders";
-    } else {
-      // Здесь будет логика для других способов оплаты (Юкасса)
-      console.log(`Оплата через ${paymentMethod} на сумму ${orderAmount}`);
-      console.log(
-        `Доставка: ${selectedDeliveryMethod}, адрес:`,
-        deliveryAddress,
-      );
-    }
+    alert("Заказ успешно оформлен!");
+    window.location.href = "/orders";
   };
 
-  const finalAmountWithDelivery = finalAmount * 85;
-  const isWalletSufficient = walletBalance >= finalAmountWithDelivery;
-  const canProceed =
-    selectedDeliveryMethod &&
-    deliveryAddress &&
-    (paymentMethod === "yukassa" ||
-      (paymentMethod === "wallet" && isWalletSufficient));
-
-  if (cart.length === 0) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-16">
-            <Icon
-              name="ShoppingCart"
-              size={64}
-              className="mx-auto text-gray-300 mb-4"
-            />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Корзина пуста
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Добавьте товары в корзину, чтобы оформить заказ
-            </p>
-            <Button onClick={() => window.history.back()}>
-              Вернуться к покупкам
-            </Button>
-          </div>
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          <Card>
+            <CardContent className="p-8">
+              <div className="text-center">
+                <Icon
+                  name="Lock"
+                  size={48}
+                  className="text-gray-400 mx-auto mb-4"
+                />
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  Войдите в аккаунт
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Чтобы просматривать корзину, нужно авторизоваться
+                </p>
+                <Link to="/login">
+                  <Button>Войти в аккаунт</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -161,226 +135,160 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Корзина ({totalItems} товаров)
-          </h1>
-          <Button
-            variant="outline"
-            onClick={clearCart}
-            className="text-red-500 hover:text-red-700"
-          >
-            <Icon name="Trash2" size={16} className="mr-2" />
-            Очистить корзину
-          </Button>
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Корзина</h1>
+          <p className="text-gray-600">
+            {totalItems > 0
+              ? `${totalItems} товаров на сумму ${getTotalPrice().toLocaleString()} ₽`
+              : "Ваша корзина пуста"}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Товары в корзине */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Товары */}
-            <div className="space-y-4">
-              {cart.map((item) => (
-                <Card key={item.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Icon name="ShoppingCart" size={20} />
+                Товары в корзине
+              </div>
+              {cart.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={clearCart}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Icon name="Trash2" size={16} className="mr-2" />
+                  Очистить корзину
+                </Button>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {cart.length === 0 ? (
+              <div className="text-center py-12">
+                <Icon
+                  name="ShoppingCart"
+                  size={48}
+                  className="text-gray-400 mx-auto mb-4"
+                />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Корзина пуста
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Добавьте товары в корзину, чтобы оформить заказ
+                </p>
+                <Link to="/">
+                  <Button>Перейти к покупкам</Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {cart.map((item: any) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 p-4 border rounded-lg bg-white"
+                  >
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      {item.image ? (
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover rounded-lg"
                         />
-                      </div>
-
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Категория: {item.category}
-                        </p>
-                        <div className="flex items-center space-x-1">
-                          <Icon
-                            name="Star"
-                            size={14}
-                            className="fill-yellow-400 text-yellow-400"
-                          />
-                          <span className="text-sm text-gray-600">
-                            {item.rating.rate}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              handleQuantityChange(item.id, item.quantity - 1)
-                            }
-                          >
-                            <Icon name="Minus" size={16} />
-                          </Button>
-                          <Input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) =>
-                              handleQuantityChange(
-                                item.id,
-                                parseInt(e.target.value) || 0,
-                              )
-                            }
-                            className="w-16 text-center"
-                            min="1"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              handleQuantityChange(item.id, item.quantity + 1)
-                            }
-                          >
-                            <Icon name="Plus" size={16} />
-                          </Button>
-                        </div>
-
-                        <div className="text-right">
-                          <div className="font-bold text-lg text-blue-600">
-                            {(item.price * item.quantity * 85).toLocaleString(
-                              "ru-RU",
-                            )}{" "}
-                            ₽
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {(item.price * 85).toLocaleString("ru-RU")} ₽ за шт.
-                          </div>
-                        </div>
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Icon name="Trash2" size={16} />
-                        </Button>
-                      </div>
+                      ) : (
+                        <Icon
+                          name="Image"
+                          size={24}
+                          className="text-gray-400"
+                        />
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
 
-            {/* Выбор доставки */}
-            <DeliverySelector
-              selectedMethodId={selectedDeliveryMethod}
-              deliveryAddress={deliveryAddress}
-              cartWeight={totalWeight}
-              onMethodSelect={handleDeliveryMethodSelect}
-              onAddressChange={handleAddressChange}
-            />
-          </div>
-
-          {/* Оформление заказа */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-24">
-              <CardContent className="p-6 space-y-6">
-                {/* Итого по заказу */}
-                <div className="space-y-4">
-                  <div className="border-b pb-4">
-                    <div className="flex justify-between text-sm">
-                      <span>Товары ({totalItems} шт.)</span>
-                      <span>{(totalPrice * 85).toLocaleString("ru-RU")} ₽</span>
-                    </div>
-                    {deliveryPrice > 0 && (
-                      <div className="flex justify-between text-sm mt-2">
-                        <span>Доставка</span>
-                        <span>{deliveryPrice.toLocaleString("ru-RU")} ₽</span>
-                      </div>
-                    )}
-                    {paymentMethod === "wallet" && (
-                      <div className="flex justify-between text-sm text-green-600 mt-2">
-                        <span>Скидка (личный кошелёк)</span>
-                        <span>
-                          -
-                          {Math.round(
-                            subtotalWithDelivery * 0.03,
-                          ).toLocaleString("ru-RU")}{" "}
-                          ₽
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Итого:</span>
-                    <span>
-                      {finalAmountWithDelivery.toLocaleString("ru-RU")} ₽
-                    </span>
-                  </div>
-                </div>
-
-                {/* Выбор способа оплаты */}
-                <PaymentMethodSelector
-                  selectedMethod={paymentMethod}
-                  onMethodChange={setPaymentMethod}
-                  walletBalance={walletBalance}
-                  requiredAmount={finalAmountWithDelivery}
-                />
-
-                {/* Кнопки */}
-                <div className="space-y-3">
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    disabled={!canProceed}
-                    onClick={handlePayment}
-                    title={
-                      !selectedDeliveryMethod
-                        ? "Выберите способ доставки"
-                        : !deliveryAddress
-                          ? "Укажите адрес доставки"
-                          : ""
-                    }
-                  >
-                    {paymentMethod === "wallet" ? (
-                      <>
-                        <Icon name="Wallet" size={20} className="mr-2" />
-                        Оплатить с личного счёта
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="CreditCard" size={20} className="mr-2" />
-                        Оплатить через ЮКассу
-                      </>
-                    )}
-                  </Button>
-
-                  {paymentMethod === "wallet" && !isWalletSufficient && (
-                    <div className="text-center p-3 bg-red-50 rounded-lg">
-                      <p className="text-sm text-red-600 mb-2">
-                        Недостаточно средств на кошельке
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900 mb-1">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-1">
+                        {item.description}
                       </p>
+                      <p className="text-sm font-semibold text-blue-600">
+                        {item.price} ₽ за шт.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
-                        className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        size="sm"
+                        onClick={() =>
+                          handleQuantityChange(item.id, item.quantity - 1)
+                        }
                       >
-                        <Icon name="Plus" size={16} className="mr-2" />
-                        Пополнить личный счёт
+                        <Icon name="Minus" size={14} />
+                      </Button>
+                      <Input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            item.id,
+                            parseInt(e.target.value) || 1,
+                          )
+                        }
+                        className="w-16 text-center"
+                        min="1"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handleQuantityChange(item.id, item.quantity + 1)
+                        }
+                      >
+                        <Icon name="Plus" size={14} />
                       </Button>
                     </div>
-                  )}
 
-                  <Button variant="outline" className="w-full">
-                    <Icon name="ArrowLeft" size={16} className="mr-2" />
-                    Продолжить покупки
+                    <div className="text-right">
+                      <p className="font-bold text-lg">
+                        {(item.price * item.quantity).toLocaleString()} ₽
+                      </p>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Icon name="Trash2" size={16} />
+                    </Button>
+                  </div>
+                ))}
+
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-semibold">Итого:</span>
+                    <span className="text-xl font-bold text-blue-600">
+                      {getTotalPrice().toLocaleString()} ₽
+                    </span>
+                  </div>
+                  <Button className="w-full" size="lg" onClick={handleCheckout}>
+                    <Icon name="CreditCard" size={20} className="mr-2" />
+                    Оформить заказ
                   </Button>
+                  <Link to="/">
+                    <Button variant="outline" className="w-full mt-2">
+                      <Icon name="ArrowLeft" size={16} className="mr-2" />
+                      Продолжить покупки
+                    </Button>
+                  </Link>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
