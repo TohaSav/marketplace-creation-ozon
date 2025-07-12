@@ -12,7 +12,13 @@ export default function AdminPayments() {
   const { getConfig, updateConfig, testConnection, isLoading } = useYookassa();
   const [isEditing, setIsEditing] = useState(false);
   const [showSecretKey, setShowSecretKey] = useState(false);
-  const [config, setConfig] = useState(null);
+  const [config, setConfig] = useState({
+    isConfigured: false,
+    shopId: "",
+    secretKey: "",
+    webhookUrl: "",
+    testMode: true,
+  });
   const [formData, setFormData] = useState({
     shopId: "",
     secretKey: "",
@@ -77,14 +83,14 @@ export default function AdminPayments() {
           </div>
           <div className="mt-4 flex md:ml-4 md:mt-0">
             <Badge
-              variant={config.isConfigured ? "default" : "secondary"}
+              variant={config?.isConfigured ? "default" : "secondary"}
               className={
-                config.isConfigured
+                config?.isConfigured
                   ? "bg-green-100 text-green-800"
                   : "bg-yellow-100 text-yellow-800"
               }
             >
-              {config.isConfigured ? "Настроено" : "Требует настройки"}
+              {config?.isConfigured ? "Настроено" : "Требует настройки"}
             </Badge>
           </div>
         </div>
@@ -102,23 +108,23 @@ export default function AdminPayments() {
               <div className="flex items-center gap-4">
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    config.isConfigured ? "bg-green-500" : "bg-red-500"
+                    config?.isConfigured ? "bg-green-500" : "bg-red-500"
                   }`}
                 />
                 <div>
                   <p className="font-medium">
-                    {config.isConfigured
+                    {config?.isConfigured
                       ? "ЮКасса подключена"
                       : "ЮКасса не настроена"}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {config.isConfigured
+                    {config?.isConfigured
                       ? "Платежи принимаются"
                       : "Необходимо заполнить настройки"}
                   </p>
                 </div>
               </div>
-              {config.isConfigured && (
+              {config?.isConfigured && (
                 <Button
                   variant="outline"
                   onClick={handleTestConnection}
@@ -160,7 +166,7 @@ export default function AdminPayments() {
                   </label>
                   <input
                     type="text"
-                    value={isEditing ? formData.shopId : config.shopId}
+                    value={isEditing ? formData.shopId : config?.shopId || ""}
                     onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
@@ -180,7 +186,9 @@ export default function AdminPayments() {
                   <div className="relative">
                     <input
                       type={showSecretKey ? "text" : "password"}
-                      value={isEditing ? formData.secretKey : config.secretKey}
+                      value={
+                        isEditing ? formData.secretKey : config?.secretKey || ""
+                      }
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
@@ -212,7 +220,9 @@ export default function AdminPayments() {
                 </label>
                 <input
                   type="url"
-                  value={isEditing ? formData.webhookUrl : config.webhookUrl}
+                  value={
+                    isEditing ? formData.webhookUrl : config?.webhookUrl || ""
+                  }
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
@@ -229,7 +239,9 @@ export default function AdminPayments() {
                 <input
                   type="checkbox"
                   id="testMode"
-                  checked={isEditing ? formData.testMode : config.testMode}
+                  checked={
+                    isEditing ? formData.testMode : config?.testMode || false
+                  }
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,

@@ -204,9 +204,27 @@ export const useYookassa = () => {
     [config],
   );
 
+  const getConfig = useCallback(() => {
+    return config;
+  }, [config]);
+
+  const updateConfig = useCallback(
+    async (newConfig: Partial<YookassaConfig>) => {
+      const updatedConfig = {
+        ...config,
+        ...newConfig,
+        isConfigured: !!(newConfig.shopId && newConfig.secretKey),
+      };
+      await saveConfig(updatedConfig);
+    },
+    [config, saveConfig],
+  );
+
   return {
     config,
     isLoading,
+    getConfig,
+    updateConfig,
     saveConfig,
     testConnection,
     createPayment,
