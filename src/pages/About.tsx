@@ -1,9 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { usePlatformStats } from "@/hooks/usePlatformStats";
+import AnimatedCounter from "@/components/AnimatedCounter";
 import { Link } from "react-router-dom";
 
 export default function About() {
+  const { stats, isLoading } = usePlatformStats();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -137,24 +140,45 @@ export default function About() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div>
                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                  5000+
+                  {isLoading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-16 mx-auto rounded"></div>
+                  ) : (
+                    <AnimatedCounter value={stats.totalProducts} />
+                  )}
                 </div>
                 <div className="text-gray-600">Товаров</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-green-600 mb-2">
-                  1000+
+                  {isLoading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-16 mx-auto rounded"></div>
+                  ) : (
+                    <AnimatedCounter value={stats.totalSellers} />
+                  )}
                 </div>
                 <div className="text-gray-600">Продавцов</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-purple-600 mb-2">
-                  15000+
+                  {isLoading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-16 mx-auto rounded"></div>
+                  ) : (
+                    <AnimatedCounter value={stats.totalBuyers} />
+                  )}
                 </div>
                 <div className="text-gray-600">Покупателей</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-red-600 mb-2">99%</div>
+                <div className="text-3xl font-bold text-red-600 mb-2">
+                  {isLoading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-16 mx-auto rounded"></div>
+                  ) : (
+                    <AnimatedCounter
+                      value={stats.satisfactionRate}
+                      suffix="%"
+                    />
+                  )}
+                </div>
                 <div className="text-gray-600">Довольных клиентов</div>
               </div>
             </div>
