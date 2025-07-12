@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserRegister() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export default function UserRegister() {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -54,11 +56,17 @@ export default function UserRegister() {
         createdAt: new Date().toISOString(),
         favorites: [],
         orders: [],
+        userType: "user" as const,
+        joinDate: new Date().toISOString().split("T")[0],
+        status: "active" as const,
       };
 
       users.push(newUser);
       localStorage.setItem("users", JSON.stringify(users));
       localStorage.setItem("user-token", JSON.stringify(newUser));
+
+      // Обновляем контекст авторизации
+      login(newUser);
 
       toast({
         title: "Регистрация успешна!",
