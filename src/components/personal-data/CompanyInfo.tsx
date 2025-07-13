@@ -8,27 +8,20 @@ export default function CompanyInfo() {
         <h3 className="font-semibold mb-3">ООО «Calibre Store»</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>
-            <strong>Юридический адрес:</strong> 115114, г. Москва, ул.
-            Примерная, д. 123, к. 1
+            <strong>Юридический адрес:</strong> Репина 19
           </p>
           <p>
-            <strong>Почтовый адрес:</strong> 115114, г. Москва, ул. Примерная,
-            д. 123, к. 1
+            <strong>ОГРН:</strong> 324665800281052
           </p>
           <p>
-            <strong>ОГРН:</strong> 1234567891011
+            <strong>ИНН:</strong> 661208876805
+          </p>
+
+          <p>
+            <strong>Телефон:</strong> +79049808275
           </p>
           <p>
-            <strong>ИНН:</strong> 7712345678
-          </p>
-          <p>
-            <strong>КПП:</strong> 771201001
-          </p>
-          <p>
-            <strong>Телефон:</strong> +7 (800) 123-45-67
-          </p>
-          <p>
-            <strong>Email:</strong> legal@marketmaster.ru
+            <strong>Email:</strong> swi79@bk.ru
           </p>
         </div>
       </div>
