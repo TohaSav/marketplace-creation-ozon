@@ -23,40 +23,67 @@ export default function ProductCard({
   onAddToFavorites,
 }: ProductCardProps) {
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-emerald-300">
-      <CardContent className="p-0">
-        <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg flex items-center justify-center relative overflow-hidden">
+    <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100 hover:border-gray-200 overflow-hidden h-full flex flex-col">
+      <CardContent className="p-0 h-full flex flex-col">
+        {/* Image Section */}
+        <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover rounded-t-lg"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
+          
           {/* Favorite button */}
           {onAddToFavorites && (
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+              className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white shadow-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddToFavorites();
               }}
             >
-              <Icon name="Heart" className="w-4 h-4 text-gray-600" />
+              <Icon name="Heart" className="w-4 h-4 text-gray-600 hover:text-red-500 transition-colors" />
             </Button>
           )}
         </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
+
+        {/* Content Section */}
+        <div className="p-4 flex flex-col flex-1">
+          {/* Title */}
+          <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 text-sm leading-5 min-h-[2.5rem]">
             {product.name}
           </h3>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-2xl font-bold text-emerald-600">
+
+          {/* Rating */}
+          <div className="flex items-center space-x-1 mb-3">
+            <div className="flex text-amber-400">
+              {[...Array(5)].map((_, i) => (
+                <Icon
+                  key={i}
+                  name="Star"
+                  size={14}
+                  className={i < Math.floor(product.rating) ? "fill-current" : "text-gray-300"}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-gray-500 ml-1">
+              {product.rating}
+            </span>
+            <span className="text-xs text-gray-400">
+              ({product.reviews})
+            </span>
+          </div>
+
+          {/* Price and Action */}
+          <div className="flex items-center justify-between mb-3 mt-auto">
+            <span className="text-xl font-bold text-indigo-600">
               {product.price.toLocaleString()} ₽
             </span>
             <Button
               size="sm"
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg"
+              className="h-8 w-8 p-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm hover:shadow-md"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddToCart();
@@ -65,23 +92,11 @@ export default function ProductCard({
               <Icon name="ShoppingCart" className="w-4 h-4" />
             </Button>
           </div>
-          <div className="flex items-center">
-            <div className="flex space-x-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Icon
-                  key={star}
-                  name="Star"
-                  className={`w-4 h-4 ${
-                    star <= Math.floor(product.rating)
-                      ? "text-yellow-400 fill-current"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-600 ml-2">
-              {product.rating} ({product.reviews})
-            </span>
+
+          {/* Delivery Info */}
+          <div className="flex items-center space-x-1 text-xs text-green-600">
+            <Icon name="Truck" size={12} />
+            <span>Доставка завтра</span>
           </div>
         </div>
       </CardContent>
