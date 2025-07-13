@@ -16,6 +16,7 @@ import PaymentRequiredModal from "@/components/PaymentRequiredModal";
 import StatsGrid from "@/components/seller-dashboard/StatsGrid";
 import ProductsTab from "@/components/seller-dashboard/ProductsTab";
 import OrdersTab from "@/components/seller-dashboard/OrdersTab";
+import AnalyticsTab from "@/components/seller-dashboard/AnalyticsTab";
 import FinancesTab from "@/components/seller-dashboard/FinancesTab";
 import StoriesTab from "@/components/seller-dashboard/StoriesTab";
 import SettingsTab from "@/components/seller-dashboard/SettingsTab";
@@ -261,6 +262,10 @@ export default function SellerDashboard() {
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
+            <AnalyticsTab />
+          </TabsContent>
+
+          <TabsContent value="analytics-old" className="mt-6">
             <div className="space-y-6">
               {/* Основные метрики */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -368,7 +373,6 @@ export default function SellerDashboard() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
 
           <TabsContent value="wallet" className="mt-6">
             <SellerWallet />
