@@ -5,7 +5,7 @@ export default function CompanyInfo() {
         1. Оператор персональных данных
       </h2>
       <div className="bg-primary/10 p-6 rounded-lg mb-4">
-        <h3 className="font-semibold mb-3">ООО «Calibre Store»</h3>
+        <h3 className="font-semibold mb-3">ИП «Calibre Store»</h3>
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>
             <strong>Юридический адрес:</strong> Репина 19
