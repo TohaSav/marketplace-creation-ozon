@@ -12,17 +12,29 @@ import { formatBarcode } from "@/utils/productGenerators";
 
 interface ProductRowProps {
   product: Product;
+  isSelected?: boolean;
+  onSelect?: () => void;
   onEdit?: (productId: number) => void;
   onDelete?: (productId: number) => void;
 }
 
 export default function ProductRow({
   product,
+  isSelected = false,
+  onSelect,
   onEdit,
   onDelete,
 }: ProductRowProps) {
   return (
-    <TableRow>
+    <TableRow className={isSelected ? "bg-blue-50" : ""}>
+      <TableCell className="w-12">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={onSelect}
+          className="rounded border-gray-300"
+        />
+      </TableCell>
       <TableCell>
         <div className="flex items-center space-x-3">
           <img
