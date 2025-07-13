@@ -10,6 +10,7 @@ import { statusSyncManager } from "@/utils/statusSync";
 import SubscriptionModal from "@/components/SubscriptionModal";
 import SubscriptionStatusCard from "@/components/SubscriptionStatusCard";
 import { useSubscription } from "@/hooks/useSubscription";
+import PaymentRequiredModal from "@/components/PaymentRequiredModal";
 
 // Tab Components
 import StatsGrid from "@/components/seller-dashboard/StatsGrid";
@@ -109,6 +110,9 @@ export default function SellerDashboard() {
     }
   };
 
+  // Проверяем есть ли активная подписка у продавца
+  const hasActiveSubscription = user?.subscription?.isActive === true;
+  
   // Проверяем статус продавца - блокируем все кроме уведомлений
   if (user?.userType === "seller" && user?.status !== "active") {
     return (
@@ -204,6 +208,9 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Модальное окно оплаты - показывается если нет активной подписки */}
+      <PaymentRequiredModal isOpen={!hasActiveSubscription} />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">

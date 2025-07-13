@@ -59,8 +59,17 @@ export default function SellerLogin() {
             createdAt: new Date().toISOString(),
             products: [],
             earnings: 0,
-            status: "pending",
+            status: "active",
             userType: "seller",
+            balance: 0,
+            subscription: {
+              isActive: false,
+              planType: "monthly",
+              planName: "",
+              startDate: "",
+              endDate: "",
+              autoRenew: false
+            }
           };
 
           sellers.push(newSeller);
@@ -72,7 +81,7 @@ export default function SellerLogin() {
 
           toast({
             title: "Регистрация успешна",
-            description: "Ожидайте одобрения администратора",
+            description: "Добро пожаловать в кабинет продавца! Выберите тарифный план для начала работы.",
           });
           navigate("/seller/dashboard");
         }
