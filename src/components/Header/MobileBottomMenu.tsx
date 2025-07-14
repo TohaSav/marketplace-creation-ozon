@@ -89,7 +89,7 @@ const MobileBottomMenu = () => {
   return (
     <>
       {/* Фиксированное меню снизу - только для мобильных и планшетов */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 md:hidden pb-safe-bottom">
         <div className="grid grid-cols-5 h-16">
           <MenuItem
             icon="Home"
@@ -233,7 +233,7 @@ const MobileBottomMenu = () => {
       )}
 
       {/* Отступ для контента чтобы не перекрывался меню - только для мобильных */}
-      <div className="h-16 md:hidden" />
+      <div className="h-16 pb-safe-bottom md:hidden" />
     </>
   );
 };

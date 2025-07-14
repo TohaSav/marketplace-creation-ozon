@@ -146,3 +146,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Safe area для мобильных устройств */
+@layer utilities {
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Дополнительные стили для лучшей совместимости с браузерами */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .mobile-bottom-menu {
+      padding-bottom: env(safe-area-inset-bottom);
+      min-height: calc(4rem + env(safe-area-inset-bottom));
+    }
+  }
+}
