@@ -42,6 +42,7 @@ import ProductReturns from "@/pages/ProductReturns";
 // Развлечения и функции
 import Shorts from "@/pages/Shorts";
 import Game from "@/pages/Game";
+import BubbleGame from "@/pages/BubbleGame";
 import AdvertisingPage from "@/pages/AdvertisingPage";
 
 // Сервисные страницы
@@ -96,6 +97,7 @@ const publicRoutes = [
   // Развлечения
   { path: "/shorts", component: Shorts },
   { path: "/game", component: Game },
+  { path: "/bubble-game", component: BubbleGame },
   { path: "/advertising", component: AdvertisingPage },
 
   // Сервисные
