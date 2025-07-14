@@ -34,6 +34,32 @@ export default function Index() {
         </div>
       </div>
 
+      {/* Mobile Products Section - показываем товары на мобильных вместо категорий */}
+      <div className="block md:hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Популярные товары
+          </h2>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon="Package"
+              title="Пока нет товаров"
+              description="Товары появятся здесь после того, как продавцы их добавят"
+            />
+          )}
+        </div>
+      </div>
+
       {/* Categories Section - скрыт на мобильных */}
       <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-12">
@@ -170,8 +196,8 @@ export default function Index() {
           </Link>
         </div>
 
-        {/* Popular Products Section */}
-        <div className="mb-12">
+        {/* Popular Products Section - только для десктопа */}
+        <div className="hidden md:block mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Популярные товары
           </h2>
