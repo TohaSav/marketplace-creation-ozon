@@ -99,17 +99,18 @@ const MobileBottomMenu = () => {
           />
           
           <MenuItem
-            icon="Grid3X3"
-            label="Каталог"
-            to="/catalog"
-            isActive={isActiveRoute("/catalog")}
-          />
-
-          <MenuItem
             icon="Gamepad2"
             label="Пузырики"
             to="/bubble-game"
             isActive={isActiveRoute("/bubble-game")}
+          />
+
+          <MenuItem
+            icon="Package"
+            label="Заказы"
+            to={isLoggedIn ? "/orders" : "/login"}
+            isActive={isActiveRoute("/orders")}
+            disabled={!isLoggedIn}
           />
 
           <MenuItem
