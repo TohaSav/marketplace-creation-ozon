@@ -101,8 +101,9 @@ const MobileBottomMenu = () => {
           <MenuItem
             icon="Gamepad2"
             label="Пузырики"
-            to="/bubble-game"
+            to={isLoggedIn ? "/bubble-game" : "/login"}
             isActive={isActiveRoute("/bubble-game")}
+            disabled={!isLoggedIn}
           />
 
           <MenuItem
