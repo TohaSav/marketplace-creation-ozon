@@ -59,43 +59,52 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           {profile.about}
         </p>
         
-        {/* Кнопки действий */}
-        <div className="flex justify-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-12 h-12 rounded-full p-0 border-red-200 hover:bg-red-50 hover:border-red-300"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDislike(profile);
-            }}
-          >
-            <Icon name="X" size={20} className="text-red-500" />
-          </Button>
+        {/* Кнопки действий с подписями */}
+        <div className="flex justify-center gap-6">
+          <div className="flex flex-col items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-12 h-12 rounded-full p-0 border-red-200 hover:bg-red-50 hover:border-red-300 mb-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDislike(profile);
+              }}
+            >
+              <Icon name="X" size={20} className="text-red-500" />
+            </Button>
+            <span className="text-xs text-gray-500">Пропустить</span>
+          </div>
           
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-12 h-12 rounded-full p-0 border-green-200 hover:bg-green-50 hover:border-green-300"
-            onClick={(e) => {
-              e.stopPropagation();
-              onLike(profile);
-            }}
-          >
-            <Icon name="Heart" size={20} className="text-green-500" />
-          </Button>
+          <div className="flex flex-col items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-12 h-12 rounded-full p-0 border-green-200 hover:bg-green-50 hover:border-green-300 mb-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onLike(profile);
+              }}
+            >
+              <Icon name="Heart" size={20} className="text-green-500" />
+            </Button>
+            <span className="text-xs text-gray-500">Нравится</span>
+          </div>
           
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-12 h-12 rounded-full p-0 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSuperLike(profile);
-            }}
-          >
-            <Icon name="Flame" size={20} className="text-orange-500" />
-          </Button>
+          <div className="flex flex-col items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-12 h-12 rounded-full p-0 border-orange-200 hover:bg-orange-50 hover:border-orange-300 mb-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSuperLike(profile);
+              }}
+            >
+              <Icon name="Flame" size={20} className="text-orange-500" />
+            </Button>
+            <span className="text-xs text-gray-500">Супер (10₽)</span>
+          </div>
         </div>
       </CardContent>
     </Card>

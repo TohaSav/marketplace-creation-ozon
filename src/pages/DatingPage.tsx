@@ -10,7 +10,6 @@ import ProfileCard from '@/components/dating/ProfileCard';
 import ProfileModal from '@/components/dating/ProfileModal';
 import ProfileStatus from '@/components/dating/ProfileStatus';
 import BalanceIndicator from '@/components/dating/BalanceIndicator';
-import ActionLegend from '@/components/dating/ActionLegend';
 import AuthPrompt from '@/components/dating/AuthPrompt';
 
 const DatingPage: React.FC = () => {
@@ -165,8 +164,6 @@ const DatingPage: React.FC = () => {
               onCancel={() => setShowForm(false)}
             />
           )}
-
-          <ActionLegend />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {profiles.map((profile) => (
