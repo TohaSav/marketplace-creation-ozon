@@ -15,6 +15,7 @@ import AdminDataManagement from "@/pages/AdminDataManagement";
 import AdminChat from "@/pages/AdminChat";
 import AdminLiveChat from "@/pages/AdminLiveChat";
 import ShopVerification from "@/pages/admin/ShopVerification";
+import DatingModerationPage from "@/pages/admin/DatingModerationPage";
 import AdminSettings from "@/pages/AdminSettings";
 
 const AdminRoutes = () => {
@@ -127,6 +128,14 @@ const AdminRoutes = () => {
           element={
             <AdminProtectedRoute>
               <ShopVerification />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/dating"
+          element={
+            <AdminProtectedRoute>
+              <DatingModerationPage />
             </AdminProtectedRoute>
           }
         />

@@ -44,6 +44,7 @@ import Shorts from "@/pages/Shorts";
 import Game from "@/pages/Game";
 import BubbleGame from "@/pages/BubbleGame";
 import AdvertisingPage from "@/pages/AdvertisingPage";
+import DatingPage from "@/pages/DatingPage";
 
 // Сервисные страницы
 import Support from "@/pages/Support";
@@ -99,6 +100,7 @@ const publicRoutes = [
   { path: "/game", component: Game },
   { path: "/bubble-game", component: BubbleGame },
   { path: "/advertising", component: AdvertisingPage },
+  { path: "/dating", component: DatingPage },
 
   // Сервисные
   { path: "/support", component: Support },
