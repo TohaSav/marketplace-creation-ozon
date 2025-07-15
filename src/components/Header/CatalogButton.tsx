@@ -33,10 +33,10 @@ const CatalogButton = ({
     <div className="flex items-center space-x-4 relative">
       <button
         onClick={() => setIsCatalogOpen(!isCatalogOpen)}
-        className="flex items-center space-x-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg"
+        className="flex items-center space-x-2 px-4 py-2 sm:px-4 sm:py-2 px-2 py-1.5 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg"
       >
-        <Icon name="Menu" size={16} />
-        <span className="font-medium">Каталог</span>
+        <Icon name="Menu" size={16} className="sm:w-4 sm:h-4 w-3.5 h-3.5" />
+        <span className="font-medium sm:text-base text-sm">Каталог</span>
       </button>
 
       {isCatalogOpen && (
