@@ -9,6 +9,8 @@ import DatingForm from '@/components/dating/DatingForm';
 import ProfileCard from '@/components/dating/ProfileCard';
 import ProfileModal from '@/components/dating/ProfileModal';
 import ProfileStatus from '@/components/dating/ProfileStatus';
+import BalanceIndicator from '@/components/dating/BalanceIndicator';
+import ActionLegend from '@/components/dating/ActionLegend';
 import AuthPrompt from '@/components/dating/AuthPrompt';
 
 const DatingPage: React.FC = () => {
@@ -40,6 +42,38 @@ const DatingPage: React.FC = () => {
   const closeProfile = () => {
     setSelectedProfile(null);
     setShowProfileModal(false);
+  };
+
+  const handleLike = (profile: Profile) => {
+    toast({
+      title: "Нравится! ❤️",
+      description: `Вы проявили интерес к ${profile.name}`,
+    });
+  };
+
+  const handleDislike = (profile: Profile) => {
+    toast({
+      title: "Пропуск",
+      description: `Вы пропустили ${profile.name}`,
+      variant: "destructive",
+    });
+  };
+
+  const handleSuperLike = (profile: Profile) => {
+    if (!user?.balance || user.balance < 10) {
+      toast({
+        title: "Недостаточно средств",
+        description: "Для супер-лайка нужно 10 рублей на балансе",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Здесь будет логика списания с баланса
+    toast({
+      title: "Супер-лайк! 🔥",
+      description: `Вы отправили супер-лайк ${profile.name} за 10 рублей`,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,6 +136,10 @@ const DatingPage: React.FC = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
+          <div className="flex justify-center mb-6">
+            <BalanceIndicator balance={user?.balance || 0} />
+          </div>
+
           {!userProfile && (
             <div className="flex justify-center mb-8">
               <Button 
@@ -128,12 +166,17 @@ const DatingPage: React.FC = () => {
             />
           )}
 
+          <ActionLegend />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {profiles.map((profile) => (
               <ProfileCard
                 key={profile.id}
                 profile={profile}
                 onClick={openProfile}
+                onLike={handleLike}
+                onSuperLike={handleSuperLike}
+                onDislike={handleDislike}
               />
             ))}
           </div>

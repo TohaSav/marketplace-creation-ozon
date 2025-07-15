@@ -1,23 +1,31 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { Profile } from '@/types/dating';
 
 interface ProfileCardProps {
   profile: Profile;
   onClick: (profile: Profile) => void;
+  onLike: (profile: Profile) => void;
+  onSuperLike: (profile: Profile) => void;
+  onDislike: (profile: Profile) => void;
 }
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onClick }) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ 
+  profile, 
+  onClick, 
+  onLike, 
+  onSuperLike, 
+  onDislike 
+}) => {
   return (
-    <Card 
-      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-      onClick={() => onClick(profile)}
-    >
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <div 
-          className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600"
+          className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600 cursor-pointer"
           style={{ aspectRatio: '9/16' }}
+          onClick={() => onClick(profile)}
         >
           {profile.photo ? (
             <img 
@@ -47,9 +55,48 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onClick }) => {
         <p className="text-sm text-gray-600 mb-2">
           Ищет: {profile.lookingFor}
         </p>
-        <p className="text-sm text-gray-700 line-clamp-3">
+        <p className="text-sm text-gray-700 line-clamp-3 mb-4">
           {profile.about}
         </p>
+        
+        {/* Кнопки действий */}
+        <div className="flex justify-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-12 h-12 rounded-full p-0 border-red-200 hover:bg-red-50 hover:border-red-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDislike(profile);
+            }}
+          >
+            <Icon name="X" size={20} className="text-red-500" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-12 h-12 rounded-full p-0 border-green-200 hover:bg-green-50 hover:border-green-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              onLike(profile);
+            }}
+          >
+            <Icon name="Heart" size={20} className="text-green-500" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-12 h-12 rounded-full p-0 border-orange-200 hover:bg-orange-50 hover:border-orange-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSuperLike(profile);
+            }}
+          >
+            <Icon name="Flame" size={20} className="text-orange-500" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
