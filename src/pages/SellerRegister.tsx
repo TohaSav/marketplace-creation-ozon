@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 const SellerRegister = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ const SellerRegister = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -59,35 +62,66 @@ const SellerRegister = () => {
     }
 
     try {
+      // Проверяем существование email среди продавцов
+      const sellers = JSON.parse(localStorage.getItem("sellers") || "[]");
+      if (sellers.some((s: any) => s.email === formData.email)) {
+        throw new Error("Продавец с таким email уже зарегистрирован");
+      }
+
       // Имитация регистрации
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Сохраняем данные продавца в localStorage
-      const sellerData = {
-        id: Date.now().toString(),
-        companyName: formData.companyName,
-        inn: formData.inn,
+      // Создаем данные нового продавца
+      const newSeller = {
+        id: Date.now(),
+        name: formData.contactPerson,
         email: formData.email,
         phone: formData.phone,
-        contactPerson: formData.contactPerson,
+        userType: "seller" as const,
+        shopName: formData.companyName,
+        inn: formData.inn,
         businessType: formData.businessType,
-        registrationDate: new Date().toLocaleDateString("ru-RU"),
+        status: "pending" as const,
+        joinDate: new Date().toISOString().split("T")[0],
+        balance: 0,
         avatar: "/api/placeholder/100/100",
         totalRevenue: 0,
         totalOrders: 0,
         productsCount: 0,
-        isLoggedIn: true,
-        userType: "seller",
+        sellerStats: {
+          totalRevenue: 0,
+          totalOrders: 0,
+          activeProducts: 0,
+          conversionRate: 0,
+          averageOrderValue: 0,
+          totalViews: 0,
+          totalClicks: 0,
+          returningCustomers: 0,
+        },
       };
 
-      localStorage.setItem("seller", JSON.stringify(sellerData));
-      localStorage.setItem("isSellerLoggedIn", "true");
+      // Сохраняем в массив продавцов
+      sellers.push(newSeller);
+      localStorage.setItem("sellers", JSON.stringify(sellers));
+      localStorage.setItem("seller-token", JSON.stringify(newSeller));
 
-      // Автоматический переход в кабинет продавца
+      // Авторизуем пользователя через контекст
+      login(newSeller);
+
+      toast({
+        title: "Регистрация успешна!",
+        description: `Добро пожаловать, ${newSeller.name}! Ваша заявка на модерации.`,
+      });
+
+      // Переход в кабинет продавца
       navigate("/seller/dashboard", { replace: true });
     } catch (error) {
       console.error("Ошибка регистрации:", error);
-      alert("Произошла ошибка при регистрации. Попробуйте еще раз.");
+      toast({
+        title: "Ошибка регистрации",
+        description: error instanceof Error ? error.message : "Произошла ошибка при регистрации",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
