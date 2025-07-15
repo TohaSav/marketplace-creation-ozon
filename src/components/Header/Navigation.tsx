@@ -94,6 +94,14 @@ const Navigation = ({
       />
 
       <NavButton
+        icon="HeartHandshake"
+        label="Знакомства"
+        to={isLoggedIn ? "/dating" : undefined}
+        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
+        isActive={isLoggedIn}
+      />
+
+      <NavButton
         icon="Heart"
         label="Избранное"
         to={isLoggedIn ? "/favorites" : undefined}
@@ -149,6 +157,14 @@ const Navigation = ({
                   >
                     <Icon name="Package" size={16} className="mr-2" />
                     Мои заказы
+                  </Link>
+                  <Link
+                    to="/dating"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                  >
+                    <Icon name="HeartHandshake" size={16} className="mr-2" />
+                    Знакомства
                   </Link>
                   <Link
                     to="/favorites"
