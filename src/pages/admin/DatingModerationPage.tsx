@@ -533,7 +533,6 @@ const DatingModerationPage: React.FC = () => {
         )}
       </div>
     </div>
-    </div>
   );
 };
 
