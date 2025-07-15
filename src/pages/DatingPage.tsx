@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -35,6 +36,8 @@ const DatingPage: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     city: '',
@@ -70,6 +73,16 @@ const DatingPage: React.FC = () => {
       age--;
     }
     return age;
+  };
+
+  const openProfile = (profile: Profile) => {
+    setSelectedProfile(profile);
+    setShowProfileModal(true);
+  };
+
+  const closeProfile = () => {
+    setSelectedProfile(null);
+    setShowProfileModal(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -336,7 +349,11 @@ const DatingPage: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {profiles.map((profile) => (
-            <Card key={profile.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card 
+              key={profile.id} 
+              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => openProfile(profile)}
+            >
               <div className="relative">
                 <div 
                   className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600"
@@ -387,6 +404,96 @@ const DatingPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Модальное окно профиля */}
+      <Dialog open={showProfileModal} onOpenChange={setShowProfileModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Icon name="User" size={20} />
+              Профиль пользователя
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedProfile && (
+            <div className="space-y-4">
+              {/* Фото профиля */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div 
+                    className="w-48 h-64 bg-gradient-to-br from-pink-100 to-red-100 rounded-lg overflow-hidden flex items-center justify-center"
+                  >
+                    {selectedProfile.photo ? (
+                      <img 
+                        src={selectedProfile.photo} 
+                        alt={selectedProfile.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Icon name="User" size={64} className="text-gray-400" />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Информация о пользователе */}
+              <div className="space-y-3">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold text-gray-900">{selectedProfile.name}</h3>
+                  <p className="text-gray-600">{selectedProfile.age} лет</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-700">Город:</span>
+                    <p className="text-gray-600">{selectedProfile.city}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Пол:</span>
+                    <p className="text-gray-600">{selectedProfile.gender}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="font-medium text-gray-700">Ищет:</span>
+                  <p className="text-gray-600">{selectedProfile.lookingFor}</p>
+                </div>
+
+                <div>
+                  <span className="font-medium text-gray-700">О себе:</span>
+                  <p className="text-gray-600 text-sm leading-relaxed mt-1">
+                    {selectedProfile.about}
+                  </p>
+                </div>
+              </div>
+
+              {/* Кнопки действий */}
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  className="flex-1 bg-red-500 hover:bg-red-600"
+                  onClick={() => {
+                    toast({
+                      title: "Интерес проявлен! ❤️",
+                      description: "Если взаимность, вы получите уведомление",
+                    });
+                    closeProfile();
+                  }}
+                >
+                  <Icon name="Heart" size={16} className="mr-2" />
+                  Нравится
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={closeProfile}
+                  className="flex-1"
+                >
+                  Закрыть
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
