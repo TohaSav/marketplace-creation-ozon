@@ -16,6 +16,8 @@ const DatingPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(1500); // Имитация баланса основного кошелька
+  const [datingBalance, setDatingBalance] = useState(50); // Баланс для знакомств
   const [formData, setFormData] = useState<FormData>({
     name: '',
     city: '',
@@ -59,7 +61,7 @@ const DatingPage: React.FC = () => {
   };
 
   const handleSuperLike = (profile: Profile) => {
-    if (!user?.balance || user.balance < 10) {
+    if (datingBalance < 10) {
       toast({
         title: "Недостаточно средств",
         description: "Для супер-лайка нужно 10 рублей на балансе",
@@ -68,11 +70,18 @@ const DatingPage: React.FC = () => {
       return;
     }
 
-    // Здесь будет логика списания с баланса
+    // Списываем с баланса знакомств
+    setDatingBalance(prev => prev - 10);
     toast({
       title: "Супер-лайк! 🔥",
       description: `Вы отправили супер-лайк ${profile.name} за 10 рублей`,
     });
+  };
+
+  const handleTopUp = (amount: number) => {
+    // Переводим средства из кошелька в баланс знакомств
+    setWalletBalance(prev => prev - amount);
+    setDatingBalance(prev => prev + amount);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -136,7 +145,11 @@ const DatingPage: React.FC = () => {
 
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-center mb-6">
-            <BalanceIndicator balance={user?.balance || 0} />
+            <BalanceIndicator 
+              balance={datingBalance} 
+              walletBalance={walletBalance}
+              onTopUp={handleTopUp}
+            />
           </div>
 
           {!userProfile && (

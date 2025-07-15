@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
-import { toast } from '@/hooks/use-toast';
+import TopUpModal from './TopUpModal';
 
 interface BalanceIndicatorProps {
   balance: number;
+  walletBalance: number;
+  onTopUp: (amount: number) => void;
 }
 
-const BalanceIndicator: React.FC<BalanceIndicatorProps> = ({ balance }) => {
+const BalanceIndicator: React.FC<BalanceIndicatorProps> = ({ balance, walletBalance, onTopUp }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleTopUp = () => {
-    toast({
-      title: "Пополнение баланса",
-      description: "Функция пополнения баланса в разработке",
-    });
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -37,6 +42,14 @@ const BalanceIndicator: React.FC<BalanceIndicatorProps> = ({ balance }) => {
         <Icon name="Flame" size={14} className="inline mr-1 text-orange-500" />
         Супер-лайк: 10 ₽
       </div>
+      
+      <TopUpModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        walletBalance={walletBalance}
+        datingBalance={balance}
+        onTopUp={onTopUp}
+      />
     </div>
   );
 };
