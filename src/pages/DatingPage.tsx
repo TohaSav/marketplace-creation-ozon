@@ -16,8 +16,8 @@ const DatingPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(1500); // Имитация баланса основного кошелька
-  const [datingBalance, setDatingBalance] = useState(50); // Баланс для знакомств
+  const [walletBalance, setWalletBalance] = useState(0); // Баланс основного кошелька (изначально 0)
+  const [datingBalance, setDatingBalance] = useState(0); // Баланс для знакомств (изначально 0)
   const [formData, setFormData] = useState<FormData>({
     name: '',
     city: '',

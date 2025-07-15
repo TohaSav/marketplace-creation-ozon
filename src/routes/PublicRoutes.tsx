@@ -35,7 +35,7 @@ import BonusCard from "@/pages/BonusCard";
 import Profile from "@/pages/Profile";
 import Orders from "@/pages/Orders";
 import Settings from "@/pages/Settings";
-import Wallet from "@/pages/Wallet";
+import WalletPage from "@/pages/WalletPage";
 import WalletSuccess from "@/pages/WalletSuccess";
 import ProductReturns from "@/pages/ProductReturns";
 
@@ -88,7 +88,7 @@ const publicRoutes = [
   { path: "/favorites", component: Favorites },
   { path: "/cart", component: Cart },
   { path: "/bonus-card", component: BonusCard },
-  { path: "/wallet", component: Wallet },
+  { path: "/wallet", component: WalletPage },
   { path: "/wallet-success", component: WalletSuccess },
   { path: "/returns", component: ProductReturns },
   { path: "/profile", component: Profile },
