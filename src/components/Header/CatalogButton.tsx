@@ -40,21 +40,21 @@ const CatalogButton = ({
       </button>
 
       {isCatalogOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-          <div className="py-2">
+        <div className="absolute top-full left-0 mt-2 w-64 sm:w-64 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+          <div className="py-2 sm:py-2 py-1">
             {categories.map((category) => (
               <Link
                 key={category.path}
                 to={category.path}
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="flex items-center px-4 py-2 sm:px-4 sm:py-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition-colors"
                 onClick={() => setIsCatalogOpen(false)}
               >
                 <div
-                  className={`w-8 h-8 ${category.bgColor} rounded-full flex items-center justify-center mr-3`}
+                  className={`w-8 h-8 sm:w-8 sm:h-8 w-6 h-6 ${category.bgColor} rounded-full flex items-center justify-center mr-3 sm:mr-3 mr-2`}
                 >
-                  {category.icon}
+                  <span className="sm:text-base text-sm">{category.icon}</span>
                 </div>
-                <span>{category.name}</span>
+                <span className="sm:text-base text-sm">{category.name}</span>
               </Link>
             ))}
           </div>
