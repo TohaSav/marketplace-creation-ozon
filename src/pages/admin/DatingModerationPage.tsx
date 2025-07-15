@@ -106,14 +106,22 @@ const DatingModerationPage: React.FC = () => {
           className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600"
           style={{ aspectRatio: '9/16', maxHeight: '300px' }}
         >
-          <div className="text-center p-4">
-            <Icon name="User" size={48} className="mx-auto mb-4 text-gray-400" />
-            <div className="space-y-1">
-              <h3 className="font-semibold text-lg">{profile.name}</h3>
-              <p className="text-sm">{profile.age} лет</p>
-              <p className="text-sm">{profile.city}</p>
+          {profile.photo ? (
+            <img 
+              src={profile.photo} 
+              alt={profile.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="text-center p-4">
+              <Icon name="User" size={48} className="mx-auto mb-4 text-gray-400" />
+              <div className="space-y-1">
+                <h3 className="font-semibold text-lg">{profile.name}</h3>
+                <p className="text-sm">{profile.age} лет</p>
+                <p className="text-sm">{profile.city}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="absolute top-2 right-2">
           <Badge variant={profile.isApproved ? "default" : "secondary"}>
@@ -124,12 +132,26 @@ const DatingModerationPage: React.FC = () => {
       <CardContent className="p-4">
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
+            <span className="font-semibold text-lg">{profile.name}</span>
+            <span className="text-sm text-gray-600">{profile.age} лет</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Город:</span>
+            <span>{profile.city}</span>
+          </div>
+          <div className="flex justify-between text-sm">
             <span className="text-gray-600">Пол:</span>
             <span>{profile.gender}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Ищет:</span>
             <span>{profile.lookingFor}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Фото:</span>
+            <span className={profile.photo ? "text-green-600" : "text-red-600"}>
+              {profile.photo ? "Загружено" : "Отсутствует"}
+            </span>
           </div>
           <div className="text-sm">
             <span className="text-gray-600">О себе:</span>

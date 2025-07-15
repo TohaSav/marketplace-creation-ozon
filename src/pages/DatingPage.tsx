@@ -86,7 +86,17 @@ const DatingPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Создаем профиль с фото-заглушкой
+      // Конвертируем фото в base64 для сохранения
+      let photoData = '';
+      if (formData.photo) {
+        const reader = new FileReader();
+        photoData = await new Promise<string>((resolve) => {
+          reader.onload = (e) => resolve(e.target?.result as string || '');
+          reader.readAsDataURL(formData.photo!);
+        });
+      }
+
+      // Создаем профиль
       const newProfile: Profile = {
         id: Date.now().toString(),
         name: formData.name,
@@ -95,7 +105,7 @@ const DatingPage: React.FC = () => {
         gender: formData.gender as 'Мужчина' | 'Женщина',
         lookingFor: formData.lookingFor as 'Мужчина' | 'Женщина',
         about: formData.about,
-        photo: '/api/placeholder/300/533', // Заглушка для фото 9:16
+        photo: photoData || '', // Сохраняем base64 фото или пустую строку
         isApproved: false,
         createdAt: new Date().toISOString()
       };
@@ -257,6 +267,34 @@ const DatingPage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Фотография *
+                  </label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setFormData({...formData, photo: file});
+                    }}
+                    required
+                    className="cursor-pointer"
+                  />
+                  {formData.photo && (
+                    <div className="mt-2">
+                      <img 
+                        src={URL.createObjectURL(formData.photo)} 
+                        alt="Предварительный просмотр"
+                        className="w-24 h-32 object-cover rounded-lg border"
+                      />
+                      <p className="text-sm text-green-600 mt-1">Фото загружено</p>
+                    </div>
+                  )}
+                  <p className="text-sm text-gray-500 mt-1">
+                    Загрузите свою фотографию (JPG, PNG)
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     О себе *
                   </label>
                   <Textarea
@@ -296,15 +334,29 @@ const DatingPage: React.FC = () => {
                   className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600"
                   style={{ aspectRatio: '9/16' }}
                 >
-                  <div className="text-center p-4">
-                    <Icon name="User" size={48} className="mx-auto mb-4 text-gray-400" />
-                    <div className="space-y-1">
-                      <h3 className="font-semibold text-lg">{profile.name}</h3>
-                      <p className="text-sm">{profile.age} лет</p>
-                      <p className="text-sm">{profile.city}</p>
+                  {profile.photo ? (
+                    <img 
+                      src={profile.photo} 
+                      alt={profile.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <Icon name="User" size={48} className="mx-auto mb-4 text-gray-400" />
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-lg">{profile.name}</h3>
+                        <p className="text-sm">{profile.age} лет</p>
+                        <p className="text-sm">{profile.city}</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
+                {profile.photo && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <h3 className="font-semibold text-lg text-white">{profile.name}</h3>
+                    <p className="text-sm text-white/90">{profile.age} лет, {profile.city}</p>
+                  </div>
+                )}
               </div>
               <CardContent className="p-4">
                 <p className="text-sm text-gray-600 mb-2">
