@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { Profile, FormData } from '@/types/dating';
 import { toast } from '@/hooks/use-toast';
 
-export const useDatingProfiles = () => {
+export const useDatingProfiles = (userId?: string) => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
 
   const calculateAge = (birthDate: string): number => {
     const today = new Date();
@@ -22,9 +23,31 @@ export const useDatingProfiles = () => {
   const loadProfiles = () => {
     const savedProfiles = localStorage.getItem('datingProfiles');
     if (savedProfiles) {
-      const allProfiles: Profile[] = JSON.parse(savedProfiles);
+      let allProfiles: Profile[] = JSON.parse(savedProfiles);
+      
+      // Миграция: добавляем userId к старым профилям
+      let hasUpdated = false;
+      allProfiles = allProfiles.map(profile => {
+        if (!profile.userId) {
+          hasUpdated = true;
+          return { ...profile, userId: 'legacy-' + profile.id };
+        }
+        return profile;
+      });
+      
+      // Сохраняем обновленные профили
+      if (hasUpdated) {
+        localStorage.setItem('datingProfiles', JSON.stringify(allProfiles));
+      }
+      
       const approvedProfiles = allProfiles.filter(profile => profile.isApproved);
       setProfiles(approvedProfiles);
+      
+      // Находим профиль текущего пользователя
+      if (userId) {
+        const currentUserProfile = allProfiles.find(profile => profile.userId === userId);
+        setUserProfile(currentUserProfile || null);
+      }
     }
   };
 
@@ -45,6 +68,7 @@ export const useDatingProfiles = () => {
       // Создаем профиль
       const newProfile: Profile = {
         id: Date.now().toString(),
+        userId: userId || 'anonymous',
         name: formData.name,
         age: calculateAge(formData.birthDate),
         city: formData.city,
@@ -75,6 +99,9 @@ export const useDatingProfiles = () => {
         description: "Анкета отправлена на модерацию. После одобрения она появится на странице.",
       });
 
+      // Обновляем профиль пользователя
+      setUserProfile(newProfile);
+
       return true;
     } catch (error) {
       toast({
@@ -90,11 +117,12 @@ export const useDatingProfiles = () => {
 
   useEffect(() => {
     loadProfiles();
-  }, []);
+  }, [userId]);
 
   return {
     profiles,
     isSubmitting,
+    userProfile,
     submitProfile,
     loadProfiles
   };

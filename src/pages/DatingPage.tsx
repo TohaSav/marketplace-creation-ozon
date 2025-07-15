@@ -8,6 +8,7 @@ import { useDatingProfiles } from '@/hooks/useDatingProfiles';
 import DatingForm from '@/components/dating/DatingForm';
 import ProfileCard from '@/components/dating/ProfileCard';
 import ProfileModal from '@/components/dating/ProfileModal';
+import ProfileStatus from '@/components/dating/ProfileStatus';
 import AuthPrompt from '@/components/dating/AuthPrompt';
 
 const DatingPage: React.FC = () => {
@@ -29,7 +30,7 @@ const DatingPage: React.FC = () => {
   const isLoggedIn = !!user;
 
   // Используем хук для работы с профилями
-  const { profiles, isSubmitting, submitProfile } = useDatingProfiles();
+  const { profiles, isSubmitting, userProfile, submitProfile } = useDatingProfiles(user?.id);
 
   const openProfile = (profile: Profile) => {
     setSelectedProfile(profile);
@@ -101,15 +102,21 @@ const DatingPage: React.FC = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-center mb-8">
-            <Button 
-              onClick={() => setShowForm(!showForm)}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              <Icon name="Plus" size={20} className="mr-2" />
-              {showForm ? 'Скрыть форму' : 'Создать анкету'}
-            </Button>
-          </div>
+          {!userProfile && (
+            <div className="flex justify-center mb-8">
+              <Button 
+                onClick={() => setShowForm(!showForm)}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                <Icon name="Plus" size={20} className="mr-2" />
+                {showForm ? 'Скрыть форму' : 'Создать анкету'}
+              </Button>
+            </div>
+          )}
+
+          {userProfile && (
+            <ProfileStatus userProfile={userProfile} />
+          )}
 
           {showForm && (
             <DatingForm
