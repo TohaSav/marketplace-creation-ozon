@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 interface Profile {
   id: string;
@@ -43,8 +45,9 @@ const DatingPage: React.FC = () => {
     photo: null
   });
 
-  // Проверяем авторизацию пользователя
-  const isLoggedIn = localStorage.getItem('user') !== null;
+  // Используем контекст авторизации
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
 
   useEffect(() => {
     loadApprovedProfiles();
@@ -72,7 +75,11 @@ const DatingPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoggedIn) {
-      alert('Только зарегистрированные пользователи могут подавать анкеты');
+      toast({
+        title: "Требуется авторизация",
+        description: "Только зарегистрированные пользователи могут подавать анкеты",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -111,9 +118,16 @@ const DatingPage: React.FC = () => {
       });
       setShowForm(false);
       
-      alert('Анкета отправлена на модерацию. После одобрения она появится на странице.');
+      toast({
+        title: "Анкета отправлена!",
+        description: "Анкета отправлена на модерацию. После одобрения она появится на странице.",
+      });
     } catch (error) {
-      alert('Ошибка при отправке анкеты');
+      toast({
+        title: "Ошибка",
+        description: "Ошибка при отправке анкеты",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +144,7 @@ const DatingPage: React.FC = () => {
               Для доступа к разделу знакомств необходимо зарегистрироваться
             </p>
             <Button 
-              onClick={() => alert('Здесь будет переход на страницу регистрации')}
+              onClick={() => window.location.href = '/register'}
               className="bg-red-500 hover:bg-red-600"
             >
               Зарегистрироваться
