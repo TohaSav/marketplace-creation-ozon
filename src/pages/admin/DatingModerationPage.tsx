@@ -32,6 +32,16 @@ const DatingModerationPage: React.FC = () => {
     const savedProfiles = localStorage.getItem('datingProfiles');
     if (savedProfiles) {
       const allProfiles: Profile[] = JSON.parse(savedProfiles);
+      
+      // Отладочная информация
+      console.log('Загружены профили в админке:', allProfiles.map(p => ({
+        id: p.id,
+        name: p.name,
+        hasPhoto: !!p.photo,
+        photoLength: p.photo?.length || 0,
+        isApproved: p.isApproved
+      })));
+      
       setProfiles(allProfiles);
       setPendingProfiles(allProfiles.filter(p => !p.isApproved));
       setApprovedProfiles(allProfiles.filter(p => p.isApproved));
@@ -103,15 +113,22 @@ const DatingModerationPage: React.FC = () => {
     <Card className="overflow-hidden">
       <div className="relative">
         <div 
-          className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600"
+          className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600 relative"
           style={{ aspectRatio: '9/16', maxHeight: '300px' }}
         >
-          {profile.photo ? (
-            <img 
-              src={profile.photo} 
-              alt={profile.name}
-              className="w-full h-full object-cover"
-            />
+          {profile.photo && profile.photo.length > 0 ? (
+            <>
+              <img 
+                src={profile.photo} 
+                alt={profile.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                <h3 className="font-semibold text-lg text-white">{profile.name}</h3>
+                <p className="text-sm text-white/90">{profile.age} лет</p>
+                <p className="text-sm text-white/90">{profile.city}</p>
+              </div>
+            </>
           ) : (
             <div className="text-center p-4">
               <Icon name="User" size={48} className="mx-auto mb-4 text-gray-400" />
@@ -238,6 +255,34 @@ const DatingModerationPage: React.FC = () => {
         >
           <Icon name="CheckCircle" size={16} />
           Одобренные ({approvedProfiles.length})
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            // Добавляем тестовый профиль с фото для проверки
+            const testProfile: Profile = {
+              id: 'test-' + Date.now(),
+              name: 'Тестовый пользователь',
+              age: 25,
+              city: 'Москва',
+              gender: 'Мужчина',
+              lookingFor: 'Женщина',
+              about: 'Тестовый профиль с фото',
+              photo: 'https://cdn.poehali.dev/files/868a1cb8-70cc-43bc-ae94-d218f551716e.png',
+              isApproved: false,
+              createdAt: new Date().toISOString()
+            };
+            
+            const savedProfiles = localStorage.getItem('datingProfiles');
+            const existingProfiles: Profile[] = savedProfiles ? JSON.parse(savedProfiles) : [];
+            existingProfiles.push(testProfile);
+            localStorage.setItem('datingProfiles', JSON.stringify(existingProfiles));
+            loadProfiles();
+          }}
+          className="flex items-center gap-2"
+        >
+          <Icon name="Plus" size={16} />
+          Добавить тестовый профиль
         </Button>
       </div>
 

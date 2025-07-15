@@ -116,6 +116,14 @@ const DatingPage: React.FC = () => {
       existingProfiles.push(newProfile);
       localStorage.setItem('datingProfiles', JSON.stringify(existingProfiles));
 
+      // Отладочная информация
+      console.log('Сохранен профиль с фото:', {
+        id: newProfile.id,
+        name: newProfile.name,
+        hasPhoto: !!newProfile.photo,
+        photoLength: newProfile.photo?.length || 0
+      });
+
       // Очищаем форму
       setFormData({
         name: '',
