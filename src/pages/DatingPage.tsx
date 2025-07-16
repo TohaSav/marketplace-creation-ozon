@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
@@ -33,7 +33,7 @@ const DatingPage: React.FC = () => {
   const isLoggedIn = !!user;
 
   // Используем хук для работы с профилями
-  const { profiles, isSubmitting, userProfile, submitProfile } = useDatingProfiles(user?.id);
+  const { profiles, isSubmitting, userProfile, submitProfile, loadMoreProfiles, isLoading, hasMore } = useDatingProfiles(user?.id);
 
   const openProfile = (profile: Profile) => {
     setSelectedProfile(profile);
@@ -83,6 +83,22 @@ const DatingPage: React.FC = () => {
     setWalletBalance(prev => prev - amount);
     setDatingBalance(prev => prev + amount);
   };
+
+  // Обработка скролла для автоматической подгрузки
+  const handleScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isLoading) {
+      return;
+    }
+    
+    if (hasMore) {
+      loadMoreProfiles();
+    }
+  }, [isLoading, hasMore, loadMoreProfiles]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,11 +207,30 @@ const DatingPage: React.FC = () => {
             ))}
           </div>
 
-          {profiles.length === 0 && (
+          {profiles.length === 0 && !isLoading && (
             <div className="text-center py-12">
               <Icon name="Heart" size={64} className="mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500">
                 Пока нет одобренных анкет. Будьте первым!
+              </p>
+            </div>
+          )}
+
+          {/* Индикатор загрузки */}
+          {isLoading && (
+            <div className="text-center py-8">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mr-3"></div>
+                <span className="text-gray-600">Загружаем анкеты...</span>
+              </div>
+            </div>
+          )}
+
+          {/* Сообщение об окончании анкет */}
+          {!hasMore && profiles.length > 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-500">
+                Все анкеты загружены! Возвращайтесь позже за новыми знакомствами ❤️
               </p>
             </div>
           )}
