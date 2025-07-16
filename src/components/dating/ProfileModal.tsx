@@ -1,23 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
 import { Profile } from '@/types/dating';
+import { useAuth } from '@/context/AuthContext';
+import { useGifts } from '@/hooks/useGifts';
+import { Gift } from '@/types/gifts';
+import GiftModal from './GiftModal';
+import GiftOverlay from './GiftOverlay';
 
 interface ProfileModalProps {
   profile: Profile | null;
   isOpen: boolean;
   onClose: () => void;
+  userBalance: number;
+  onBalanceChange: (amount: number) => void;
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ profile, isOpen, onClose }) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({ 
+  profile, 
+  isOpen, 
+  onClose, 
+  userBalance, 
+  onBalanceChange 
+}) => {
+  const { user } = useAuth();
+  const { sendGift, getProfileGifts } = useGifts();
+  const [showGiftModal, setShowGiftModal] = useState(false);
+
   const handleLike = () => {
     toast({
       title: "Интерес проявлен! ❤️",
       description: "Если взаимность, вы получите уведомление",
     });
     onClose();
+  };
+
+  const handleSendGift = (gift: Gift) => {
+    if (!user || !profile) return;
+
+    // Списываем средства с баланса
+    onBalanceChange(-gift.price);
+    
+    // Отправляем подарок
+    sendGift(gift, user.id, profile.id);
+    
+    setShowGiftModal(false);
   };
 
   return (
@@ -48,6 +77,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ profile, isOpen, onClose })
                     <Icon name="User" size={64} className="text-gray-400" />
                   )}
                 </div>
+                {/* Оверлей с подарками */}
+                <GiftOverlay gifts={getProfileGifts(profile.id)} />
               </div>
             </div>
 
@@ -93,6 +124,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ profile, isOpen, onClose })
               </Button>
               <Button 
                 variant="outline" 
+                onClick={() => setShowGiftModal(true)}
+                className="flex-1 border-purple-300 text-purple-600 hover:bg-purple-50"
+              >
+                <Icon name="Gift" size={16} className="mr-2" />
+                Подарок
+              </Button>
+              <Button 
+                variant="outline" 
                 onClick={onClose}
                 className="flex-1"
               >
@@ -100,6 +139,18 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ profile, isOpen, onClose })
               </Button>
             </div>
           </div>
+        )}
+        
+        {/* Модальное окно подарков */}
+        {profile && (
+          <GiftModal
+            isOpen={showGiftModal}
+            onClose={() => setShowGiftModal(false)}
+            recipientName={profile.name}
+            recipientId={profile.id}
+            userBalance={userBalance}
+            onSendGift={handleSendGift}
+          />
         )}
       </DialogContent>
     </Dialog>

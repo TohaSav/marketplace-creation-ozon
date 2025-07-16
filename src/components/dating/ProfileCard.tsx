@@ -3,6 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { Profile } from '@/types/dating';
+import { useGifts } from '@/hooks/useGifts';
+import GiftOverlay from './GiftOverlay';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -19,6 +21,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onSuperLike, 
   onDislike 
 }) => {
+  const { getProfileGifts } = useGifts();
+  const profileGifts = getProfileGifts(profile.id);
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
@@ -27,6 +32,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           style={{ aspectRatio: '9/16' }}
           onClick={() => onClick(profile)}
         >
+          {/* Оверлей с подарками */}
+          <GiftOverlay gifts={profileGifts} />
+        </div>
           {profile.photo ? (
             <img 
               src={profile.photo} 

@@ -240,6 +240,8 @@ const DatingPage: React.FC = () => {
           profile={selectedProfile}
           isOpen={showProfileModal}
           onClose={closeProfile}
+          userBalance={datingBalance}
+          onBalanceChange={(amount) => setDatingBalance(prev => prev + amount)}
         />
       </div>
     </div>
