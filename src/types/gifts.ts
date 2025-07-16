@@ -49,12 +49,12 @@ export const GIFTS: Gift[] = [
     description: 'Простое сердечко'
   },
 
-  // Цветы (10-30 рублей)
+  // Цветы (5 монет)
   {
     id: 'rose',
     name: 'Роза',
     emoji: '🌹',
-    price: 10,
+    price: 5,
     category: 'flowers',
     description: 'Красивая красная роза'
   },
@@ -62,7 +62,7 @@ export const GIFTS: Gift[] = [
     id: 'bouquet',
     name: 'Букет',
     emoji: '💐',
-    price: 25,
+    price: 5,
     category: 'flowers',
     description: 'Красивый букет цветов'
   },
@@ -70,7 +70,7 @@ export const GIFTS: Gift[] = [
     id: 'tulip',
     name: 'Тюльпан',
     emoji: '🌷',
-    price: 15,
+    price: 5,
     category: 'flowers',
     description: 'Нежный тюльпан'
   },
@@ -78,17 +78,17 @@ export const GIFTS: Gift[] = [
     id: 'sunflower',
     name: 'Подсолнух',
     emoji: '🌻',
-    price: 20,
+    price: 5,
     category: 'flowers',
     description: 'Яркий подсолнух'
   },
 
-  // Сердечки (15-40 рублей)
+  // Сердечки (5 монет)
   {
     id: 'heart-eyes',
     name: 'Влюблённые глаза',
     emoji: '😍',
-    price: 15,
+    price: 5,
     category: 'hearts',
     description: 'Влюблённый взгляд'
   },
@@ -96,7 +96,7 @@ export const GIFTS: Gift[] = [
     id: 'kiss',
     name: 'Поцелуй',
     emoji: '💋',
-    price: 20,
+    price: 5,
     category: 'hearts',
     description: 'Нежный поцелуй'
   },
@@ -104,7 +104,7 @@ export const GIFTS: Gift[] = [
     id: 'couple',
     name: 'Пара',
     emoji: '💑',
-    price: 30,
+    price: 5,
     category: 'hearts',
     description: 'Влюблённая пара'
   },
@@ -112,17 +112,17 @@ export const GIFTS: Gift[] = [
     id: 'sparkling-heart',
     name: 'Сияющее сердце',
     emoji: '💖',
-    price: 40,
+    price: 5,
     category: 'hearts',
     description: 'Сияющее сердце'
   },
 
-  // Роскошные подарки (50-100 рублей)
+  // Роскошные подарки (5 монет)
   {
     id: 'diamond',
     name: 'Бриллиант',
     emoji: '💎',
-    price: 100,
+    price: 5,
     category: 'luxury',
     description: 'Роскошный бриллиант'
   },
@@ -130,7 +130,7 @@ export const GIFTS: Gift[] = [
     id: 'crown',
     name: 'Корона',
     emoji: '👑',
-    price: 75,
+    price: 5,
     category: 'luxury',
     description: 'Золотая корона'
   },
@@ -138,7 +138,7 @@ export const GIFTS: Gift[] = [
     id: 'ring',
     name: 'Кольцо',
     emoji: '💍',
-    price: 80,
+    price: 5,
     category: 'luxury',
     description: 'Обручальное кольцо'
   },
@@ -146,12 +146,12 @@ export const GIFTS: Gift[] = [
     id: 'champagne',
     name: 'Шампанское',
     emoji: '🥂',
-    price: 50,
+    price: 5,
     category: 'luxury',
     description: 'Бокал шампанского'
   },
 
-  // Весёлые подарки (5-25 рублей)
+  // Весёлые подарки (5 монет)
   {
     id: 'balloon',
     name: 'Шарик',
@@ -164,7 +164,7 @@ export const GIFTS: Gift[] = [
     id: 'cake',
     name: 'Торт',
     emoji: '🎂',
-    price: 25,
+    price: 5,
     category: 'fun',
     description: 'Праздничный торт'
   },
@@ -172,7 +172,7 @@ export const GIFTS: Gift[] = [
     id: 'teddy',
     name: 'Мишка',
     emoji: '🧸',
-    price: 20,
+    price: 5,
     category: 'fun',
     description: 'Плюшевый мишка'
   },
@@ -180,7 +180,7 @@ export const GIFTS: Gift[] = [
     id: 'gift-box',
     name: 'Подарок',
     emoji: '🎁',
-    price: 15,
+    price: 5,
     category: 'fun',
     description: 'Красивая коробка'
   }

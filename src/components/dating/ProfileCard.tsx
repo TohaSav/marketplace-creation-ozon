@@ -12,6 +12,9 @@ interface ProfileCardProps {
   onLike: (profile: Profile) => void;
   onSuperLike: (profile: Profile) => void;
   onDislike: (profile: Profile) => void;
+  currentUserId?: string;
+  onGiftClick?: (profile: Profile) => void;
+  userBalance?: number;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ 
@@ -19,10 +22,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onClick, 
   onLike, 
   onSuperLike, 
-  onDislike 
+  onDislike,
+  currentUserId,
+  onGiftClick,
+  userBalance = 0
 }) => {
   const { getProfileGifts } = useGifts();
   const profileGifts = getProfileGifts(profile.id);
+  const isOwnProfile = currentUserId === profile.id;
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -67,7 +74,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         </p>
         
         {/* Кнопки действий с подписями */}
-        <div className="flex justify-center gap-6">
+        <div className={`flex justify-center ${isOwnProfile ? 'gap-8' : 'gap-4'}`}>
           <div className="flex flex-col items-center">
             <Button
               variant="outline"
@@ -112,6 +119,41 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </Button>
             <span className="text-xs text-gray-500">Супер (10₽)</span>
           </div>
+          
+          {/* Кнопка подарка - скрыта для собственной анкеты */}
+          {!isOwnProfile && onGiftClick && (
+            <div className="flex flex-col items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-12 h-12 rounded-full p-0 border-purple-200 hover:bg-purple-50 hover:border-purple-300 mb-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGiftClick(profile);
+                }}
+              >
+                <Icon name="Gift" size={20} className="text-purple-500" />
+              </Button>
+              <span className="text-xs text-gray-500">Подарок</span>
+            </div>
+          )}
+          
+          {!isOwnProfile && onGift && (
+            <div className="flex flex-col items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-12 h-12 rounded-full p-0 border-purple-200 hover:bg-purple-50 hover:border-purple-300 mb-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGift(profile);
+                }}
+              >
+                <Icon name="Gift" size={20} className="text-purple-500" />
+              </Button>
+              <span className="text-xs text-gray-500">Подарок</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

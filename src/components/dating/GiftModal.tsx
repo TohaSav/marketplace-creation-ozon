@@ -1,161 +1,130 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
-import { Gift, GIFTS, GIFT_CATEGORIES } from '@/types/gifts';
+import { toast } from '@/hooks/use-toast';
+import { Profile } from '@/types/dating';
+
+interface Gift {
+  id: string;
+  name: string;
+  icon: string;
+  price: number;
+  emoji: string;
+}
 
 interface GiftModalProps {
   isOpen: boolean;
   onClose: () => void;
-  recipientName: string;
-  recipientId: string;
+  profile: Profile | null;
   userBalance: number;
-  onSendGift: (gift: Gift) => void;
+  onGiftSent: (giftId: string, cost: number) => void;
 }
+
+const gifts: Gift[] = [
+  { id: '1', name: 'Роза', icon: 'Heart', price: 0, emoji: '🌹' },
+  { id: '2', name: 'Поцелуй', icon: 'Heart', price: 5, emoji: '💋' },
+  { id: '3', name: 'Конфета', icon: 'Gift', price: 5, emoji: '🍬' },
+  { id: '4', name: 'Цветы', icon: 'Flower', price: 5, emoji: '💐' },
+  { id: '5', name: 'Торт', icon: 'Cake', price: 5, emoji: '🎂' },
+  { id: '6', name: 'Шампанское', icon: 'Wine', price: 5, emoji: '🍾' },
+  { id: '7', name: 'Мишка', icon: 'Heart', price: 5, emoji: '🧸' },
+  { id: '8', name: 'Сердце', icon: 'Heart', price: 5, emoji: '💖' },
+];
 
 const GiftModal: React.FC<GiftModalProps> = ({
   isOpen,
   onClose,
-  recipientName,
-  recipientId,
+  profile,
   userBalance,
-  onSendGift
+  onGiftSent
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('free');
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
 
-  const categorizedGifts = GIFTS.filter(gift => gift.category === selectedCategory);
-
-  const handleGiftSelect = (gift: Gift) => {
-    setSelectedGift(gift);
-  };
-
-  const handleSendGift = () => {
-    if (!selectedGift) return;
-
-    if (selectedGift.price > userBalance) {
+  const handleGiftSend = (gift: Gift) => {
+    if (gift.price > userBalance) {
       toast({
         title: "Недостаточно средств",
-        description: `Для отправки подарка "${selectedGift.name}" нужно ${selectedGift.price} рублей`,
+        description: `Для отправки подарка "${gift.name}" нужно ${gift.price} монет`,
         variant: "destructive",
       });
       return;
     }
 
-    onSendGift(selectedGift);
-    onClose();
-    setSelectedGift(null);
+    onGiftSent(gift.id, gift.price);
     
     toast({
-      title: `Подарок отправлен! ${selectedGift.emoji}`,
-      description: `Вы подарили ${selectedGift.name} пользователю ${recipientName}`,
+      title: "Подарок отправлен! 🎁",
+      description: `Вы отправили "${gift.name}" пользователю ${profile?.name}`,
     });
+    
+    onClose();
   };
+
+  if (!profile) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Icon name="Gift" size={24} className="text-red-500" />
-            Подарок для {recipientName}
+          <DialogTitle className="text-center">
+            Подарки для {profile.name}
           </DialogTitle>
         </DialogHeader>
-
-        <div className="space-y-4">
-          {/* Баланс пользователя */}
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-blue-800">Ваш баланс:</span>
-              <span className="text-lg font-bold text-blue-900">{userBalance} ₽</span>
-            </div>
+        
+        <div className="text-center mb-4">
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+            <Icon name="Coins" size={16} />
+            <span>Ваш баланс: {userBalance} монет</span>
           </div>
+        </div>
 
-          {/* Категории подарков */}
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(GIFT_CATEGORIES).map(([key, category]) => (
-              <Button
-                key={key}
-                variant={selectedCategory === key ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(key)}
-                className="text-xs"
-              >
-                {category.name}
-              </Button>
-            ))}
-          </div>
-
-          {/* Сетка подарков */}
-          <div className="grid grid-cols-4 gap-3 max-h-64 overflow-y-auto">
-            {categorizedGifts.map((gift) => (
-              <div
-                key={gift.id}
-                className={`p-3 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                  selectedGift?.id === gift.id 
-                    ? 'border-red-500 bg-red-50' 
-                    : 'border-gray-200 hover:border-gray-300'
-                } ${
-                  gift.price > userBalance && gift.price > 0 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : ''
-                }`}
-                onClick={() => gift.price <= userBalance || gift.price === 0 ? handleGiftSelect(gift) : null}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">{gift.emoji}</div>
-                  <div className="text-xs font-medium text-gray-800 mb-1">{gift.name}</div>
-                  <div className="text-xs">
-                    {gift.price === 0 ? (
-                      <Badge className="bg-green-100 text-green-800 text-xs">Бесплатно</Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">{gift.price} ₽</Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Информация о выбранном подарке */}
-          {selectedGift && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedGift.emoji}</span>
-                  <div>
-                    <h4 className="font-medium">{selectedGift.name}</h4>
-                    <p className="text-sm text-gray-600">{selectedGift.description}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-gray-900">
-                    {selectedGift.price === 0 ? 'Бесплатно' : `${selectedGift.price} ₽`}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Отображается 7 дней
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Кнопки действий */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={onClose}>
-              Отмена
-            </Button>
-            <Button 
-              onClick={handleSendGift}
-              disabled={!selectedGift}
-              className="bg-red-500 hover:bg-red-600"
+        <div className="grid grid-cols-4 gap-3">
+          {gifts.map((gift) => (
+            <div
+              key={gift.id}
+              className={`relative p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                selectedGift?.id === gift.id
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
+              }`}
+              onClick={() => setSelectedGift(gift)}
             >
-              <Icon name="Gift" size={16} className="mr-2" />
-              Подарить
-            </Button>
-          </div>
+              <div className="text-center">
+                <div className="text-2xl mb-1">{gift.emoji}</div>
+                <div className="text-xs font-medium text-gray-700 mb-1">
+                  {gift.name}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {gift.price === 0 ? 'Бесплатно' : `${gift.price} монет`}
+                </div>
+              </div>
+              
+              {gift.price > userBalance && (
+                <div className="absolute inset-0 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                  <Icon name="Lock" size={20} className="text-gray-500" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-2 mt-6">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="flex-1"
+          >
+            Отмена
+          </Button>
+          <Button
+            onClick={() => selectedGift && handleGiftSend(selectedGift)}
+            disabled={!selectedGift || (selectedGift.price > userBalance)}
+            className="flex-1 bg-red-500 hover:bg-red-600"
+          >
+            <Icon name="Gift" size={16} className="mr-2" />
+            Отправить
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

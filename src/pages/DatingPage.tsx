@@ -11,11 +11,14 @@ import ProfileModal from '@/components/dating/ProfileModal';
 import ProfileStatus from '@/components/dating/ProfileStatus';
 import BalanceIndicator from '@/components/dating/BalanceIndicator';
 import AuthPrompt from '@/components/dating/AuthPrompt';
+import GiftModal from '@/components/dating/GiftModal';
 
 const DatingPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showGiftModal, setShowGiftModal] = useState(false);
+  const [giftRecipient, setGiftRecipient] = useState<Profile | null>(null);
   const [walletBalance, setWalletBalance] = useState(0); // Баланс основного кошелька (изначально 0)
   const [datingBalance, setDatingBalance] = useState(0); // Баланс для знакомств (изначально 0)
   const [formData, setFormData] = useState<FormData>({
@@ -82,6 +85,11 @@ const DatingPage: React.FC = () => {
     // Переводим средства из кошелька в баланс знакомств
     setWalletBalance(prev => prev - amount);
     setDatingBalance(prev => prev + amount);
+  };
+
+  const handleGift = (profile: Profile) => {
+    setGiftRecipient(profile);
+    setShowGiftModal(true);
   };
 
   // Обработка скролла для автоматической подгрузки
@@ -203,6 +211,8 @@ const DatingPage: React.FC = () => {
                 onLike={handleLike}
                 onSuperLike={handleSuperLike}
                 onDislike={handleDislike}
+                currentUserId={user?.id}
+                onGift={handleGift}
               />
             ))}
           </div>
@@ -242,6 +252,30 @@ const DatingPage: React.FC = () => {
           onClose={closeProfile}
           userBalance={datingBalance}
           onBalanceChange={(amount) => setDatingBalance(prev => prev + amount)}
+        />
+
+        <GiftModal
+          isOpen={showGiftModal}
+          onClose={() => setShowGiftModal(false)}
+          recipientName={giftRecipient?.name || ''}
+          recipientId={giftRecipient?.id || ''}
+          userBalance={datingBalance}
+          onSendGift={handleSendGift}
+        />
+        
+        <GiftModal
+          isOpen={showGiftModal}
+          onClose={() => {
+            setShowGiftModal(false);
+            setGiftRecipient(null);
+          }}
+          profile={giftRecipient}
+          userBalance={datingBalance}
+          onGiftSent={(giftId, cost) => {
+            setDatingBalance(prev => prev - cost);
+            setShowGiftModal(false);
+            setGiftRecipient(null);
+          }}
         />
       </div>
     </div>
