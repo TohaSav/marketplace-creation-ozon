@@ -16,9 +16,10 @@ interface Gift {
 interface GiftModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: Profile | null;
+  recipientName: string;
+  recipientId: string;
   userBalance: number;
-  onGiftSent: (giftId: string, cost: number) => void;
+  onSendGift: (gift: Gift) => void;
 }
 
 const gifts: Gift[] = [
@@ -35,9 +36,10 @@ const gifts: Gift[] = [
 const GiftModal: React.FC<GiftModalProps> = ({
   isOpen,
   onClose,
-  profile,
+  recipientName,
+  recipientId,
   userBalance,
-  onGiftSent
+  onSendGift
 }) => {
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
 
@@ -51,24 +53,24 @@ const GiftModal: React.FC<GiftModalProps> = ({
       return;
     }
 
-    onGiftSent(gift.id, gift.price);
+    onSendGift(gift);
     
     toast({
       title: "Подарок отправлен! 🎁",
-      description: `Вы отправили "${gift.name}" пользователю ${profile?.name}`,
+      description: `Вы отправили "${gift.name}" пользователю ${recipientName}`,
     });
     
     onClose();
   };
 
-  if (!profile) return null;
+  if (!recipientName) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">
-            Подарки для {profile.name}
+            Подарки для {recipientName}
           </DialogTitle>
         </DialogHeader>
         
