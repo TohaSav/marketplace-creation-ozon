@@ -68,7 +68,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
     const size = isGolden ? 60 + Math.random() * 30 : 30 + Math.random() * 40;
     const x = Math.random() * (gameArea.clientWidth - size);
     const value = isGolden ? 5 : parseFloat((Math.random() * 1.4 + 0.1).toFixed(2));
-    const speed = isGolden ? 1 + Math.random() * 1 : 1.5 + Math.random() * 2;
+    const speed = isGolden ? 0.3 + Math.random() * 0.4 : 0.5 + Math.random() * 0.8;
     const color = isGolden ? goldenGradient : gradients[Math.floor(Math.random() * gradients.length)];
 
     return {
