@@ -32,9 +32,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           style={{ aspectRatio: '9/16' }}
           onClick={() => onClick(profile)}
         >
-          {/* Оверлей с подарками */}
-          <GiftOverlay gifts={profileGifts} />
-        </div>
           {profile.photo ? (
             <img 
               src={profile.photo} 
@@ -52,6 +49,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </div>
           )}
         </div>
+        {/* Оверлей с подарками */}
+        <GiftOverlay gifts={profileGifts} />
         {profile.photo && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <h3 className="font-semibold text-lg text-white">{profile.name}</h3>
