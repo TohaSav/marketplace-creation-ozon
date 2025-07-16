@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
@@ -7,9 +7,10 @@ interface Bubble {
   x: number;
   y: number;
   size: number;
+  value: number;
+  isGolden: boolean;
   speed: number;
   color: string;
-  opacity: number;
 }
 
 interface BubbleGameProps {
@@ -20,21 +21,24 @@ interface BubbleGameProps {
 const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [score, setScore] = useState(0);
-  const [gameRunning, setGameRunning] = useState(false);
+  const [gameActive, setGameActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
+  const bubbleIdRef = useRef(0);
+  const lastGoldenBubbleRef = useRef(0);
+  const lastBubbleSpawnRef = useRef(0);
 
-  const colors = [
-    'from-blue-400 to-blue-600',
-    'from-pink-400 to-pink-600', 
-    'from-purple-400 to-purple-600',
-    'from-green-400 to-green-600',
-    'from-yellow-400 to-yellow-600',
-    'from-red-400 to-red-600',
-    'from-indigo-400 to-indigo-600',
-    'from-cyan-400 to-cyan-600'
+  const gradients = [
+    'linear-gradient(135deg, rgba(255, 105, 180, 0.8) 0%, rgba(255, 20, 147, 0.9) 100%)',
+    'linear-gradient(135deg, rgba(64, 224, 208, 0.8) 0%, rgba(0, 191, 255, 0.9) 100%)',
+    'linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 165, 0, 0.9) 100%)',
+    'linear-gradient(135deg, rgba(138, 43, 226, 0.8) 0%, rgba(75, 0, 130, 0.9) 100%)',
+    'linear-gradient(135deg, rgba(50, 205, 50, 0.8) 0%, rgba(34, 139, 34, 0.9) 100%)',
+    'linear-gradient(135deg, rgba(255, 99, 71, 0.8) 0%, rgba(220, 20, 60, 0.9) 100%)',
   ];
+
+  const goldenGradient = 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 1) 100%)';
 
   useEffect(() => {
     const checkMobile = () => {
@@ -48,7 +52,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (!isOpen) {
-      setGameRunning(false);
+      setGameActive(false);
       setBubbles([]);
       setScore(0);
       if (animationRef.current) {
@@ -57,69 +61,102 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const createBubble = () => {
-    if (!gameAreaRef.current) return null;
-    
-    const rect = gameAreaRef.current.getBoundingClientRect();
-    const size = Math.random() * 40 + 20;
-    
+  const createBubble = useCallback((isGolden = false): Bubble => {
+    const gameArea = gameAreaRef.current;
+    if (!gameArea) return {} as Bubble;
+
+    const size = isGolden ? 60 + Math.random() * 30 : 30 + Math.random() * 40;
+    const x = Math.random() * (gameArea.clientWidth - size);
+    const value = isGolden ? 5 : parseFloat((Math.random() * 1.4 + 0.1).toFixed(2));
+    const speed = isGolden ? 1 + Math.random() * 1 : 1.5 + Math.random() * 2;
+    const color = isGolden ? goldenGradient : gradients[Math.floor(Math.random() * gradients.length)];
+
     return {
-      id: Date.now() + Math.random(),
-      x: Math.random() * (rect.width - size),
-      y: rect.height + size,
+      id: bubbleIdRef.current++,
+      x,
+      y: gameArea.clientHeight,
       size,
-      speed: Math.random() * 2 + 1,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      opacity: Math.random() * 0.5 + 0.5
+      value,
+      isGolden,
+      speed,
+      color,
     };
-  };
+  }, [gradients, goldenGradient]);
 
-  const updateBubbles = () => {
-    setBubbles(prevBubbles => {
-      const updated = prevBubbles
-        .map(bubble => ({
-          ...bubble,
-          y: bubble.y - bubble.speed,
-          x: bubble.x + Math.sin(bubble.y * 0.01) * 0.5
-        }))
-        .filter(bubble => bubble.y + bubble.size > -50);
-
-      if (Math.random() < 0.03) {
-        const newBubble = createBubble();
-        if (newBubble) {
-          updated.push(newBubble);
-        }
+  const popBubble = useCallback((bubbleId: number) => {
+    setBubbles(prev => {
+      const bubble = prev.find(b => b.id === bubbleId);
+      if (bubble) {
+        setScore(prevScore => prevScore + bubble.value);
       }
-
-      return updated;
+      return prev.filter(b => b.id !== bubbleId);
     });
-  };
+  }, []);
 
-  const gameLoop = () => {
-    if (gameRunning) {
-      updateBubbles();
-      animationRef.current = requestAnimationFrame(gameLoop);
+  const updateBubbles = useCallback(() => {
+    const gameArea = gameAreaRef.current;
+    if (!gameArea) return;
+
+    setBubbles(prev => prev.map(bubble => ({
+      ...bubble,
+      y: bubble.y - bubble.speed,
+    })).filter(bubble => bubble.y + bubble.size > 0));
+  }, []);
+
+  const gameLoop = useCallback(() => {
+    if (!gameActive) return;
+
+    updateBubbles();
+
+    const now = Date.now();
+    const shouldCreateGolden = now - lastGoldenBubbleRef.current > 40000;
+    const shouldCreateRegular = now - lastBubbleSpawnRef.current > 800;
+
+    if (shouldCreateGolden) {
+      setBubbles(prev => [...prev, createBubble(true)]);
+      lastGoldenBubbleRef.current = now;
     }
-  };
+
+    if (shouldCreateRegular && Math.random() < 0.7) {
+      setBubbles(prev => [...prev, createBubble(false)]);
+      lastBubbleSpawnRef.current = now;
+    }
+
+    animationRef.current = requestAnimationFrame(gameLoop);
+  }, [gameActive, updateBubbles, createBubble]);
 
   const startGame = () => {
-    setGameRunning(true);
+    setGameActive(true);
     setScore(0);
     setBubbles([]);
+    bubbleIdRef.current = 0;
+    lastGoldenBubbleRef.current = Date.now();
+    lastBubbleSpawnRef.current = Date.now();
     gameLoop();
   };
 
   const stopGame = () => {
-    setGameRunning(false);
+    setGameActive(false);
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
   };
 
-  const popBubble = (bubbleId: number) => {
-    setBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
-    setScore(prev => prev + 10);
+  const handleClose = () => {
+    stopGame();
+    onClose();
   };
+
+  useEffect(() => {
+    if (gameActive) {
+      gameLoop();
+    }
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [gameActive, gameLoop]);
 
   if (!isOpen) return null;
 
@@ -136,12 +173,12 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <h2 className="text-2xl font-bold text-gray-800">🫧 Пузырики</h2>
-              <div className="text-lg font-semibold text-blue-600">
-                Очки: {score}
+              <div className="text-lg font-semibold text-green-600">
+                {score.toFixed(2)} ₽
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {!gameRunning ? (
+              {!gameActive ? (
                 <Button onClick={startGame} className="bg-green-600 hover:bg-green-700">
                   <Icon name="Play" size={16} className="mr-1" />
                   Играть
@@ -152,9 +189,18 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
                   Пауза
                 </Button>
               )}
-              <Button onClick={onClose} variant="outline" size="sm">
+              <Button onClick={handleClose} variant="outline" size="sm">
                 <Icon name="X" size={16} />
               </Button>
+            </div>
+          </div>
+          
+          {/* Правила */}
+          <div className="mt-2 text-center">
+            <div className="inline-block bg-white/70 rounded-lg px-3 py-1">
+              <div className="text-xs text-gray-700">
+                Обычные: 0.1-1.5₽ • Золотые: 5₽ (каждые 40 сек)
+              </div>
             </div>
           </div>
         </div>
@@ -162,37 +208,55 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
         {/* Игровая область */}
         <div 
           ref={gameAreaRef}
-          className={`absolute inset-0 bg-gradient-to-b from-sky-200 via-blue-300 to-blue-500 overflow-hidden ${
-            isMobile ? 'pt-20' : 'pt-24'
+          className={`absolute inset-0 bg-gradient-to-b from-sky-200 via-blue-300 to-cyan-400 overflow-hidden ${
+            isMobile ? 'pt-24' : 'pt-28'
           }`}
           style={{ 
-            background: 'linear-gradient(to bottom, #dbeafe, #93c5fd, #3b82f6)',
-            cursor: gameRunning ? 'crosshair' : 'default'
+            cursor: gameActive ? 'crosshair' : 'default'
           }}
         >
           
           {/* Пузырики */}
-          {bubbles.map(bubble => (
+          {gameActive && bubbles.map(bubble => (
             <div
               key={bubble.id}
-              className={`absolute rounded-full bg-gradient-to-br ${bubble.color} cursor-pointer transition-transform hover:scale-110 shadow-lg animate-pulse`}
+              className="absolute cursor-pointer transition-transform hover:scale-110 select-none"
               style={{
                 left: bubble.x,
-                top: bubble.y,
+                bottom: bubble.y,
                 width: bubble.size,
                 height: bubble.size,
-                opacity: bubble.opacity,
-                animation: 'float 3s ease-in-out infinite'
+                background: bubble.color,
+                borderRadius: '50%',
+                border: bubble.isGolden ? '3px solid #FFD700' : '2px solid rgba(255, 255, 255, 0.4)',
+                boxShadow: bubble.isGolden 
+                  ? '0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.4)'
+                  : '0 8px 25px rgba(0, 0, 0, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.4)',
+                animation: 'bubble-float 2s ease-in-out infinite',
               }}
               onClick={() => popBubble(bubble.id)}
             >
-              <div className="absolute inset-2 rounded-full bg-white/30" />
-              <div className="absolute top-2 left-2 w-2 h-2 rounded-full bg-white/60" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className={`text-xs font-bold ${bubble.isGolden ? 'text-yellow-900' : 'text-white'} text-center drop-shadow-sm`}>
+                  {bubble.isGolden && <Icon name="Star" size={14} className="mx-auto mb-1" />}
+                  <div>{bubble.value.toFixed(2)}₽</div>
+                </div>
+              </div>
+              
+              {/* Блики */}
+              <div 
+                className="absolute top-2 left-2 w-2 h-2 bg-white rounded-full opacity-70"
+                style={{ filter: 'blur(0.5px)' }}
+              />
+              <div 
+                className="absolute top-3 right-2 w-1 h-1 bg-white rounded-full opacity-50"
+                style={{ filter: 'blur(0.3px)' }}
+              />
             </div>
           ))}
 
           {/* Инструкции */}
-          {!gameRunning && bubbles.length === 0 && (
+          {!gameActive && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center bg-white/90 backdrop-blur-sm rounded-xl p-6 mx-4">
                 <div className="text-4xl mb-4">🫧</div>
@@ -201,7 +265,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
                 </h3>
                 <p className="text-gray-600 mb-4">
                   {isMobile ? 'Нажимайте на пузырики' : 'Кликайте по пузырикам'} чтобы их лопнуть<br />
-                  За каждый пузырик вы получаете 10 очков
+                  Зарабатывайте деньги за каждый пузырик
                 </p>
                 <Button onClick={startGame} className="bg-blue-600 hover:bg-blue-700">
                   <Icon name="Play" size={16} className="mr-2" />
@@ -213,7 +277,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Мобильное управление */}
-        {isMobile && gameRunning && (
+        {isMobile && gameActive && (
           <div className="absolute bottom-4 left-4 right-4 flex justify-center">
             <Button 
               onClick={stopGame} 
@@ -228,9 +292,10 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
       </div>
 
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(180deg); }
+        @keyframes bubble-float {
+          0%, 100% { transform: translateX(0px) scale(1); }
+          25% { transform: translateX(-3px) scale(1.02); }
+          75% { transform: translateX(3px) scale(0.98); }
         }
       `}</style>
     </div>
