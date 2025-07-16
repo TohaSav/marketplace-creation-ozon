@@ -13,7 +13,7 @@ interface ProfileCardProps {
   onSuperLike: (profile: Profile) => void;
   onDislike: (profile: Profile) => void;
   currentUserId?: string;
-  onGiftClick?: (profile: Profile) => void;
+  onGift?: (profile: Profile) => void;
   userBalance?: number;
 }
 
@@ -24,7 +24,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onSuperLike, 
   onDislike,
   currentUserId,
-  onGiftClick,
+  onGift,
   userBalance = 0
 }) => {
   const { getProfileGifts } = useGifts();
@@ -121,23 +121,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           </div>
           
           {/* Кнопка подарка - скрыта для собственной анкеты */}
-          {!isOwnProfile && onGiftClick && (
-            <div className="flex flex-col items-center">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-12 h-12 rounded-full p-0 border-purple-200 hover:bg-purple-50 hover:border-purple-300 mb-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onGiftClick(profile);
-                }}
-              >
-                <Icon name="Gift" size={20} className="text-purple-500" />
-              </Button>
-              <span className="text-xs text-gray-500">Подарок</span>
-            </div>
-          )}
-          
           {!isOwnProfile && onGift && (
             <div className="flex flex-col items-center">
               <Button
