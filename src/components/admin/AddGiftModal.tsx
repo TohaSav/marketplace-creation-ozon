@@ -9,10 +9,36 @@ interface AddGiftModalProps {
 }
 
 const giftIcons = [
-  '💎', '💍', '👑', '🌹', '💐', '🌸', '💖', '💕', 
-  '💘', '💝', '🎁', '🧸', '🎀', '🦋', '✨', '⭐',
-  '🥂', '🍾', '🍷', '🍫', '🍰', '🎂', '☕', '🌺',
-  '🌻', '🌷', '🎵', '🎶', '🎉', '💯', '❤️', '🧳'
+  // Драгоценности и украшения
+  '💎', '💍', '👑', '💄', '👜', '👠', '⌚', '📿',
+  
+  // Цветы и растения
+  '🌹', '💐', '🌸', '🌺', '🌻', '🌷', '🌼', '🏵️',
+  '🌿', '🍀', '🌱', '🌲', '🌳', '🌴', '🌵', '🎋',
+  
+  // Сердца и любовь
+  '💖', '💕', '💘', '💝', '❤️', '🧡', '💛', '💚',
+  '💙', '💜', '🤍', '🖤', '🤎', '💗', '💓', '💞',
+  
+  // Подарки и праздники
+  '🎁', '🎀', '🎉', '🎊', '🎈', '🥳', '🎆', '🎇',
+  '✨', '⭐', '🌟', '💫', '🔮', '🎪', '🎭', '🎨',
+  
+  // Игрушки и милые предметы
+  '🧸', '🪆', '🎎', '🦋', '🐝', '🦄', '🎯', '🎲',
+  '🪀', '🧩', '🎱', '🏆', '🥇', '🎖️', '🏅', '🎗️',
+  
+  // Еда и напитки
+  '🥂', '🍾', '🍷', '🍸', '🍹', '🍫', '🍰', '🎂',
+  '🧁', '🍩', '🍪', '🍭', '🍬', '☕', '🍵', '🥤',
+  
+  // Музыка и развлечения
+  '🎵', '🎶', '🎤', '🎧', '🎸', '🎹', '🎺', '🎻',
+  '🎬', '📚', '📖', '🖼️', '🎪', '🎳', '🎮', '📱',
+  
+  // Космос и магия
+  '🌙', '🌛', '🌜', '🌝', '🌞', '☀️', '🌈', '☁️',
+  '⚡', '🔥', '❄️', '☃️', '🌊', '💧', '🌀', '🧳'
 ];
 
 const AddGiftModal: React.FC<AddGiftModalProps> = ({ isOpen, onClose, onAdd }) => {
@@ -71,8 +97,9 @@ const AddGiftModal: React.FC<AddGiftModalProps> = ({ isOpen, onClose, onAdd }) =
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Выберите иконку подарка
+              <span className="text-gray-500 text-xs ml-2">({giftIcons.length} вариантов)</span>
             </label>
-            <div className="grid grid-cols-8 gap-2 max-h-48 overflow-y-auto border rounded-lg p-4 bg-gray-50">
+            <div className="grid grid-cols-8 gap-2 max-h-64 overflow-y-auto border rounded-lg p-4 bg-gray-50">
               {giftIcons.map((icon, index) => (
                 <button
                   key={index}
