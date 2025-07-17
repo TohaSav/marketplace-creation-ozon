@@ -102,6 +102,13 @@ const Navigation = ({
       />
 
       <NavButton
+        icon="Gamepad2"
+        label="Пузырики"
+        to="/bubble-game"
+        isActive={true}
+      />
+
+      <NavButton
         icon="Heart"
         label="Избранное"
         to={isLoggedIn ? "/favorites" : undefined}
