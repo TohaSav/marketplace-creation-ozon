@@ -3,8 +3,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { Profile } from '@/types/dating';
-import { useGifts } from '@/hooks/useGifts';
-import GiftOverlay from './GiftOverlay';
+import ProfileBlogModal from './ProfileBlogModal';
+// import { useGifts } from '@/hooks/useGifts';
+// import GiftOverlay from './GiftOverlay';
 
 interface ProfileCardProps {
   profile: Profile;
@@ -27,19 +28,20 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onGift,
   userBalance = 0
 }) => {
-  const { getProfileGifts } = useGifts();
-  const [giftsKey, setGiftsKey] = React.useState(0);
-  const profileGifts = getProfileGifts(profile.id);
+  // const { getProfileGifts } = useGifts();
+  // const [giftsKey, setGiftsKey] = React.useState(0);
+  // const profileGifts = getProfileGifts(profile.id);
+  const [isBlogModalOpen, setIsBlogModalOpen] = React.useState(false);
   const isOwnProfile = currentUserId === profile.id;
   
   // Принудительное обновление подарков каждые 1.2 секунды для синхронизации
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setGiftsKey(prev => prev + 1);
-    }, 1200);
-    
-    return () => clearInterval(interval);
-  }, []);
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setGiftsKey(prev => prev + 1);
+  //   }, 1200);
+  //   
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -47,7 +49,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <div 
           className="w-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center text-gray-600 cursor-pointer"
           style={{ aspectRatio: '9/16' }}
-          onClick={() => onClick(profile)}
+          onClick={() => setIsBlogModalOpen(true)}
         >
           {profile.photo ? (
             <img 
@@ -66,8 +68,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </div>
           )}
         </div>
-        {/* Оверлей с подарками */}
-        <GiftOverlay key={giftsKey} gifts={profileGifts} />
+        {/* Оверлей с подарками - убираем */}
+        {/* <GiftOverlay key={giftsKey} gifts={profileGifts} /> */}
         {profile.photo && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <h3 className="font-semibold text-lg text-white">{profile.name}</h3>
@@ -149,6 +151,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           )}
         </div>
       </CardContent>
+      
+      {/* Модальное окно блога */}
+      <ProfileBlogModal 
+        profile={profile}
+        isOpen={isBlogModalOpen}
+        onClose={() => setIsBlogModalOpen(false)}
+      />
     </Card>
   );
 };
