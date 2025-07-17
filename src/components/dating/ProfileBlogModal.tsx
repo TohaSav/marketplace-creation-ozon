@@ -166,24 +166,14 @@ const ProfileBlogModal: React.FC<ProfileBlogModalProps> = ({ profile, isOpen, on
             </h3>
             
             {profileGifts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-16 gap-2">
                 {profileGifts.map((sentGift) => (
                   <div
                     key={sentGift.id}
-                    className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow text-center"
+                    className="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow text-center"
+                    title={`${sentGift.gift.name} - ${formatDate(sentGift.sentAt)}`}
                   >
-                    <div className="text-4xl mb-2">{sentGift.gift.emoji}</div>
-                    <div className="text-sm font-medium text-gray-900 mb-1">
-                      {sentGift.gift.name}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {formatDate(sentGift.sentAt)}
-                    </div>
-                    {sentGift.gift.price > 0 && (
-                      <div className="text-xs text-purple-600 font-medium mt-1">
-                        {sentGift.gift.price}₽
-                      </div>
-                    )}
+                    <div className="text-3xl">{sentGift.gift.emoji}</div>
                   </div>
                 ))}
               </div>
