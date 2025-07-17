@@ -10,8 +10,8 @@ const GiftOverlay: React.FC<GiftOverlayProps> = ({ gifts, className = '' }) => {
   const [currentGiftIndex, setCurrentGiftIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Фильтруем активные подарки (не истекшие)
-  const activeGifts = gifts.filter(gift => new Date(gift.expiresAt) > new Date());
+  // Используем все подарки (убираем фильтрацию по времени)
+  const activeGifts = gifts;
 
   useEffect(() => {
     if (activeGifts.length === 0) {
@@ -27,12 +27,16 @@ const GiftOverlay: React.FC<GiftOverlayProps> = ({ gifts, className = '' }) => {
       return;
     }
 
-    // Если несколько подарков, переключаем их каждые 3 секунды
+    // Если несколько подарков, переключаем их каждые 2 секунды с плавным миганием
     const interval = setInterval(() => {
-      setCurrentGiftIndex((prevIndex) => 
-        (prevIndex + 1) % activeGifts.length
-      );
-    }, 3000);
+      setIsVisible(false);
+      setTimeout(() => {
+        setCurrentGiftIndex((prevIndex) => 
+          (prevIndex + 1) % activeGifts.length
+        );
+        setIsVisible(true);
+      }, 200);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [activeGifts.length]);
@@ -47,26 +51,28 @@ const GiftOverlay: React.FC<GiftOverlayProps> = ({ gifts, className = '' }) => {
     <div className={`absolute -top-1 -right-1 ${className}`}>
       <div className="relative">
         {/* Основной подарок */}
-        <div className="w-8 h-8 bg-white rounded-full border-2 border-red-500 flex items-center justify-center shadow-lg animate-pulse">
-          <span className="text-lg leading-none">
-            {currentGift.gift.emoji}
+        <div className={`w-10 h-10 bg-white rounded-full border-2 border-pink-500 flex items-center justify-center shadow-lg transition-all duration-200 ${
+          activeGifts.length > 1 ? 'animate-pulse' : ''
+        } ${isVisible ? 'opacity-100 scale-100' : 'opacity-70 scale-95'}`}>
+          <span className="text-xl leading-none">
+            {currentGift.icon}
           </span>
         </div>
 
         {/* Индикатор количества подарков */}
         {activeGifts.length > 1 && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md">
             {activeGifts.length}
           </div>
         )}
 
         {/* Анимированное кольцо */}
-        <div className="absolute inset-0 w-8 h-8 border-2 border-red-300 rounded-full animate-ping"></div>
+        <div className="absolute inset-0 w-10 h-10 border-2 border-pink-300 rounded-full animate-ping"></div>
       </div>
 
       {/* Подсказка при наведении */}
       <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-        {currentGift.gift.name}
+        {currentGift.name}
         {activeGifts.length > 1 && ` (${activeGifts.length} подарков)`}
       </div>
     </div>
