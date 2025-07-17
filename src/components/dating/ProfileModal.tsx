@@ -69,7 +69,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                   )}
                 </div>
                 {/* Оверлей с подарками */}
-                <GiftOverlay key={giftsKey} gifts={getProfileGifts(profile.id)} className="top-2 right-2" />
+                <GiftOverlay key={giftsKey} gifts={getProfileGifts(profile.id)} />
               </div>
             </div>
 

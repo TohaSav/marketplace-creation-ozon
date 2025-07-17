@@ -67,7 +67,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           )}
         </div>
         {/* Оверлей с подарками */}
-        <GiftOverlay key={giftsKey} gifts={profileGifts} className="top-2 right-2" />
+        <GiftOverlay key={giftsKey} gifts={profileGifts} />
         {profile.photo && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <h3 className="font-semibold text-lg text-white">{profile.name}</h3>
