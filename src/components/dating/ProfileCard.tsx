@@ -28,8 +28,18 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   userBalance = 0
 }) => {
   const { getProfileGifts } = useGifts();
+  const [giftsKey, setGiftsKey] = React.useState(0);
   const profileGifts = getProfileGifts(profile.id);
   const isOwnProfile = currentUserId === profile.id;
+  
+  // Принудительное обновление подарков каждые 2 секунды
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setGiftsKey(prev => prev + 1);
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -57,7 +67,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           )}
         </div>
         {/* Оверлей с подарками */}
-        <GiftOverlay gifts={profileGifts} className="top-2 right-2" />
+        <GiftOverlay key={giftsKey} gifts={profileGifts} className="top-2 right-2" />
         {profile.photo && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <h3 className="font-semibold text-lg text-white">{profile.name}</h3>

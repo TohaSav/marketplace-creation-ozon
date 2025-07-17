@@ -11,6 +11,7 @@ interface GiftModalProps {
   recipientId: string;
   userBalance: number;
   onBalanceChange: (amount: number) => void;
+  onGiftSent?: () => void;
 }
 
 const GiftModal: React.FC<GiftModalProps> = ({ 
@@ -19,7 +20,8 @@ const GiftModal: React.FC<GiftModalProps> = ({
   recipientName, 
   recipientId,
   userBalance,
-  onBalanceChange
+  onBalanceChange,
+  onGiftSent
 }) => {
   const [gifts, setGifts] = useState<Gift[]>([]);
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
@@ -70,6 +72,11 @@ const GiftModal: React.FC<GiftModalProps> = ({
       title: "Подарок отправлен! 🎁",
       description: `${selectedGift.icon} ${selectedGift.name} отправлен пользователю ${recipientName}`,
     });
+
+    // Уведомляем о отправке подарка
+    if (onGiftSent) {
+      onGiftSent();
+    }
 
     onClose();
     setSelectedGift(null);

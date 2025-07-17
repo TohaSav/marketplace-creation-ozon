@@ -25,8 +25,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   userBalance, 
   onBalanceChange 
 }) => {
-  const { getProfileGifts } = useGifts();
+  const { getProfileGifts, refreshGifts } = useGifts();
   const [isGiftModalOpen, setIsGiftModalOpen] = React.useState(false);
+  const [giftsKey, setGiftsKey] = React.useState(0);
 
 
   const handleLike = () => {
@@ -68,7 +69,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                   )}
                 </div>
                 {/* Оверлей с подарками */}
-                <GiftOverlay gifts={getProfileGifts(profile.id)} className="top-2 right-2" />
+                <GiftOverlay key={giftsKey} gifts={getProfileGifts(profile.id)} className="top-2 right-2" />
               </div>
             </div>
 
@@ -140,6 +141,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
             recipientId={profile.id}
             userBalance={userBalance}
             onBalanceChange={onBalanceChange}
+            onGiftSent={() => {
+              refreshGifts();
+              setGiftsKey(prev => prev + 1);
+            }}
           />
         )}
       </DialogContent>

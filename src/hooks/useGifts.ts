@@ -11,6 +11,17 @@ export const useGifts = () => {
       setProfileGifts(JSON.parse(savedGifts));
     }
   }, []);
+  
+  // Принудительное обновление при изменении localStorage
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  
+  const refreshGifts = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+  
+  useEffect(() => {
+    // Этот эффект будет вызываться при изменении refreshTrigger
+  }, [refreshTrigger]);
 
   // Сохранение подарков в localStorage
   const saveGifts = (gifts: Record<string, SentGift[]>) => {
@@ -44,9 +55,42 @@ export const useGifts = () => {
 
   // Получение подарков для конкретного профиля
   const getProfileGifts = (profileId: string): SentGift[] => {
-    const gifts = profileGifts[profileId] || [];
-    // Возвращаем только активные подарки (не истекшие)
-    return gifts.filter(gift => new Date(gift.expiresAt) > new Date());
+    // Проверяем новый формат из GiftModal
+    const profileGiftsKey = `profile_gifts_${profileId}`;
+    const directGifts = JSON.parse(localStorage.getItem(profileGiftsKey) || '[]');
+    
+    // Преобразуем формат если нужно
+    const convertedGifts = directGifts.map((gift: any) => {
+      if (gift.icon && gift.name) {
+        // Это подарок из нового формата
+        return {
+          id: gift.id || Date.now().toString(),
+          giftId: gift.id || 'unknown',
+          fromUserId: gift.senderId || 'unknown',
+          toProfileId: profileId,
+          sentAt: gift.sentAt,
+          expiresAt: gift.expiresAt || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          gift: {
+            id: gift.id || 'unknown',
+            name: gift.name,
+            icon: gift.icon,
+            price: gift.price || 0,
+            createdAt: gift.createdAt || new Date().toISOString()
+          },
+          // Добавляем прямые свойства для совместимости
+          icon: gift.icon,
+          name: gift.name,
+          price: gift.price || 0
+        };
+      }
+      return gift;
+    });
+    
+    // Также проверяем старый формат
+    const oldFormatGifts = profileGifts[profileId] || [];
+    
+    // Объединяем и возвращаем все подарки
+    return [...convertedGifts, ...oldFormatGifts];
   };
 
   // Очистка истекших подарков
@@ -97,6 +141,7 @@ export const useGifts = () => {
     sendGift,
     getProfileGifts,
     canSendFreeGift,
-    cleanupExpiredGifts
+    cleanupExpiredGifts,
+    refreshGifts
   };
 };
