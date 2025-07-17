@@ -12,6 +12,14 @@ export interface Seller {
   description: string;
   rejectionReason?: string;
   revisionComment?: string;
+  // Новые обязательные поля
+  ogrn: string;
+  kpp?: string;
+  bik: string;
+  bankAccount: string;
+  correspondentAccount?: string;
+  inn: string;
+  businessType?: string;
 }
 
 export type SellerStatus = Seller["status"];
@@ -22,6 +30,14 @@ export interface SellerFormData {
   phone: string;
   shopName: string;
   description: string;
+  // Новые обязательные поля
+  ogrn: string;
+  kpp?: string;
+  bik: string;
+  bankAccount: string;
+  correspondentAccount?: string;
+  inn: string;
+  businessType?: string;
 }
 
 export interface SellerModalProps {

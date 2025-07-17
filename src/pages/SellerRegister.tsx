@@ -15,6 +15,12 @@ const SellerRegister = () => {
     confirmPassword: "",
     businessType: "",
     agreement: false,
+    // Новые обязательные поля
+    ogrn: "",
+    kpp: "",
+    bik: "",
+    bankAccount: "",
+    correspondentAccount: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -42,7 +48,10 @@ const SellerRegister = () => {
       !formData.email ||
       !formData.phone ||
       !formData.contactPerson ||
-      !formData.password
+      !formData.password ||
+      !formData.ogrn ||
+      !formData.bik ||
+      !formData.bankAccount
     ) {
       alert("Пожалуйста, заполните все обязательные поля");
       setIsLoading(false);
@@ -88,6 +97,12 @@ const SellerRegister = () => {
         totalRevenue: 0,
         totalOrders: 0,
         productsCount: 0,
+        // Новые обязательные поля
+        ogrn: formData.ogrn,
+        kpp: formData.kpp,
+        bik: formData.bik,
+        bankAccount: formData.bankAccount,
+        correspondentAccount: formData.correspondentAccount,
         sellerStats: {
           totalRevenue: 0,
           totalOrders: 0,
@@ -280,6 +295,81 @@ const SellerRegister = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="your@email.com"
                 />
+              </div>
+            </div>
+
+            {/* Banking Information */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Банковские реквизиты</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ОГРН *
+                  </label>
+                  <input
+                    type="text"
+                    name="ogrn"
+                    value={formData.ogrn}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="1234567890123"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    КПП
+                  </label>
+                  <input
+                    type="text"
+                    name="kpp"
+                    value={formData.kpp}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="123456789"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    БИК *
+                  </label>
+                  <input
+                    type="text"
+                    name="bik"
+                    value={formData.bik}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="044525225"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Расчётный счёт *
+                  </label>
+                  <input
+                    type="text"
+                    name="bankAccount"
+                    value={formData.bankAccount}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="40702810000000000000"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Корреспондентский счёт
+                  </label>
+                  <input
+                    type="text"
+                    name="correspondentAccount"
+                    value={formData.correspondentAccount}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="30101810000000000000"
+                  />
+                </div>
               </div>
             </div>
 

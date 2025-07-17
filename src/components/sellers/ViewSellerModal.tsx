@@ -109,6 +109,38 @@ const ViewSellerModal: React.FC<ViewSellerModalProps> = ({
             </Label>
             <p className="mt-1 text-gray-900">{seller.description}</p>
           </div>
+          
+          {/* Банковские реквизиты */}
+          <Separator />
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Банковские реквизиты</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-700">ИНН</Label>
+                <p className="text-lg font-mono">{seller.inn || "Не указан"}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700">ОГРН</Label>
+                <p className="text-lg font-mono">{seller.ogrn || "Не указан"}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700">КПП</Label>
+                <p className="text-lg font-mono">{seller.kpp || "Не указан"}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700">БИК</Label>
+                <p className="text-lg font-mono">{seller.bik || "Не указан"}</p>
+              </div>
+              <div className="col-span-2">
+                <Label className="text-sm font-medium text-gray-700">Расчётный счёт</Label>
+                <p className="text-lg font-mono">{seller.bankAccount || "Не указан"}</p>
+              </div>
+              <div className="col-span-2">
+                <Label className="text-sm font-medium text-gray-700">Корреспондентский счёт</Label>
+                <p className="text-lg font-mono">{seller.correspondentAccount || "Не указан"}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

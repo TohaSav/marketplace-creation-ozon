@@ -296,7 +296,7 @@ export default function SellerModerationModal({
                   Корреспондентский счёт
                 </Label>
                 <p className="mt-1 text-sm text-gray-900 font-mono">
-                  {seller.corrAccount || "Не указан"}
+                  {seller.correspondentAccount || "Не указан"}
                 </p>
               </div>
             </div>
