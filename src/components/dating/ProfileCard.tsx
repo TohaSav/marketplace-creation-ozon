@@ -32,11 +32,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   const profileGifts = getProfileGifts(profile.id);
   const isOwnProfile = currentUserId === profile.id;
   
-  // Принудительное обновление подарков каждые 2 секунды
+  // Принудительное обновление подарков каждые 1.2 секунды для синхронизации
   React.useEffect(() => {
     const interval = setInterval(() => {
       setGiftsKey(prev => prev + 1);
-    }, 2000);
+    }, 1200);
     
     return () => clearInterval(interval);
   }, []);

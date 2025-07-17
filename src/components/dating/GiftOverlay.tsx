@@ -27,7 +27,7 @@ const GiftOverlay: React.FC<GiftOverlayProps> = ({ gifts, className = '' }) => {
       return;
     }
 
-    // Если несколько подарков, переключаем их каждые 1.5 секунды с плавным переходом
+    // Если несколько подарков, переключаем их каждые 1.2 секунды с плавным переходом
     const interval = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
@@ -35,8 +35,8 @@ const GiftOverlay: React.FC<GiftOverlayProps> = ({ gifts, className = '' }) => {
           (prevIndex + 1) % activeGifts.length
         );
         setIsVisible(true);
-      }, 150);
-    }, 1500);
+      }, 120);
+    }, 1200);
 
     return () => clearInterval(interval);
   }, [activeGifts.length]);
@@ -51,31 +51,43 @@ const GiftOverlay: React.FC<GiftOverlayProps> = ({ gifts, className = '' }) => {
     <div className={`absolute top-2 right-2 ${className}`}>
       <div className="relative">
         {/* Основной подарок */}
-        <div className={`w-14 h-14 bg-white rounded-full border-3 border-pink-500 flex items-center justify-center shadow-xl transition-all duration-300 ${
+        <div className={`w-16 h-16 bg-white rounded-full border-4 border-pink-500 flex items-center justify-center shadow-2xl transition-all duration-300 ${
           activeGifts.length > 1 ? 'animate-pulse' : ''
-        } ${isVisible ? 'opacity-100 scale-100' : 'opacity-60 scale-90'}`}>
-          <span className="text-2xl leading-none">
+        } ${isVisible ? 'opacity-100 scale-100' : 'opacity-50 scale-85'}`}>
+          <span className="text-3xl leading-none">
             {currentGift.icon}
           </span>
         </div>
 
         {/* Индикатор количества подарков */}
         {activeGifts.length > 1 && (
-          <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg border-2 border-white">
+          <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-pink-600 to-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-xl border-3 border-white animate-bounce">
             {activeGifts.length}
           </div>
         )}
 
         {/* Анимированное кольцо */}
-        <div className="absolute inset-0 w-14 h-14 border-2 border-pink-300 rounded-full animate-ping"></div>
+        <div className="absolute inset-0 w-16 h-16 border-3 border-pink-300 rounded-full animate-ping"></div>
+        
+        {/* Дополнительное кольцо для множественных подарков */}
+        {activeGifts.length > 1 && (
+          <div className="absolute inset-0 w-16 h-16 border-2 border-yellow-400 rounded-full animate-pulse"></div>
+        )}
       </div>
 
       {/* Подсказка при наведении */}
-      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-black bg-opacity-90 text-white text-xs px-3 py-2 rounded-lg opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-lg">
-        {currentGift.name}
+      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-3 bg-black bg-opacity-95 text-white text-sm px-4 py-3 rounded-xl opacity-0 hover:opacity-100 transition-all duration-300 whitespace-nowrap z-10 shadow-2xl border border-pink-500">
+        <div className="font-bold text-pink-300">{currentGift.name}</div>
         {activeGifts.length > 1 && (
-          <div className="text-center text-gray-300 text-xs mt-1">
-            {currentGiftIndex + 1} из {activeGifts.length}
+          <div className="text-center text-gray-300 text-xs mt-2 flex items-center justify-center gap-2">
+            <span>Подарок {currentGiftIndex + 1} из {activeGifts.length}</span>
+            <div className="flex gap-1">
+              {Array.from({ length: activeGifts.length }, (_, i) => (
+                <div key={i} className={`w-1.5 h-1.5 rounded-full ${
+                  i === currentGiftIndex ? 'bg-pink-400' : 'bg-gray-500'
+                }`} />
+              ))}
+            </div>
           </div>
         )}
       </div>
