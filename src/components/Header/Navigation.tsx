@@ -104,8 +104,9 @@ const Navigation = ({
       <NavButton
         icon="Gamepad2"
         label="Пузырики"
-        to="/bubble-game"
-        isActive={true}
+        to={isLoggedIn ? "/bubble-game" : undefined}
+        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
+        isActive={isLoggedIn}
       />
 
       <NavButton
