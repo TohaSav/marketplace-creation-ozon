@@ -21,12 +21,16 @@ interface BubbleGameProps {
 const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [gameEnded, setGameEnded] = useState(false);
+  const [canPlay, setCanPlay] = useState(true);
   const [gameActive, setGameActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const bubbleIdRef = useRef(0);
   const lastGoldenBubbleRef = useRef(0);
+  const gameTimerRef = useRef<NodeJS.Timeout>();
   const lastBubbleSpawnRef = useRef(0);
 
   const gradients = [
@@ -51,12 +55,23 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
   }, []);
 
   useEffect(() => {
+    const lastPlayDate = localStorage.getItem('bubbleGameLastPlay');
+    const today = new Date().toDateString();
+    setCanPlay(!lastPlayDate || lastPlayDate !== today);
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) {
       setGameActive(false);
       setBubbles([]);
       setScore(0);
+      setTimeLeft(60);
+      setGameEnded(false);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+      }
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
       }
     }
   }, [isOpen]);
@@ -67,7 +82,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
 
     const size = isGolden ? 60 + Math.random() * 30 : 30 + Math.random() * 40;
     const x = Math.random() * (gameArea.clientWidth - size);
-    const value = isGolden ? 5 : parseFloat((Math.random() * 1.4 + 0.1).toFixed(2));
+    const value = isGolden ? parseFloat((Math.random() * 4 + 1).toFixed(2)) : parseFloat((Math.random() * 0.15 + 0.10).toFixed(2));
     const speed = isGolden ? 0.05 + Math.random() * 0.1 : 0.1 + Math.random() * 0.15;
     const color = isGolden ? goldenGradient : gradients[Math.floor(Math.random() * gradients.length)];
 
@@ -109,7 +124,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
     updateBubbles();
 
     const now = Date.now();
-    const shouldCreateGolden = now - lastGoldenBubbleRef.current > 40000;
+    const shouldCreateGolden = now - lastGoldenBubbleRef.current > 80000;
     const shouldCreateRegular = now - lastBubbleSpawnRef.current > 800;
 
     if (shouldCreateGolden) {
@@ -126,19 +141,51 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
   }, [gameActive, updateBubbles, createBubble]);
 
   const startGame = () => {
+    if (!canPlay) return;
+    
     setGameActive(true);
     setScore(0);
     setBubbles([]);
+    setTimeLeft(60);
+    setGameEnded(false);
     bubbleIdRef.current = 0;
     lastGoldenBubbleRef.current = Date.now();
     lastBubbleSpawnRef.current = Date.now();
+    
+    // Запускаем таймер игры
+    gameTimerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          endGame();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
     gameLoop();
+  };
+
+  const endGame = () => {
+    setGameActive(false);
+    setGameEnded(true);
+    setCanPlay(false);
+    localStorage.setItem('bubbleGameLastPlay', new Date().toDateString());
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+    }
   };
 
   const stopGame = () => {
     setGameActive(false);
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
+    }
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
     }
   };
 
@@ -176,13 +223,24 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
               <div className="text-lg font-semibold text-green-600">
                 {score.toFixed(2)} ₽
               </div>
+              <div className="text-lg font-semibold text-blue-600">
+                ⏰ {timeLeft}с
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              {!gameActive ? (
-                <Button onClick={startGame} className="bg-green-600 hover:bg-green-700">
+              {!gameActive && !gameEnded ? (
+                <Button 
+                  onClick={startGame} 
+                  disabled={!canPlay}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400"
+                >
                   <Icon name="Play" size={16} className="mr-1" />
-                  Играть
+                  {canPlay ? 'Играть' : 'Уже играли сегодня'}
                 </Button>
+              ) : gameEnded ? (
+                <div className="text-sm text-gray-600">
+                  Игра окончена! Приходите завтра
+                </div>
               ) : (
                 <Button onClick={stopGame} variant="outline">
                   <Icon name="Pause" size={16} className="mr-1" />
@@ -199,7 +257,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
           <div className="mt-2 text-center">
             <div className="inline-block bg-white/70 rounded-lg px-3 py-1">
               <div className="text-xs text-gray-700">
-                Обычные: 0.1-1.5₽ • Золотые: 5₽ (каждые 40 сек)
+                Обычные: 0.10-0.25₽ • Золотые: 1-5₽ • Игра: 60 сек • Раз в сутки
               </div>
             </div>
           </div>
@@ -256,7 +314,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
           ))}
 
           {/* Инструкции */}
-          {!gameActive && (
+          {!gameActive && !gameEnded && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center bg-white/90 backdrop-blur-sm rounded-xl p-6 mx-4">
                 <div className="text-4xl mb-4">🫧</div>
@@ -265,12 +323,37 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
                 </h3>
                 <p className="text-gray-600 mb-4">
                   {isMobile ? 'Нажимайте на пузырики' : 'Кликайте по пузырикам'} чтобы их лопнуть<br />
-                  Зарабатывайте деньги за каждый пузырик
+                  У вас есть 60 секунд! Можно играть раз в сутки
                 </p>
-                <Button onClick={startGame} className="bg-blue-600 hover:bg-blue-700">
+                <Button 
+                  onClick={startGame} 
+                  disabled={!canPlay}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
+                >
                   <Icon name="Play" size={16} className="mr-2" />
-                  Начать игру
+                  {canPlay ? 'Начать игру' : 'Уже играли сегодня'}
                 </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Результаты игры */}
+          {gameEnded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center bg-white/90 backdrop-blur-sm rounded-xl p-6 mx-4">
+                <div className="text-4xl mb-4">🎉</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  Игра окончена!
+                </h3>
+                <p className="text-gray-600 mb-2">
+                  Ваш результат:
+                </p>
+                <div className="text-2xl font-bold text-green-600 mb-4">
+                  {score.toFixed(2)} ₽
+                </div>
+                <p className="text-sm text-gray-500">
+                  Приходите завтра за новой игрой!
+                </p>
               </div>
             </div>
           )}
