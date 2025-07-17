@@ -9,10 +9,10 @@ interface AddGiftModalProps {
 }
 
 const giftIcons = [
-  '💐', '🌹', '🌺', '🌻', '🌷', '🌸', '💝', '🎁', 
-  '💎', '💍', '👑', '🍫', '🍰', '🎂', '🧸', '🎀',
-  '❤️', '💖', '💕', '💘', '💯', '⭐', '✨', '🎉',
-  '🍾', '🥂', '🍷', '☕', '🧳', '🎵', '🎶', '🦋'
+  '💎', '💍', '👑', '🌹', '💐', '🌸', '💖', '💕', 
+  '💘', '💝', '🎁', '🧸', '🎀', '🦋', '✨', '⭐',
+  '🥂', '🍾', '🍷', '🍫', '🍰', '🎂', '☕', '🌺',
+  '🌻', '🌷', '🎵', '🎶', '🎉', '💯', '❤️', '🧳'
 ];
 
 const AddGiftModal: React.FC<AddGiftModalProps> = ({ isOpen, onClose, onAdd }) => {
@@ -78,7 +78,7 @@ const AddGiftModal: React.FC<AddGiftModalProps> = ({ isOpen, onClose, onAdd }) =
                   key={index}
                   type="button"
                   onClick={() => setSelectedIcon(icon)}
-                  className={`w-12 h-12 text-2xl flex items-center justify-center rounded-lg transition-all hover:bg-white hover:shadow-md ${
+                  className={`w-14 h-14 text-3xl flex items-center justify-center rounded-lg transition-all hover:bg-white hover:shadow-md ${
                     selectedIcon === icon 
                       ? 'bg-pink-100 border-2 border-pink-500 shadow-md' 
                       : 'bg-white border border-gray-200'
@@ -91,7 +91,7 @@ const AddGiftModal: React.FC<AddGiftModalProps> = ({ isOpen, onClose, onAdd }) =
             {selectedIcon && (
               <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
                 <span>Выбрано:</span>
-                <span className="text-2xl">{selectedIcon}</span>
+                <span className="text-3xl">{selectedIcon}</span>
               </div>
             )}
           </div>

@@ -132,7 +132,7 @@ const GiftModal: React.FC<GiftModalProps> = ({
                     }`}
                   >
                     <div className="text-center">
-                      <div className="text-3xl mb-2">{gift.icon}</div>
+                      <div className="text-4xl mb-2">{gift.icon}</div>
                       <h4 className="font-medium text-gray-900 text-sm mb-1">
                         {gift.name}
                       </h4>
@@ -159,7 +159,7 @@ const GiftModal: React.FC<GiftModalProps> = ({
           <div className="px-6 py-4 border-t bg-gray-50">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{selectedGift.icon}</span>
+                <span className="text-3xl">{selectedGift.icon}</span>
                 <div>
                   <h4 className="font-medium text-gray-900">{selectedGift.name}</h4>
                   <p className={`text-sm ${

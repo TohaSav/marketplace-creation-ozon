@@ -150,7 +150,7 @@ const GiftsPage: React.FC = () => {
                   className="border rounded-lg p-6 hover:shadow-md transition-shadow bg-gradient-to-br from-white to-gray-50"
                 >
                   <div className="text-center">
-                    <div className="text-4xl mb-3">{gift.icon}</div>
+                    <div className="text-5xl mb-3">{gift.icon}</div>
                     <h3 className="font-semibold text-gray-900 mb-2">{gift.name}</h3>
                     <div className={`text-lg font-bold mb-4 ${
                       gift.price === 0 ? 'text-green-600' : 'text-blue-600'
