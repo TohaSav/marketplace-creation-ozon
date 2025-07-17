@@ -68,13 +68,13 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
     const size = isGolden ? 60 + Math.random() * 30 : 30 + Math.random() * 40;
     const x = Math.random() * (gameArea.clientWidth - size);
     const value = isGolden ? 5 : parseFloat((Math.random() * 1.4 + 0.1).toFixed(2));
-    const speed = isGolden ? 0.1 + Math.random() * 0.2 : 0.2 + Math.random() * 0.3;
+    const speed = isGolden ? 0.05 + Math.random() * 0.1 : 0.1 + Math.random() * 0.15;
     const color = isGolden ? goldenGradient : gradients[Math.floor(Math.random() * gradients.length)];
 
     return {
       id: bubbleIdRef.current++,
       x,
-      y: gameArea.clientHeight,
+      y: -size,
       size,
       value,
       isGolden,
@@ -99,8 +99,8 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
 
     setBubbles(prev => prev.map(bubble => ({
       ...bubble,
-      y: bubble.y - bubble.speed,
-    })).filter(bubble => bubble.y + bubble.size > 0));
+      y: bubble.y + bubble.speed,
+    })).filter(bubble => bubble.y < gameArea.clientHeight));
   }, []);
 
   const gameLoop = useCallback(() => {
@@ -223,7 +223,7 @@ const BubbleGame: React.FC<BubbleGameProps> = ({ isOpen, onClose }) => {
               className="absolute cursor-pointer transition-transform hover:scale-110 select-none"
               style={{
                 left: bubble.x,
-                bottom: bubble.y,
+                top: bubble.y,
                 width: bubble.size,
                 height: bubble.size,
                 background: bubble.color,
