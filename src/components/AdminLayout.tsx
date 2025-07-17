@@ -19,6 +19,7 @@ const navigation = [
     icon: "CheckCircle",
   },
   { name: "Знакомства", href: "/admin/dating", icon: "Heart" },
+  { name: "Подарки", href: "/admin/gifts", icon: "Gift" },
   { name: "Реклама", href: "/admin/advertising", icon: "Megaphone" },
   { name: "Пополнение", href: "/admin/payments", icon: "CreditCard" },
   { name: "Чат", href: "/admin/chat", icon: "MessageCircle" },

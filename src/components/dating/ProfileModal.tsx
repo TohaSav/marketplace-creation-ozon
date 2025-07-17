@@ -8,6 +8,7 @@ import { Profile } from '@/types/dating';
 import { useGifts } from '@/hooks/useGifts';
 
 import GiftOverlay from './GiftOverlay';
+import GiftModal from './GiftModal';
 
 interface ProfileModalProps {
   profile: Profile | null;
@@ -25,6 +26,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   onBalanceChange 
 }) => {
   const { getProfileGifts } = useGifts();
+  const [isGiftModalOpen, setIsGiftModalOpen] = React.useState(false);
 
 
   const handleLike = () => {
@@ -112,10 +114,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               </Button>
               <Button 
                 variant="outline" 
-                onClick={() => toast({
-                  title: "Подарок 🎁",
-                  description: "Функция подарков скоро будет доступна",
-                })}
+                onClick={() => setIsGiftModalOpen(true)}
                 className="flex-1 border-purple-300 text-purple-600 hover:bg-purple-50"
               >
                 <Icon name="Gift" size={16} className="mr-2" />
@@ -132,7 +131,17 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
           </div>
         )}
         
-
+        {/* Модальное окно подарков */}
+        {profile && (
+          <GiftModal
+            isOpen={isGiftModalOpen}
+            onClose={() => setIsGiftModalOpen(false)}
+            recipientName={profile.name}
+            recipientId={profile.id}
+            userBalance={userBalance}
+            onBalanceChange={onBalanceChange}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
