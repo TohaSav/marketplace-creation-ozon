@@ -83,48 +83,50 @@ const Navigation = ({
     );
   };
 
+  // Проверяем, является ли пользователь покупателем
+  const isBuyer = isLoggedIn && user?.role !== 'seller';
+
   return (
     <div className="flex items-center space-x-6">
-      <NavButton
-        icon="Package"
-        label="Заказы"
-        to={isLoggedIn ? "/orders" : undefined}
-        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
-        isActive={isLoggedIn}
-      />
+      {isBuyer && (
+        <>
+          <NavButton
+            icon="Package"
+            label="Заказы"
+            to="/orders"
+            isActive={true}
+          />
 
-      <NavButton
-        icon="HeartHandshake"
-        label="Знакомства"
-        to={isLoggedIn ? "/dating" : undefined}
-        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
-        isActive={isLoggedIn}
-      />
+          <NavButton
+            icon="HeartHandshake"
+            label="Знакомства"
+            to="/dating"
+            isActive={true}
+          />
 
-      <NavButton
-        icon="Gamepad2"
-        label="Пузырики"
-        to={isLoggedIn ? "/bubble-game" : undefined}
-        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
-        isActive={isLoggedIn}
-      />
+          <NavButton
+            icon="Gamepad2"
+            label="Пузырики"
+            to="/bubble-game"
+            isActive={true}
+          />
 
-      <NavButton
-        icon="Heart"
-        label="Избранное"
-        to={isLoggedIn ? "/favorites" : undefined}
-        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
-        isActive={isLoggedIn}
-      />
+          <NavButton
+            icon="Heart"
+            label="Избранное"
+            to="/favorites"
+            isActive={true}
+          />
 
-      <NavButton
-        icon="ShoppingCart"
-        label="Корзина"
-        to={isLoggedIn ? "/cart" : undefined}
-        onClick={!isLoggedIn ? () => setIsMenuOpen(true) : undefined}
-        isActive={isLoggedIn}
-        badge={0}
-      />
+          <NavButton
+            icon="ShoppingCart"
+            label="Корзина"
+            to="/cart"
+            isActive={true}
+            badge={0}
+          />
+        </>
+      )}
 
       <div className="relative">
         {isLoggedIn ? (
