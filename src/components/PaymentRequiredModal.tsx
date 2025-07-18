@@ -3,6 +3,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { useAuth } from "@/context/AuthContext";
+import { yooKassaService, type PaymentData } from "@/services/yookassa";
+import { toast } from "@/hooks/use-toast";
+import { activateSubscription } from "@/utils/yookassaApi";
 
 interface TariffPlan {
   id: string;
@@ -91,28 +94,138 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
     setIsProcessing(true);
     
     try {
-      // Имитация обработки платежа
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Обновляем пользователя с активной подпиской
       const selectedTariff = tariffPlans.find(plan => plan.id === selectedPlan);
-      if (selectedTariff) {
+      if (!selectedTariff) {
+        throw new Error("Тариф не найден");
+      }
+
+      // Если выбран пробный тариф - активируем бесплатно
+      if (selectedPlan === "trial") {
+        // Проверяем, не использовал ли уже пробный тариф
+        if (user.hasUsedTrial) {
+          toast({
+            title: "Пробный тариф недоступен",
+            description: "Вы уже использовали пробный тариф. Выберите платный план.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Активируем пробный тариф
+        const subscription = activateSubscription(
+          user.id,
+          "trial"
+        );
+        
         const updatedUser = {
           ...user,
-          subscription: {
-            isActive: true,
-            planType: "monthly" as const,
-            planName: selectedTariff.name,
-            startDate: new Date().toISOString(),
-            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            autoRenew: true
-          }
+          subscription,
+          hasUsedTrial: true
         };
         
         updateUser(updatedUser);
+        
+        toast({
+          title: "Пробный тариф активирован! 🎉",
+          description: "У вас есть 7 дней для тестирования всех функций Premium.",
+          variant: "default",
+        });
+        
+        return;
+      }
+
+      // Для платных тарифов - обработка через ЮКассу
+      if (paymentMethod === "yookassa") {
+        // Проверяем настройки ЮKassa
+        if (!yooKassaService.isEnabled()) {
+          toast({
+            title: "Платежи недоступны",
+            description: "ЮKassa не настроена. Обратитесь к администратору.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const paymentData: PaymentData = {
+          amount: {
+            value: selectedTariff.price.toString(),
+            currency: "RUB",
+          },
+          description: `Подписка на тариф "${selectedTariff.name}" на 1 месяц`,
+          confirmation: {
+            type: "redirect",
+            return_url: `${window.location.origin}/payment-success`,
+          },
+          capture: true,
+          metadata: {
+            user_id: user.id,
+            tariff_id: selectedPlan,
+            tariff_name: selectedTariff.name,
+          },
+        };
+
+        const payment = await yooKassaService.createPayment(paymentData);
+
+        if (payment.confirmation?.confirmation_url) {
+          // Сохраняем информацию о платеже
+          localStorage.setItem(
+            "pending_payment",
+            JSON.stringify({
+              id: payment.id,
+              amount: payment.amount,
+              description: payment.description,
+              tariffId: selectedPlan,
+              userId: user.id,
+              createdAt: new Date().toISOString(),
+            })
+          );
+
+          // Перенаправляем на ЮКассу
+          window.location.href = payment.confirmation.confirmation_url;
+        } else {
+          throw new Error("Не удалось получить URL для оплаты");
+        }
+      } else if (paymentMethod === "wallet") {
+        // Оплата через кошелек
+        const userBalance = user.balance || 0;
+        if (userBalance < selectedTariff.price) {
+          toast({
+            title: "Недостаточно средств",
+            description: "Пополните баланс кошелька или выберите другой способ оплаты.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Списываем средства и активируем подписку
+        const subscription = activateSubscription(
+          user.id,
+          "monthly"
+        );
+        
+        const updatedUser = {
+          ...user,
+          subscription,
+          balance: userBalance - selectedTariff.price
+        };
+        
+        updateUser(updatedUser);
+        
+        toast({
+          title: "Подписка активирована! 🎉",
+          description: `Тариф "${selectedTariff.name}" успешно оплачен из кошелька.`,
+          variant: "default",
+        });
       }
     } catch (error) {
       console.error("Ошибка оплаты:", error);
+      const errorMessage = error instanceof Error ? error.message : "Произошла ошибка при оплате";
+      
+      toast({
+        title: "Ошибка оплаты",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -275,14 +388,31 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
 
             <Button
               onClick={handlePayment}
-              disabled={isProcessing || (paymentMethod === "wallet" && (user.balance || 0) < (tariffPlans.find(p => p.id === selectedPlan)?.price || 0))}
-              className="w-full h-12 text-lg font-medium"
+              disabled={isProcessing || (paymentMethod === "wallet" && (user.balance || 0) < (tariffPlans.find(p => p.id === selectedPlan)?.price || 0)) || (selectedPlan === "trial" && user.hasUsedTrial)}
+              className={cn(
+                "w-full h-12 text-lg font-medium",
+                selectedPlan === "trial" 
+                  ? "bg-green-600 hover:bg-green-700" 
+                  : "bg-blue-600 hover:bg-blue-700"
+              )}
             >
               {isProcessing ? (
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Обработка платежа...
+                  {selectedPlan === "trial" ? "Активация..." : "Обработка платежа..."}
                 </div>
+              ) : selectedPlan === "trial" ? (
+                user.hasUsedTrial ? (
+                  <div className="flex items-center gap-2">
+                    <Icon name="X" size={20} />
+                    Пробный тариф уже использован
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Icon name="Gift" size={20} />
+                    Получить бесплатно
+                  </div>
+                )
               ) : (
                 <div className="flex items-center gap-2">
                   <Icon name="CreditCard" size={20} />
@@ -291,9 +421,21 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
               )}
             </Button>
 
-            {paymentMethod === "wallet" && (user.balance || 0) < (tariffPlans.find(p => p.id === selectedPlan)?.price || 0) && (
+            {paymentMethod === "wallet" && (user.balance || 0) < (tariffPlans.find(p => p.id === selectedPlan)?.price || 0) && selectedPlan !== "trial" && (
               <p className="text-sm text-red-500 mt-2 text-center">
                 Недостаточно средств в кошельке. Пополните баланс или выберите другой способ оплаты.
+              </p>
+            )}
+            
+            {selectedPlan === "trial" && user.hasUsedTrial && (
+              <p className="text-sm text-red-500 mt-2 text-center">
+                Вы уже использовали пробный тариф. Выберите платный план.
+              </p>
+            )}
+            
+            {selectedPlan === "trial" && !user.hasUsedTrial && (
+              <p className="text-sm text-green-600 mt-2 text-center">
+                🎁 Полный доступ ко всем функциям Premium на 7 дней!
               </p>
             )}
           </div>
