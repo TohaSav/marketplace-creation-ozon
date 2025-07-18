@@ -2,11 +2,14 @@ export interface SubscriptionPlan {
   id: string;
   name: string;
   price: number;
-  duration: "month" | "year";
+  duration: "month" | "year" | "trial";
   maxProducts: number;
   features: string[];
   isPopular?: boolean;
   description: string;
+  isTrial?: boolean;
+  trialDays?: number;
+  oneTimeOnly?: boolean;
 }
 
 export interface SellerSubscription {
@@ -17,6 +20,8 @@ export interface SellerSubscription {
   isActive: boolean;
   remainingProducts: number;
   autoRenew: boolean;
+  hasUsedTrial?: boolean;
+  productsHidden?: boolean;
 }
 
 export interface SubscriptionStatus {
@@ -30,6 +35,31 @@ export interface SubscriptionStatus {
 
 // Новые тарифные планы для магазинов
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+  {
+    id: "trial",
+    name: "Пробный",
+    price: 0,
+    duration: "trial",
+    maxProducts: -1,
+    trialDays: 7,
+    isTrial: true,
+    oneTimeOnly: true,
+    description: "Попробуйте все возможности Premium бесплатно!",
+    features: [
+      "Неограниченное количество товаров",
+      "Enterprise аналитика и отчетность",
+      "Персональная техническая поддержка",
+      "Все инструменты продвижения включены",
+      "Минимальная комиссия 1.5% с продаж",
+      "Эксклюзивный статус в маркетплейсе",
+      "Команда персональных менеджеров",
+      "Индивидуальный дизайн магазина",
+      "Полный доступ к API",
+      "Приоритетное размещение и реклама",
+      "Возможность белого лейбла",
+      "⚠️ Все товары скроются после 7 дней",
+    ],
+  },
   {
     id: "mini",
     name: "Мини",

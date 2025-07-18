@@ -33,6 +33,16 @@ export default function SubscriptionModal({
   const [loading, setLoading] = useState(false);
 
   const handleSubscribe = async (planId: string) => {
+    // Проверяем использование пробного тарифа
+    if (planId === "trial" && user?.hasUsedTrial) {
+      toast({
+        title: "Пробный тариф недоступен",
+        description: "Вы уже использовали пробный тариф. Выберите платный план.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     setSelectedPlan(planId);
 
@@ -54,6 +64,8 @@ export default function SubscriptionModal({
 
   const getPlanBadgeColor = (plan: SubscriptionPlan) => {
     switch (plan.id) {
+      case "trial":
+        return "bg-gradient-to-r from-green-400 to-green-600 text-white";
       case "mini":
         return "bg-green-500 text-white";
       case "maxi":
@@ -69,6 +81,8 @@ export default function SubscriptionModal({
 
   const getPlanIcon = (planId: string) => {
     switch (planId) {
+      case "trial":
+        return "Clock";
       case "mini":
         return "Zap";
       case "maxi":
@@ -142,17 +156,25 @@ export default function SubscriptionModal({
 
           {/* Тарифные планы */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {SUBSCRIPTION_PLANS.map((plan) => (
+            {SUBSCRIPTION_PLANS.map((plan) => {
+              const isTrialUsed = plan.id === "trial" && user?.hasUsedTrial;
+              return (
               <Card
                 key={plan.id}
-                onClick={() => setActivePlan(plan.id)}
-                className={`relative transition-all duration-200 hover:shadow-lg cursor-pointer ${
-                  activePlan === plan.id 
+                onClick={() => !isTrialUsed && setActivePlan(plan.id)}
+                className={`relative transition-all duration-200 ${
+                  isTrialUsed 
+                    ? "opacity-50 cursor-not-allowed bg-gray-100" 
+                    : "hover:shadow-lg cursor-pointer"
+                } ${
+                  activePlan === plan.id && !isTrialUsed
                     ? "ring-2 ring-green-500 shadow-xl scale-105 bg-green-50" 
-                    : plan.isPopular 
-                      ? "ring-2 ring-blue-500 scale-105" 
-                      : "hover:scale-102"
-                } ${plan.id === "premium" && activePlan !== plan.id ? "bg-gradient-to-br from-yellow-50 to-orange-50" : ""}`}
+                    : plan.id === "trial" && !isTrialUsed
+                      ? "ring-2 ring-green-400 scale-105 bg-gradient-to-br from-green-50 to-green-100"
+                      : plan.isPopular && !isTrialUsed
+                        ? "ring-2 ring-blue-500 scale-105" 
+                        : !isTrialUsed ? "hover:scale-102" : ""
+                } ${plan.id === "premium" && activePlan !== plan.id && !isTrialUsed ? "bg-gradient-to-br from-yellow-50 to-orange-50" : ""}`}
               >
                 {activePlan === plan.id && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -162,7 +184,21 @@ export default function SubscriptionModal({
                     </Badge>
                   </div>
                 )}
-                {plan.isPopular && activePlan !== plan.id && (
+                {plan.id === "trial" && activePlan !== plan.id && !isTrialUsed && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-green-500 text-white px-3 py-1">
+                      🎁 Бесплатно
+                    </Badge>
+                  </div>
+                )}
+                {isTrialUsed && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-gray-500 text-white px-3 py-1">
+                      ✅ Использован
+                    </Badge>
+                  </div>
+                )}
+                {plan.isPopular && activePlan !== plan.id && plan.id !== "trial" && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-500 text-white px-3 py-1">
                       Популярный
@@ -184,12 +220,25 @@ export default function SubscriptionModal({
                   </CardTitle>
 
                   <div className="mt-2">
-                    <span className="text-3xl font-bold text-gray-900">
-                      {plan.price.toLocaleString()} ₽
-                    </span>
-                    <span className="text-gray-500 text-sm ml-1">
-                      /{plan.duration === "month" ? "мес" : "год"}
-                    </span>
+                    {plan.id === "trial" ? (
+                      <>
+                        <span className="text-3xl font-bold text-green-600">
+                          БЕСПЛАТНО
+                        </span>
+                        <span className="text-gray-500 text-sm ml-1 block">
+                          на {plan.trialDays} дней
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-3xl font-bold text-gray-900">
+                          {plan.price.toLocaleString()} ₽
+                        </span>
+                        <span className="text-gray-500 text-sm ml-1">
+                          /{plan.duration === "month" ? "мес" : "год"}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   <p className="text-sm text-gray-600 mt-2">
@@ -229,15 +278,17 @@ export default function SubscriptionModal({
                       e.stopPropagation();
                       handleSubscribe(plan.id);
                     }}
-                    disabled={loading}
+                    disabled={loading || isTrialUsed}
                     className={`w-full transition-all duration-200 ${
-                      activePlan === plan.id
-                        ? "bg-green-600 hover:bg-green-700"
-                        : plan.id === "premium"
-                          ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                          : plan.isPopular
-                            ? "bg-blue-600 hover:bg-blue-700"
-                            : "bg-gray-800 hover:bg-gray-900"
+                      isTrialUsed
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : activePlan === plan.id
+                          ? "bg-green-600 hover:bg-green-700"
+                          : plan.id === "premium"
+                            ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                            : plan.isPopular
+                              ? "bg-blue-600 hover:bg-blue-700"
+                              : "bg-gray-800 hover:bg-gray-900"
                     }`}
                     style={{ pointerEvents: 'auto' }}
                   >
@@ -250,10 +301,15 @@ export default function SubscriptionModal({
                         />
                         Подключение...
                       </>
+                    ) : isTrialUsed ? (
+                      <>
+                        <Icon name="X" size={16} className="mr-2" />
+                        Уже использован
+                      </>
                     ) : activePlan === plan.id ? (
                       <>
                         <Icon name="CreditCard" size={16} className="mr-2" />
-                        Оплатить план
+                        {plan.id === "trial" ? "Активировать пробный" : "Оплатить план"}
                       </>
                     ) : (
                       <>
@@ -264,7 +320,8 @@ export default function SubscriptionModal({
                   </Button>
                 </CardContent>
               </Card>
-            ))}
+            );
+            })}
           </div>
 
           {/* Дополнительная информация */}

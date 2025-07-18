@@ -19,9 +19,10 @@ interface User {
   isSeller?: boolean;
   balance?: number;
   sellerStats?: SellerStats;
+  hasUsedTrial?: boolean;
   subscription?: {
     isActive: boolean;
-    planType: "monthly" | "yearly";
+    planType: "monthly" | "yearly" | "trial";
     planName: string;
     startDate: string;
     endDate: string;
