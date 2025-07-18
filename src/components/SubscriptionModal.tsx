@@ -29,6 +29,7 @@ export default function SubscriptionModal({
 }: SubscriptionModalProps) {
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [activePlan, setActivePlan] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubscribe = async (planId: string) => {
@@ -144,11 +145,24 @@ export default function SubscriptionModal({
             {SUBSCRIPTION_PLANS.map((plan) => (
               <Card
                 key={plan.id}
-                className={`relative transition-all duration-200 hover:shadow-lg ${
-                  plan.isPopular ? "ring-2 ring-blue-500 scale-105" : ""
-                } ${plan.id === "premium" ? "bg-gradient-to-br from-yellow-50 to-orange-50" : ""}`}
+                onClick={() => setActivePlan(plan.id)}
+                className={`relative transition-all duration-200 hover:shadow-lg cursor-pointer ${
+                  activePlan === plan.id 
+                    ? "ring-2 ring-green-500 shadow-xl scale-105 bg-green-50" 
+                    : plan.isPopular 
+                      ? "ring-2 ring-blue-500 scale-105" 
+                      : "hover:scale-102"
+                } ${plan.id === "premium" && activePlan !== plan.id ? "bg-gradient-to-br from-yellow-50 to-orange-50" : ""}`}
               >
-                {plan.isPopular && (
+                {activePlan === plan.id && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-green-500 text-white px-3 py-1">
+                      <Icon name="Check" size={14} className="mr-1" />
+                      Выбран
+                    </Badge>
+                  </div>
+                )}
+                {plan.isPopular && activePlan !== plan.id && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-500 text-white px-3 py-1">
                       Популярный
@@ -211,14 +225,19 @@ export default function SubscriptionModal({
                   </ul>
 
                   <Button
-                    onClick={() => handleSubscribe(plan.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSubscribe(plan.id);
+                    }}
                     disabled={loading}
                     className={`w-full transition-all duration-200 ${
-                      plan.id === "premium"
-                        ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                        : plan.isPopular
-                          ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-gray-800 hover:bg-gray-900"
+                      activePlan === plan.id
+                        ? "bg-green-600 hover:bg-green-700"
+                        : plan.id === "premium"
+                          ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                          : plan.isPopular
+                            ? "bg-blue-600 hover:bg-blue-700"
+                            : "bg-gray-800 hover:bg-gray-900"
                     }`}
                     style={{ pointerEvents: 'auto' }}
                   >
@@ -231,9 +250,14 @@ export default function SubscriptionModal({
                         />
                         Подключение...
                       </>
-                    ) : (
+                    ) : activePlan === plan.id ? (
                       <>
                         <Icon name="CreditCard" size={16} className="mr-2" />
+                        Оплатить план
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Mouse" size={16} className="mr-2" />
                         Выбрать план
                       </>
                     )}
