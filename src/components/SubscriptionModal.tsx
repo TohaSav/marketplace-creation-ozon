@@ -15,6 +15,8 @@ import {
 } from "@/types/subscription";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { yooKassaService, type PaymentData } from "@/services/yookassa";
+import { activateSubscription } from "@/utils/yookassaApi";
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -47,13 +49,90 @@ export default function SubscriptionModal({
     setSelectedPlan(planId);
 
     try {
-      await onSubscribe(planId);
-      onClose();
+      const selectedTariff = SUBSCRIPTION_PLANS.find(plan => plan.id === planId);
+      if (!selectedTariff) {
+        throw new Error("Тариф не найден");
+      }
+
+      // Если выбран пробный тариф - активируем бесплатно
+      if (planId === "trial") {
+        // Активируем пробный тариф на 7 дней
+        const subscription = activateSubscription(
+          user?.id || '',
+          "trial"
+        );
+        
+        // Вызываем callback для обновления пользователя
+        await onSubscribe(planId);
+        
+        toast({
+          title: "Пробный тариф активирован! 🎉",
+          description: "У вас есть 7 дней для тестирования всех функций Premium.",
+          variant: "default",
+        });
+        
+        onClose();
+        return;
+      }
+
+      // Для платных тарифов - обработка через ЮКассу
+      if (!yooKassaService.isEnabled()) {
+        toast({
+          title: "Платежи недоступны",
+          description: "ЮКасса не настроена. Обратитесь к администратору.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const paymentData: PaymentData = {
+        amount: {
+          value: selectedTariff.price.toString(),
+          currency: "RUB",
+        },
+        description: `Подписка на тариф "${selectedTariff.name}" на ${selectedTariff.duration === 'month' ? '1 месяц' : '1 год'}`,
+        confirmation: {
+          type: "redirect",
+          return_url: `${window.location.origin}/payment-success`,
+        },
+        capture: true,
+        metadata: {
+          user_id: user?.id || '',
+          tariff_id: planId,
+          tariff_name: selectedTariff.name,
+          seller_id: user?.id || '',
+        },
+      };
+
+      const payment = await yooKassaService.createPayment(paymentData);
+
+      if (payment.confirmation?.confirmation_url) {
+        // Сохраняем информацию о платеже
+        localStorage.setItem(
+          "pending_payment",
+          JSON.stringify({
+            id: payment.id,
+            amount: payment.amount,
+            description: payment.description,
+            tariffId: planId,
+            userId: user?.id || '',
+            sellerId: user?.id || '',
+            createdAt: new Date().toISOString(),
+          })
+        );
+
+        // Перенаправляем на ЮКассу
+        window.location.href = payment.confirmation.confirmation_url;
+      } else {
+        throw new Error("Не удалось получить URL для оплаты");
+      }
     } catch (error) {
       console.error("Ошибка подписки:", error);
+      const errorMessage = error instanceof Error ? error.message : "Произошла ошибка при оформлении подписки";
+      
       toast({
         title: "Ошибка подписки",
-        description: "Не удалось оформить подписку. Попробуйте позже.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -299,7 +378,7 @@ export default function SubscriptionModal({
                           size={16}
                           className="mr-2 animate-spin"
                         />
-                        Подключение...
+                        {plan.id === "trial" ? "Активация..." : "Переход к оплате..."}
                       </>
                     ) : isTrialUsed ? (
                       <>
@@ -308,8 +387,17 @@ export default function SubscriptionModal({
                       </>
                     ) : activePlan === plan.id ? (
                       <>
-                        <Icon name="CreditCard" size={16} className="mr-2" />
-                        {plan.id === "trial" ? "Активировать пробный" : "Оплатить план"}
+                        {plan.id === "trial" ? (
+                          <>
+                            <Icon name="Gift" size={16} className="mr-2" />
+                            Получить бесплатно
+                          </>
+                        ) : (
+                          <>
+                            <Icon name="CreditCard" size={16} className="mr-2" />
+                            Оплатить {plan.price.toLocaleString()} ₽
+                          </>
+                        )}
                       </>
                     ) : (
                       <>
