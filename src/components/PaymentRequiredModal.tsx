@@ -16,17 +16,17 @@ interface TariffPlan {
 
 const tariffPlans: TariffPlan[] = [
   {
-    id: "mini",
-    name: "Мини",
-    price: 1500,
-    monthlyPrice: 150,
+    id: "trial",
+    name: "Пробный",
+    price: 0,
+    monthlyPrice: 0,
     features: [
-      "До 50 товаров",
-      "Базовая аналитика",
-      "Email поддержка",
-      "Мобильное приложение"
+      "Неограниченно товаров",
+      "Все функции Premium",
+      "7 дней бесплатно",
+      "⚠️ Товары скроются после"
     ],
-    color: "from-blue-500 to-blue-600"
+    color: "from-green-400 to-green-600"
   },
   {
     id: "maxi",
@@ -80,7 +80,7 @@ interface PaymentRequiredModalProps {
 }
 
 export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalProps) {
-  const [selectedPlan, setSelectedPlan] = useState<string>("maxi");
+  const [selectedPlan, setSelectedPlan] = useState<string>("trial");
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "yookassa">("yookassa");
   const [isProcessing, setIsProcessing] = useState(false);
   const { user, updateUser } = useAuth();
@@ -165,10 +165,10 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
                 
                 <div className="mb-4">
                   <div className="text-3xl font-bold text-gray-900">
-                    ₽{plan.price.toLocaleString()}
+                    {plan.price === 0 ? 'БЕСПЛАТНО' : `₽${plan.price.toLocaleString()}`}
                   </div>
                   <div className="text-sm text-gray-500">
-                    ₽{plan.monthlyPrice}/месяц
+                    {plan.price === 0 ? 'на 7 дней' : `₽${plan.monthlyPrice}/месяц`}
                   </div>
                 </div>
 
