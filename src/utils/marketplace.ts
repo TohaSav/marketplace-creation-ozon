@@ -43,6 +43,32 @@ export const filterProducts = (
 ): Product[] => {
   let filtered = [...products];
 
+  // Hide products from sellers with expired trial subscriptions
+  filtered = filtered.filter((product) => {
+    if (product.sellerId) {
+      const seller = JSON.parse(localStorage.getItem('sellers') || '[]')
+        .find((s: any) => s.id === product.sellerId);
+      
+      if (seller && seller.subscription) {
+        const now = new Date();
+        const endDate = new Date(seller.subscription.endDate);
+        
+        // If trial expired and no active subscription, hide products
+        if (seller.subscription.planType === 'trial' && 
+            endDate < now && 
+            !seller.subscription.isActive) {
+          return false;
+        }
+        
+        // If any subscription expired, hide products
+        if (endDate < now && !seller.subscription.isActive) {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+
   // Search filter
   if (filters.searchQuery) {
     filtered = filtered.filter(

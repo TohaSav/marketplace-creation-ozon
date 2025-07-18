@@ -98,8 +98,8 @@ export default function SubscriptionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto p-0">
-        <div className="p-6 overflow-y-auto max-h-[95vh]">
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden p-0">
+        <div className="p-6 overflow-y-auto max-h-[95vh] scroll-smooth">
         <DialogHeader>
           <DialogTitle className="text-center text-3xl font-bold">
             🚀 Добро пожаловать в ваш магазин!
@@ -155,7 +155,7 @@ export default function SubscriptionModal({
           </Card>
 
           {/* Тарифные планы */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {SUBSCRIPTION_PLANS.map((plan) => {
               const isTrialUsed = plan.id === "trial" && user?.hasUsedTrial;
               return (
