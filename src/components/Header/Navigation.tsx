@@ -129,94 +129,113 @@ const Navigation = ({
       <div className="relative">
         {isLoggedIn ? (
           <>
-            <button
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mb-1">
-                <span className="text-white text-xs font-medium">
-                  {user ? getInitials(user.name) : "U"}
-                </span>
-              </div>
-              <span className="text-xs">{user?.name || "Профиль"}</span>
-            </button>
-
-            {isUserMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
-                <div className="p-2">
-                  <div className="px-3 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">
-                      {user?.name}
-                    </p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
-                  </div>
-                  <Link
-                    to="/profile"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="User" size={16} className="mr-2" />
-                    Мой профиль
-                  </Link>
-                  <Link
-                    to="/orders"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="Package" size={16} className="mr-2" />
-                    Мои заказы
-                  </Link>
-                  <Link
-                    to="/dating"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="HeartHandshake" size={16} className="mr-2" />
-                    Знакомства
-                  </Link>
-                  <Link
-                    to="/favorites"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="Heart" size={16} className="mr-2" />
-                    Избранное
-                  </Link>
-                  <Link
-                    to="/bonus-card"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="CreditCard" size={16} className="mr-2" />
-                    Бонусная карта
-                  </Link>
-                  <Link
-                    to="/wallet"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="Wallet" size={16} className="mr-2" />
-                    Кошелёк
-                  </Link>
-                  <Link
-                    to="/returns"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
-                  >
-                    <Icon name="RotateCcw" size={16} className="mr-2" />
-                    Возврат товара
-                  </Link>
-                  <div className="border-t border-gray-100 mt-1 pt-1">
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
-                    >
-                      <Icon name="LogOut" size={16} className="mr-2" />
-                      Выйти
-                    </button>
-                  </div>
+            {/* Проверяем, является ли пользователь одобренным продавцом */}
+            {user?.role === 'seller' && user?.isApproved ? (
+              // Для одобренных продавцов - прямой переход в кабинет без выпадающего меню
+              <Link
+                to="/seller-dashboard"
+                className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mb-1">
+                  <span className="text-white text-xs font-medium">
+                    {user ? getInitials(user.name) : "U"}
+                  </span>
                 </div>
-              </div>
+                <span className="text-xs">{user?.name || "Кабинет"}</span>
+              </Link>
+            ) : (
+              // Для обычных пользователей - стандартное выпадающее меню
+              <>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mb-1">
+                    <span className="text-white text-xs font-medium">
+                      {user ? getInitials(user.name) : "U"}
+                    </span>
+                  </div>
+                  <span className="text-xs">{user?.name || "Профиль"}</span>
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
+                    <div className="p-2">
+                      <div className="px-3 py-2 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">
+                          {user?.name}
+                        </p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="User" size={16} className="mr-2" />
+                        Мой профиль
+                      </Link>
+                      <Link
+                        to="/orders"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="Package" size={16} className="mr-2" />
+                        Мои заказы
+                      </Link>
+                      <Link
+                        to="/dating"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="HeartHandshake" size={16} className="mr-2" />
+                        Знакомства
+                      </Link>
+                      <Link
+                        to="/favorites"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="Heart" size={16} className="mr-2" />
+                        Избранное
+                      </Link>
+                      <Link
+                        to="/bonus-card"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="CreditCard" size={16} className="mr-2" />
+                        Бонусная карта
+                      </Link>
+                      <Link
+                        to="/wallet"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="Wallet" size={16} className="mr-2" />
+                        Кошелёк
+                      </Link>
+                      <Link
+                        to="/returns"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Icon name="RotateCcw" size={16} className="mr-2" />
+                        Возврат товара
+                      </Link>
+                      <div className="border-t border-gray-100 mt-1 pt-1">
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                        >
+                          <Icon name="LogOut" size={16} className="mr-2" />
+                          Выйти
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </>
         ) : (
