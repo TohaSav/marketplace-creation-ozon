@@ -83,7 +83,8 @@ export default function SubscriptionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto p-0">
+        <div className="p-6 overflow-y-auto max-h-[95vh]">
         <DialogHeader>
           <DialogTitle className="text-center text-3xl font-bold">
             🚀 Добро пожаловать в ваш магазин!
@@ -212,13 +213,14 @@ export default function SubscriptionModal({
                   <Button
                     onClick={() => handleSubscribe(plan.id)}
                     disabled={loading}
-                    className={`w-full ${
+                    className={`w-full transition-all duration-200 ${
                       plan.id === "premium"
                         ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
                         : plan.isPopular
                           ? "bg-blue-600 hover:bg-blue-700"
                           : "bg-gray-800 hover:bg-gray-900"
                     }`}
+                    style={{ pointerEvents: 'auto' }}
                   >
                     {loading && selectedPlan === plan.id ? (
                       <>
@@ -286,6 +288,7 @@ export default function SubscriptionModal({
             Выбрав план, вы сможете сразу же начать добавлять товары и принимать
             заказы
           </div>
+        </div>
         </div>
       </DialogContent>
     </Dialog>
