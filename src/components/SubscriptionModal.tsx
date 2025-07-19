@@ -177,8 +177,7 @@ export default function SubscriptionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden p-0">
-        <div className="p-6 overflow-y-auto max-h-[95vh] scroll-smooth">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-6">
         <DialogHeader>
           <DialogTitle className="text-center text-3xl font-bold">
             🚀 Добро пожаловать в ваш магазин!
@@ -457,7 +456,6 @@ export default function SubscriptionModal({
             Выбрав план, вы сможете сразу же начать добавлять товары и принимать
             заказы
           </div>
-        </div>
         </div>
       </DialogContent>
     </Dialog>
