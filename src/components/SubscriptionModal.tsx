@@ -219,8 +219,13 @@ export default function SubscriptionModal({
               return (
               <Card
                 key={plan.id}
-                onClick={() => !isTrialUsed && setActivePlan(plan.id)}
-                className={`relative transition-all duration-200 ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isTrialUsed) {
+                    setActivePlan(plan.id);
+                  }
+                }}
+                className={`relative transition-all duration-75 active:scale-95 ${
                   isTrialUsed 
                     ? "opacity-50 cursor-not-allowed bg-gray-100" 
                     : "hover:shadow-lg cursor-pointer"
@@ -339,7 +344,7 @@ export default function SubscriptionModal({
                       }
                     }}
                     disabled={loading || isTrialUsed}
-                    className={`w-full text-sm py-2 transition-all duration-200 ${
+                    className={`w-full text-sm py-2 transition-all duration-75 active:scale-95 ${
                       isTrialUsed
                         ? "bg-gray-400 cursor-not-allowed"
                         : activePlan === plan.id
