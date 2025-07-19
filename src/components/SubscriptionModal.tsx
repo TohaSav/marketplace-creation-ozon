@@ -177,63 +177,43 @@ export default function SubscriptionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-6">
-        <DialogHeader>
-          <DialogTitle className="text-center text-3xl font-bold">
-            🚀 Добро пожаловать в ваш магазин!
+      <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto p-4 scrollbar-thin scroll-smooth">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-center text-2xl font-bold text-gray-900">
+            🚀 Выберите тарифный план
           </DialogTitle>
-          <p className="text-center text-gray-600 text-lg mt-2">
-            Для начала продаж выберите подходящий тарифный план
+          <p className="text-center text-gray-600 text-sm mt-1">
+            Начните продажи с подходящего тарифа
           </p>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Информационный блок */}
-          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Icon name="Info" size={24} className="text-blue-600" />
-                <h3 className="text-xl font-semibold text-blue-900">
-                  Почему нужен тарифный план?
-                </h3>
+        <div className="space-y-4">
+          {/* Компактный информационный блок */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-100">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="Info" size={20} className="text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">
+                Преимущества платформы
+              </h3>
+            </div>
+            <div className="grid md:grid-cols-3 gap-3 text-sm">
+              <div className="flex items-center gap-2">
+                <Icon name="Shield" size={14} className="text-green-600" />
+                <span className="text-gray-700">Безопасность сделок</span>
               </div>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div className="flex items-start gap-2">
-                  <Icon
-                    name="Shield"
-                    size={16}
-                    className="text-green-600 mt-0.5"
-                  />
-                  <span className="text-gray-700">
-                    Качественная модерация и безопасность сделок
-                  </span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Icon
-                    name="Headphones"
-                    size={16}
-                    className="text-blue-600 mt-0.5"
-                  />
-                  <span className="text-gray-700">
-                    Техническая поддержка и помощь в развитии
-                  </span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Icon
-                    name="TrendingUp"
-                    size={16}
-                    className="text-purple-600 mt-0.5"
-                  />
-                  <span className="text-gray-700">
-                    Инструменты продвижения и аналитики
-                  </span>
-                </div>
+              <div className="flex items-center gap-2">
+                <Icon name="Headphones" size={14} className="text-blue-600" />
+                <span className="text-gray-700">Техподдержка 24/7</span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex items-center gap-2">
+                <Icon name="TrendingUp" size={14} className="text-purple-600" />
+                <span className="text-gray-700">Аналитика продаж</span>
+              </div>
+            </div>
+          </div>
 
           {/* Тарифные планы */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             {SUBSCRIPTION_PLANS.map((plan) => {
               const isTrialUsed = plan.id === "trial" && user?.hasUsedTrial;
               return (
@@ -284,69 +264,67 @@ export default function SubscriptionModal({
                   </div>
                 )}
 
-                <CardHeader className="text-center pb-4">
-                  <div className="flex justify-center mb-3">
-                    <div
-                      className={`p-3 rounded-full ${getPlanBadgeColor(plan)}`}
-                    >
-                      <Icon name={getPlanIcon(plan.id)} size={24} />
+                <CardHeader className="text-center pb-3">
+                  <div className="flex justify-center mb-2">
+                    <div className={`p-2 rounded-full ${getPlanBadgeColor(plan)}`}>
+                      <Icon name={getPlanIcon(plan.id)} size={20} />
                     </div>
                   </div>
 
-                  <CardTitle className="text-xl font-bold">
+                  <CardTitle className="text-lg font-bold">
                     {plan.name}
                   </CardTitle>
 
                   <div className="mt-2">
                     {plan.id === "trial" ? (
                       <>
-                        <span className="text-3xl font-bold text-green-600">
+                        <span className="text-2xl font-bold text-green-600">
                           БЕСПЛАТНО
                         </span>
-                        <span className="text-gray-500 text-sm ml-1 block">
+                        <span className="text-gray-500 text-xs block">
                           на {plan.trialDays} дней
                         </span>
                       </>
                     ) : (
                       <>
-                        <span className="text-3xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-gray-900">
                           {plan.price.toLocaleString()} ₽
                         </span>
-                        <span className="text-gray-500 text-sm ml-1">
+                        <span className="text-gray-500 text-xs">
                           /{plan.duration === "month" ? "мес" : "год"}
                         </span>
                       </>
                     )}
                   </div>
 
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-xs text-gray-600 mt-1 line-clamp-2">
                     {plan.description}
                   </p>
 
-                  <div className="mt-3">
-                    <Badge variant="outline" className="text-xs">
+                  <div className="mt-2">
+                    <Badge variant="outline" className="text-xs px-2 py-0.5">
                       {plan.maxProducts === -1
                         ? "∞ товаров"
-                        : `до ${plan.maxProducts.toLocaleString()} товаров`}
+                        : `${plan.maxProducts.toLocaleString()} товаров`}
                     </Badge>
                   </div>
                 </CardHeader>
 
-                <CardContent>
-                  <ul className="space-y-2 mb-6 text-xs">
-                    {plan.features.slice(0, 4).map((feature, index) => (
+                <CardContent className="pt-0">
+                  <ul className="space-y-1 mb-4 text-xs">
+                    {plan.features.slice(0, 3).map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <Icon
                           name="Check"
-                          size={14}
+                          size={12}
                           className="text-green-500 mt-0.5 flex-shrink-0"
                         />
-                        <span className="text-gray-600">{feature}</span>
+                        <span className="text-gray-600 leading-tight">{feature}</span>
                       </li>
                     ))}
-                    {plan.features.length > 4 && (
+                    {plan.features.length > 3 && (
                       <li className="text-xs text-gray-500 italic">
-                        +{plan.features.length - 4} дополнительных возможностей
+                        +{plan.features.length - 3} возможностей
                       </li>
                     )}
                   </ul>
@@ -361,7 +339,7 @@ export default function SubscriptionModal({
                       }
                     }}
                     disabled={loading || isTrialUsed}
-                    className={`w-full transition-all duration-200 ${
+                    className={`w-full text-sm py-2 transition-all duration-200 ${
                       isTrialUsed
                         ? "bg-gray-400 cursor-not-allowed"
                         : activePlan === plan.id
@@ -415,50 +393,26 @@ export default function SubscriptionModal({
             })}
           </div>
 
-          {/* Дополнительная информация */}
-          <Card className="bg-gray-50">
-            <CardContent className="pt-6">
-              <div className="grid md:grid-cols-3 gap-4 text-center">
-                <div>
-                  <Icon
-                    name="Shield"
-                    size={32}
-                    className="mx-auto mb-2 text-green-600"
-                  />
-                  <h4 className="font-semibold mb-1">Безопасность</h4>
-                  <p className="text-xs text-gray-600">
-                    Все платежи защищены SSL-шифрованием
-                  </p>
-                </div>
-                <div>
-                  <Icon
-                    name="RefreshCw"
-                    size={32}
-                    className="mx-auto mb-2 text-blue-600"
-                  />
-                  <h4 className="font-semibold mb-1">Гибкость</h4>
-                  <p className="text-xs text-gray-600">
-                    Возможность смены тарифа в любое время
-                  </p>
-                </div>
-                <div>
-                  <Icon
-                    name="Award"
-                    size={32}
-                    className="mx-auto mb-2 text-purple-600"
-                  />
-                  <h4 className="font-semibold mb-1">Качество</h4>
-                  <p className="text-xs text-gray-600">
-                    Проверенная платформа с тысячами продавцов
-                  </p>
-                </div>
+          {/* Компактная дополнительная информация */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="grid md:grid-cols-3 gap-3 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <Icon name="Shield" size={16} className="text-green-600" />
+                <span className="text-xs text-gray-700">SSL защита</span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex items-center justify-center gap-2">
+                <Icon name="RefreshCw" size={16} className="text-blue-600" />
+                <span className="text-xs text-gray-700">Смена тарифа</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <Icon name="Award" size={16} className="text-purple-600" />
+                <span className="text-xs text-gray-700">1000+ продавцов</span>
+              </div>
+            </div>
+          </div>
 
-          <div className="text-center text-sm text-gray-500">
-            Выбрав план, вы сможете сразу же начать добавлять товары и принимать
-            заказы
+          <div className="text-center text-xs text-gray-500 pt-2">
+            Выберите план и начните продажи прямо сейчас
           </div>
         </div>
       </DialogContent>
