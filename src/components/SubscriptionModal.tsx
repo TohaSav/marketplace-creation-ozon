@@ -354,7 +354,11 @@ export default function SubscriptionModal({
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSubscribe(plan.id);
+                      if (activePlan === plan.id) {
+                        handleSubscribe(plan.id);
+                      } else {
+                        setActivePlan(plan.id);
+                      }
                     }}
                     disabled={loading || isTrialUsed}
                     className={`w-full transition-all duration-200 ${
