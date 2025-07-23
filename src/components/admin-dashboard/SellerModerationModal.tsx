@@ -35,9 +35,18 @@ export default function SellerModerationModal({
     setIsProcessing(true);
     try {
       await updateSellerStatus(seller.id, "active");
+      
+      // Сохраняем информацию о том, что продавец одобрен
+      const approvedSellerData = {
+        id: seller.id,
+        approved: true,
+        approvedAt: new Date().toISOString()
+      };
+      localStorage.setItem(`seller-approved-${seller.id}`, JSON.stringify(approvedSellerData));
+      
       toast({
         title: "Продавец одобрен",
-        description: `${seller.name} уведомлен об активации профиля`,
+        description: `${seller.name} уведомлен об активации профиля и перенаправлен на выбор тарифа`,
       });
       onClose();
     } catch (error) {

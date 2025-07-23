@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ interface Plan {
 
 export default function PlansTab() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [trialActivated, setTrialActivated] = useState(false);
   const [trialExpiry, setTrialExpiry] = useState<Date | null>(null);
@@ -166,7 +168,7 @@ export default function PlansTab() {
                 <Button 
                   size="sm" 
                   className="bg-red-600 hover:bg-red-700"
-                  onClick={() => handlePlanSelect('basic')}
+                  onClick={() => navigate('/seller/pricing')}
                 >
                   Выбрать тариф
                 </Button>
@@ -257,11 +259,8 @@ export default function PlansTab() {
                 <Button 
                   className="w-full" 
                   variant={currentPlan === plan.id ? "secondary" : "default"}
-                  disabled={
-                    currentPlan === plan.id || 
-                    (plan.id === 'trial' && trialActivated)
-                  }
-                  onClick={() => handlePlanSelect(plan.id)}
+                  disabled={currentPlan === plan.id}
+                  onClick={() => plan.price > 0 ? navigate('/seller/pricing') : handlePlanSelect(plan.id)}
                 >
                   {currentPlan === plan.id ? (
                     <>

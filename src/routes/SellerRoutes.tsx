@@ -11,6 +11,7 @@ import SellerLuckGame from "@/pages/SellerLuckGame";
 import SellerWallet from "@/pages/SellerWallet";
 import SellerWalletSuccess from "@/pages/SellerWalletSuccess";
 import SellerTariffs from "@/pages/SellerTariffs";
+import SellerPricing from "@/pages/SellerPricing";
 
 const SellerRoutes = () => {
   try {
@@ -98,6 +99,16 @@ const SellerRoutes = () => {
           element={
             <Layout>
               <SellerTariffs />
+            </Layout>
+          }
+        />
+
+        {/* Выбор тарифного плана */}
+        <Route
+          path="/seller/pricing"
+          element={
+            <Layout>
+              <SellerPricing />
             </Layout>
           }
         />

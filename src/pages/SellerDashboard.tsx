@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { statusSyncManager } from "@/utils/statusSync";
 import SubscriptionModal from "@/components/SubscriptionModal";
 import SubscriptionStatusCard from "@/components/SubscriptionStatusCard";
@@ -26,19 +27,34 @@ import RevisionModal from "@/components/RevisionModal";
 
 export default function SellerDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const { shouldShowSubscriptionModal, activateSubscription } =
     useSubscription();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
-  // Проверяем необходимость показа модального окна подписки
+  // Проверяем одобрение продавца и перенаправляем на выбор тарифа
   useEffect(() => {
     if (user?.userType === "seller" && user?.status === "active") {
+      // Проверяем, был ли продавец только что одобрен
+      const approvedData = localStorage.getItem(`seller-approved-${user.id}`);
+      if (approvedData) {
+        const parsedData = JSON.parse(approvedData);
+        if (parsedData.approved) {
+          // Удаляем флаг одобрения
+          localStorage.removeItem(`seller-approved-${user.id}`);
+          // Перенаправляем на страницу тарифов с флагом одобрения
+          navigate('/seller/pricing', { state: { fromApproval: true } });
+          return;
+        }
+      }
+      
+      // Стандартная проверка подписки
       if (shouldShowSubscriptionModal()) {
         setShowSubscriptionModal(true);
       }
     }
-  }, [user, shouldShowSubscriptionModal]);
+  }, [user, shouldShowSubscriptionModal, navigate]);
 
   // Подписываемся на изменения статуса продавца
   useEffect(() => {
