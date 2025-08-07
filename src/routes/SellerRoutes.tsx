@@ -12,6 +12,7 @@ import SellerWallet from "@/pages/SellerWallet";
 import SellerWalletSuccess from "@/pages/SellerWalletSuccess";
 import SellerTariffs from "@/pages/SellerTariffs";
 import SellerPricing from "@/pages/SellerPricing";
+import Payouts from "@/pages/seller/Payouts";
 
 const SellerRoutes = () => {
   try {
@@ -109,6 +110,16 @@ const SellerRoutes = () => {
           element={
             <Layout>
               <SellerPricing />
+            </Layout>
+          }
+        />
+
+        {/* Выплаты */}
+        <Route
+          path="/seller/payouts"
+          element={
+            <Layout>
+              <Payouts />
             </Layout>
           }
         />

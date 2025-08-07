@@ -17,6 +17,7 @@ import AdminLiveChat from "@/pages/AdminLiveChat";
 import ShopVerification from "@/pages/admin/ShopVerification";
 import DatingModerationPage from "@/pages/admin/DatingModerationPage";
 import GiftsPage from "@/pages/admin/GiftsPage";
+import PayoutsManagement from "@/pages/admin/PayoutsManagement";
 import AdminSettings from "@/pages/AdminSettings";
 
 const AdminRoutes = () => {
@@ -145,6 +146,14 @@ const AdminRoutes = () => {
           element={
             <AdminProtectedRoute>
               <GiftsPage />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payouts"
+          element={
+            <AdminProtectedRoute>
+              <PayoutsManagement />
             </AdminProtectedRoute>
           }
         />
