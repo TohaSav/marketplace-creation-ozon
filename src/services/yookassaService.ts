@@ -54,9 +54,9 @@ class YooKassaService {
 
   constructor() {
     this.config = {
-      shopId: process.env.YOOKASSA_SHOP_ID || 'test_shop_id',
-      secretKey: process.env.YOOKASSA_SECRET_KEY || 'test_secret_key',
-      isProduction: process.env.NODE_ENV === 'production'
+      shopId: import.meta.env.VITE_YOOKASSA_SHOP_ID || 'test_shop_id',
+      secretKey: import.meta.env.VITE_YOOKASSA_SECRET_KEY || 'test_secret_key',
+      isProduction: import.meta.env.MODE === 'production'
     };
     
     this.baseUrl = this.config.isProduction 
