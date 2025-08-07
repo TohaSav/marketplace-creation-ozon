@@ -1,90 +1,143 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import AdminLayout from '@/components/AdminLayout';
 
 interface PayoutRequest {
-  id: number;
+  id: string;
+  sellerId: number;
   sellerName: string;
+  sellerEmail: string;
   amount: number;
   requestDate: string;
   paymentMethod: string;
   accountDetails: string;
   priority: 'high' | 'medium' | 'low';
   status: 'pending' | 'approved' | 'rejected';
+  yookassaPaymentId?: string;
 }
 
-const mockPayoutRequests: PayoutRequest[] = [
-  {
-    id: 1,
-    sellerName: "Анна Петрова",
-    amount: 15750.50,
-    requestDate: "2024-08-07T10:00:00Z",
-    paymentMethod: "card",
-    accountDetails: "****1234",
-    priority: "high",
-    status: "pending"
-  },
-  {
-    id: 2,
-    sellerName: "Иван Сидоров",
-    amount: 8920.00,
-    requestDate: "2024-08-07T14:30:00Z",
-    paymentMethod: "sbp",
-    accountDetails: "+7900****567",
-    priority: "medium",
-    status: "pending"
-  },
-  {
-    id: 3,
-    sellerName: "Мария Козлова",
-    amount: 25340.80,
-    requestDate: "2024-08-07T16:15:00Z",
-    paymentMethod: "card",
-    accountDetails: "****5678",
-    priority: "high",
-    status: "pending"
+interface Seller {
+  id: number;
+  name: string;
+  email: string;
+  userType: 'seller';
+  balance?: number;
+  paymentMethod?: string;
+  accountDetails?: string;
+}
+
+// Функция для загрузки реальных продавцов из localStorage
+const loadSellers = (): Seller[] => {
+  try {
+    const sellers = localStorage.getItem('sellers');
+    return sellers ? JSON.parse(sellers) : [];
+  } catch (error) {
+    console.error('Ошибка загрузки продавцов:', error);
+    return [];
   }
-];
+};
+
+// Функция для загрузки заявок на выплату
+const loadPayoutRequests = (): PayoutRequest[] => {
+  try {
+    const requests = localStorage.getItem('payout_requests');
+    return requests ? JSON.parse(requests) : [];
+  } catch (error) {
+    console.error('Ошибка загрузки заявок:', error);
+    return [];
+  }
+};
+
+// Функция для сохранения заявок
+const savePayoutRequests = (requests: PayoutRequest[]) => {
+  try {
+    localStorage.setItem('payout_requests', JSON.stringify(requests));
+  } catch (error) {
+    console.error('Ошибка сохранения заявок:', error);
+  }
+};
 
 function PayoutsManagement() {
-  const [payoutRequests, setPayoutRequests] = useState<PayoutRequest[]>(mockPayoutRequests);
+  const [payoutRequests, setPayoutRequests] = useState<PayoutRequest[]>([]);
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  // Загрузка данных при монтировании компонента
+  useEffect(() => {
+    setIsLoading(true);
+    const loadedSellers = loadSellers();
+    const loadedRequests = loadPayoutRequests();
+    
+    setSellers(loadedSellers);
+    setPayoutRequests(loadedRequests);
+    setIsLoading(false);
+  }, []);
 
   const getPaymentMethodIcon = (method: string) => {
     return method === 'card' ? 'CreditCard' : 'Smartphone';
   };
 
-  const approvePayoutRequest = (requestId: number) => {
+  const approvePayoutRequest = async (requestId: string) => {
     const request = payoutRequests.find(r => r.id === requestId);
     if (!request) return;
 
-    setPayoutRequests(prev => prev.map(r => 
-      r.id === requestId ? { ...r, status: 'approved' as const } : r
-    ));
+    try {
+      // Обновляем статус заявки
+      const updatedRequests = payoutRequests.map(r => 
+        r.id === requestId ? { 
+          ...r, 
+          status: 'approved' as const,
+          yookassaPaymentId: `yookassa_${Date.now()}`
+        } : r
+      );
+      
+      setPayoutRequests(updatedRequests);
+      savePayoutRequests(updatedRequests);
 
-    toast({
-      title: "✅ Заявка одобрена",
-      description: `Выплата ${request.amount.toLocaleString('ru-RU')} ₽ для ${request.sellerName} отправлена в ЮКассу`
-    });
+      // Обновляем баланс продавца
+      const updatedSellers = sellers.map(seller => {
+        if (seller.id === request.sellerId && seller.balance) {
+          return {
+            ...seller,
+            balance: seller.balance - request.amount
+          };
+        }
+        return seller;
+      });
+      
+      setSellers(updatedSellers);
+      localStorage.setItem('sellers', JSON.stringify(updatedSellers.filter(s => s.userType === 'seller')));
+
+      toast({
+        title: "✅ Заявка одобрена",
+        description: `Выплата ${request.amount.toLocaleString('ru-RU')} ₽ для ${request.sellerName} отправлена в ЮКассу`
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обработать заявку",
+        variant: "destructive"
+      });
+    }
   };
 
-  const rejectPayoutRequest = (requestId: number) => {
+  const rejectPayoutRequest = (requestId: string) => {
     const request = payoutRequests.find(r => r.id === requestId);
     if (!request) return;
 
-    setPayoutRequests(prev => prev.map(r => 
+    const updatedRequests = payoutRequests.map(r => 
       r.id === requestId ? { ...r, status: 'rejected' as const } : r
-    ));
+    );
+    
+    setPayoutRequests(updatedRequests);
+    savePayoutRequests(updatedRequests);
 
     toast({
       title: "❌ Заявка отклонена",
@@ -180,7 +233,12 @@ function PayoutsManagement() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {pendingRequests.map(request => (
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <Icon name="Loader2" size={48} className="mx-auto text-gray-400 mb-4 animate-spin" />
+                    <p className="text-gray-600">Загрузка заявок...</p>
+                  </div>
+                ) : pendingRequests.map(request => (
                   <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg bg-orange-50">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
@@ -188,6 +246,9 @@ function PayoutsManagement() {
                       </div>
                       <div>
                         <p className="font-medium text-orange-900">{request.sellerName}</p>
+                        <p className="text-sm text-orange-700">
+                          {request.sellerEmail}
+                        </p>
                         <p className="text-sm text-orange-700">
                           {request.amount.toLocaleString('ru-RU')} ₽ → {request.accountDetails}
                         </p>
@@ -226,11 +287,16 @@ function PayoutsManagement() {
                   </div>
                 ))}
                 
-                {pendingRequests.length === 0 && (
+                {!isLoading && pendingRequests.length === 0 && (
                   <div className="text-center py-8">
-                    <Icon name="CheckCircle" size={48} className="mx-auto text-green-500 mb-4" />
-                    <p className="text-gray-600 font-medium">Все заявки обработаны</p>
-                    <p className="text-sm text-gray-500 mt-1">Новые заявки появятся здесь автоматически</p>
+                    <Icon name="Inbox" size={48} className="mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-600 font-medium">Нет новых заявок</p>
+                    <p className="text-sm text-gray-500 mt-1">Заявки от продавцов появятся здесь автоматически</p>
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                      <p className="text-sm text-blue-700">
+                        💡 Продавцы могут отправлять заявки на выплату через свой кабинет в разделе "Выплаты"
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -251,9 +317,12 @@ function PayoutsManagement() {
                   <Button 
                     className="h-16 flex-col" 
                     variant="outline"
-                    onClick={() => {
-                      pendingRequests.forEach(r => approvePayoutRequest(r.id));
+                    onClick={async () => {
+                      for (const request of pendingRequests) {
+                        await approvePayoutRequest(request.id);
+                      }
                     }}
+                    disabled={pendingRequests.length === 0}
                   >
                     <Icon name="CheckCircle2" size={24} className="mb-2 text-green-600" />
                     <span>Одобрить все заявки</span>

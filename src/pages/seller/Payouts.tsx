@@ -111,7 +111,7 @@ export default function Payouts() {
   };
 
   const requestPayout = async () => {
-    if (!selectedMethod || !payoutAmount) return;
+    if (!selectedMethod || !payoutAmount || !user) return;
 
     const amount = parseFloat(payoutAmount);
     const validation = yooKassaService.validatePayoutAmount(amount, minPayoutAmount);
@@ -137,30 +137,39 @@ export default function Payouts() {
     setIsProcessing(true);
 
     try {
-      // Создаем выплату через ЮКассу
-      const payoutResponse = await yooKassaService.createPayout(
-        user?.id || 1,
+      // Создаем заявку на выплату для админки
+      const payoutRequest = {
+        id: `payout_${user.id}_${Date.now()}`,
+        sellerId: user.id,
+        sellerName: user.name,
+        sellerEmail: user.email,
         amount,
-        selectedMethod.type,
-        selectedMethod.details,
-        `Выплата продавцу ${user?.name || 'Неизвестный'}`
-      );
+        requestDate: new Date().toISOString(),
+        paymentMethod: selectedMethod.type,
+        accountDetails: selectedMethod.details,
+        priority: amount > 20000 ? 'high' as const : 'medium' as const,
+        status: 'pending' as const
+      };
 
-      // Добавляем в историю
+      // Сохраняем заявку в localStorage для админки
+      const existingRequests = JSON.parse(localStorage.getItem('payout_requests') || '[]');
+      const updatedRequests = [payoutRequest, ...existingRequests];
+      localStorage.setItem('payout_requests', JSON.stringify(updatedRequests));
+
+      // Добавляем в локальную историю продавца
       const newPayout: PayoutHistory = {
-        id: payoutResponse.id,
+        id: payoutRequest.id,
         amount,
-        status: 'processing',
+        status: 'pending',
         createdAt: new Date().toISOString(),
-        paymentMethod: selectedMethod,
-        yookassaPaymentId: payoutResponse.id
+        paymentMethod: selectedMethod
       };
 
       setPayoutHistory([newPayout, ...payoutHistory]);
 
       toast({
         title: "✅ Заявка на выплату отправлена",
-        description: `${amount.toLocaleString('ru-RU')} ₽ будет переведено через ЮКассу`,
+        description: `Заявка на ${amount.toLocaleString('ru-RU')} ₽ отправлена администратору на рассмотрение`,
         duration: 5000
       });
 
@@ -169,7 +178,7 @@ export default function Payouts() {
 
     } catch (error) {
       toast({
-        title: "Ошибка создания выплаты",
+        title: "Ошибка создания заявки",
         description: error instanceof Error ? error.message : "Попробуйте позже",
         variant: "destructive"
       });
@@ -269,12 +278,12 @@ export default function Payouts() {
                 <div className="flex items-start gap-2">
                   <Icon name="Info" size={16} className="text-blue-600 mt-0.5" />
                   <div className="text-sm text-blue-800">
-                    <p className="font-medium mb-1">Условия выплат:</p>
+                    <p className="font-medium mb-1">Процесс выплаты:</p>
                     <ul className="space-y-1 text-blue-700">
-                      <li>• Выплаты через ЮКассу</li>
-                      <li>• Обработка: 1-3 рабочих дня</li>
+                      <li>• Заявка отправляется администратору</li>
+                      <li>• Рассмотрение: до 24 часов</li>
+                      <li>• Выплата через ЮКассу: 1-3 дня</li>
                       <li>• Комиссия: 0% для продавцов</li>
-                      <li>• Доступно 24/7</li>
                     </ul>
                   </div>
                 </div>
@@ -293,7 +302,7 @@ export default function Payouts() {
                 ) : (
                   <>
                     <Icon name="Send" size={16} />
-                    Отправить через ЮКассу
+                    Отправить заявку администратору
                   </>
                 )}
               </Button>
