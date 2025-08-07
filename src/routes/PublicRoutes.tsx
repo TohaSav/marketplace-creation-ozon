@@ -28,6 +28,10 @@ import Careers from "@/pages/Careers";
 import Contacts from "@/pages/Contacts";
 import Warranty from "@/pages/Warranty";
 
+// Оферты и условия
+import SellerTerms from "@/pages/SellerTerms";
+import BuyerTerms from "@/pages/BuyerTerms";
+
 // Пользовательские страницы
 import Favorites from "@/pages/Favorites";
 import Cart from "@/pages/Cart";
@@ -83,6 +87,10 @@ const publicRoutes = [
   { path: "/warranty", component: Warranty },
   { path: "/trading-rules", component: TradingRules },
   { path: "/commissions", component: Commissions },
+
+  // Оферты и условия
+  { path: "/seller-terms", component: SellerTerms },
+  { path: "/buyer-terms", component: BuyerTerms },
 
   // Пользовательские
   { path: "/favorites", component: Favorites },

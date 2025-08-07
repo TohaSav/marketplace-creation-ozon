@@ -99,6 +99,14 @@ export default function Footer() {
                   Гарантия
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/buyer-terms"
+                  className="hover:text-white transition-colors"
+                >
+                  Условия покупателям
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -143,6 +151,14 @@ export default function Footer() {
                   className="hover:text-white transition-colors"
                 >
                   Поддержка продавцов
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/seller-terms"
+                  className="hover:text-white transition-colors"
+                >
+                  Условия продавцам
                 </Link>
               </li>
             </ul>
