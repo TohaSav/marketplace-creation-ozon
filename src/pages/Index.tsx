@@ -5,11 +5,26 @@ import EmptyState from "@/components/EmptyState";
 import { useCart } from "@/hooks/useCart";
 import { getProducts } from "@/data/products";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import DailyBonusModal from "@/components/modals/DailyBonusModal";
+import { useDailyBonus } from "@/hooks/useDailyBonus";
 
 export default function Index() {
   const { getFeaturedProducts } = useProductStore();
   const [realProducts, setRealProducts] = useState([]);
   const { addToCart } = useCart();
+  const { user, updateUserBalance } = useAuth();
+  
+  // Система ежедневных бонусов для зарегистрированных пользователей
+  const { bonusData, shouldShowModal, setShouldShowModal, claimBonus } = useDailyBonus(
+    user?.id?.toString() || '',
+    user?.joinDate || ''
+  );
+
+  const handleClaimBonus = async (amount: number) => {
+    await claimBonus(amount);
+    updateUserBalance(amount);
+  };
 
   useEffect(() => {
     const loadedProducts = getProducts();
@@ -30,6 +45,15 @@ export default function Index() {
 
   return (
     <div className="bg-gradient-light min-h-screen">
+      {/* Модальное окно ежедневных бонусов */}
+      {user && shouldShowModal && (
+        <DailyBonusModal
+          isOpen={shouldShowModal}
+          onClose={() => setShouldShowModal(false)}
+          userProfile={user}
+          onClaimBonus={handleClaimBonus}
+        />
+      )}
       {/* Banner Section */}
       <div className="bg-gradient-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
