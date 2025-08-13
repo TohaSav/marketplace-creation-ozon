@@ -2,17 +2,17 @@ import { Link } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
-import { useCart } from "@/hooks/useCart";
 import { getProducts } from "@/data/products";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import DailyBonusModal from "@/components/modals/DailyBonusModal";
+import CartAuthModal from "@/components/modals/CartAuthModal";
 import { useDailyBonus } from "@/hooks/useDailyBonus";
+import { useCartAuth } from "@/hooks/useCartAuth";
 
 export default function Index() {
   const { getFeaturedProducts } = useProductStore();
   const [realProducts, setRealProducts] = useState([]);
-  const { addToCart } = useCart();
   const { user, updateUserBalance } = useAuth();
   
   // Система ежедневных бонусов для зарегистрированных пользователей
@@ -20,6 +20,16 @@ export default function Index() {
     user?.id?.toString() || '',
     user?.joinDate || ''
   );
+
+  // Система авторизации для корзины
+  const { 
+    showAuthModal, 
+    pendingProduct, 
+    handleAddToCart, 
+    handleModalLogin, 
+    handleModalRegister, 
+    handleModalClose 
+  } = useCartAuth();
 
   const handleClaimBonus = async (amount: number) => {
     await claimBonus(amount);
@@ -34,15 +44,6 @@ export default function Index() {
 
   const featuredProducts = realProducts.length > 0 ? realProducts : getFeaturedProducts(8);
 
-  const handleAddToCart = (product: any) => {
-    addToCart({
-      id: parseInt(product.id),
-      name: product.name,
-      price: product.price,
-      image: ('image' in product ? product.image : product.images[0]) || '/placeholder.svg',
-    });
-  };
-
   return (
     <div className="bg-gradient-light min-h-screen">
       {/* Модальное окно ежедневных бонусов */}
@@ -54,6 +55,15 @@ export default function Index() {
           onClaimBonus={handleClaimBonus}
         />
       )}
+
+      {/* Модальное окно регистрации для корзины */}
+      <CartAuthModal
+        isOpen={showAuthModal}
+        onClose={handleModalClose}
+        onLogin={handleModalLogin}
+        onRegister={handleModalRegister}
+        productName={pendingProduct?.name}
+      />
       {/* Banner Section */}
       <div className="bg-gradient-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
