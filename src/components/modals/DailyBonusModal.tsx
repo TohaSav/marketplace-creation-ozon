@@ -97,7 +97,11 @@ export default function DailyBonusModal({ isOpen, onClose, userProfile, onClaimB
         
         {/* Header с градиентом */}
         <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"2\" fill=\"white\" opacity=\"0.1\"/><circle cx=\"80\" cy=\"40\" r=\"1.5\" fill=\"white\" opacity=\"0.1\"/><circle cx=\"60\" cy=\"80\" r=\"1\" fill=\"white\" opacity=\"0.1\"/></svg>')] opacity-20"></div>
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-4 left-4 w-2 h-2 bg-white/20 rounded-full"></div>
+            <div className="absolute top-8 right-6 w-1.5 h-1.5 bg-white/10 rounded-full"></div>
+            <div className="absolute bottom-4 right-1/3 w-1 h-1 bg-white/15 rounded-full"></div>
+          </div>
           
           <div className="relative z-10">
             <div className="mb-3">
