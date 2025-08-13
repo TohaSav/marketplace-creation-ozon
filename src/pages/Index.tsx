@@ -3,18 +3,28 @@ import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
 import { useCart } from "@/hooks/useCart";
+import { getProducts } from "@/data/products";
+import { useEffect, useState } from "react";
 
 export default function Index() {
   const { getFeaturedProducts } = useProductStore();
-  const featuredProducts = getFeaturedProducts(8);
+  const [realProducts, setRealProducts] = useState([]);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    const loadedProducts = getProducts();
+    const featuredProducts = loadedProducts.filter(p => p.isFeatured || p.isPopular).slice(0, 8);
+    setRealProducts(featuredProducts);
+  }, []);
+
+  const featuredProducts = realProducts.length > 0 ? realProducts : getFeaturedProducts(8);
 
   const handleAddToCart = (product: any) => {
     addToCart({
       id: parseInt(product.id),
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: ('image' in product ? product.image : product.images[0]) || '/placeholder.svg',
     });
   };
 

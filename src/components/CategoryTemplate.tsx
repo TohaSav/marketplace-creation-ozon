@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
 import { useCart } from "@/hooks/useCart";
 import Icon from "@/components/ui/icon";
+import { getProductsByCategory } from "@/data/products";
 
 interface CategoryTemplateProps {
   categoryKey: string;
@@ -20,18 +21,41 @@ export default function CategoryTemplate({
   emptyIcon,
   showFilters = false,
 }: CategoryTemplateProps) {
-  const { getProductsByCategory } = useProductStore();
-  const allProducts = getProductsByCategory(categoryKey);
+  const { getProductsByCategory: getStoreProducts } = useProductStore();
+  const [realProducts, setRealProducts] = useState([]);
   const { addToCart } = useCart();
   const [sortBy, setSortBy] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    // Маппинг ключей категорий на названия категорий в данных
+    const categoryMap: { [key: string]: string } = {
+      'electronics': 'Электроника',
+      'clothing': 'Одежда',
+      'home-garden': 'Дом и интерьер',
+      'beauty': 'Красота',
+      'sport': 'Спорт',
+      'sports': 'Спорт',
+      'auto': 'Автотовары',
+      'books': 'Книги',
+      'toys': 'Детские товары'
+    };
+
+    const categoryName = categoryMap[categoryKey];
+    if (categoryName) {
+      const products = getProductsByCategory(categoryName);
+      setRealProducts(products);
+    }
+  }, [categoryKey]);
+
+  const allProducts = realProducts.length > 0 ? realProducts : getStoreProducts(categoryKey);
 
   const handleAddToCart = (product: any) => {
     addToCart({
       id: parseInt(product.id),
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: ('image' in product ? product.image : product.images[0]) || '/placeholder.svg',
     });
   };
 
@@ -39,7 +63,7 @@ export default function CategoryTemplate({
   const filteredProducts = allProducts.filter(
     (product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   // Сортировка товаров
