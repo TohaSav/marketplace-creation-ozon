@@ -2,17 +2,17 @@ import { Link } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
 import EmptyState from "@/components/EmptyState";
-import { getProducts } from "@/data/products";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import DailyBonusModal from "@/components/modals/DailyBonusModal";
 import CartAuthModal from "@/components/modals/CartAuthModal";
 import { useDailyBonus } from "@/hooks/useDailyBonus";
 import { useCartAuth } from "@/hooks/useCartAuth";
+import { useInfiniteProducts } from "@/hooks/useInfiniteProducts";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import Icon from "@/components/ui/icon";
+import { useEffect } from "react";
 
 export default function Index() {
-  const { getFeaturedProducts } = useProductStore();
-  const [realProducts, setRealProducts] = useState([]);
   const { user, updateUserBalance } = useAuth();
   
   // Система ежедневных бонусов для зарегистрированных пользователей
@@ -31,18 +31,26 @@ export default function Index() {
     handleModalClose 
   } = useCartAuth();
 
+  // Бесконечная прокрутка товаров
+  const { 
+    products: allProducts, 
+    loading, 
+    hasMore, 
+    loadMoreProducts, 
+    totalProducts 
+  } = useInfiniteProducts(12);
+
+  // Хук для отслеживания скролла
+  const { sentinelRef } = useInfiniteScroll({
+    loading,
+    hasMore,
+    onLoadMore: loadMoreProducts,
+  });
+
   const handleClaimBonus = async (amount: number) => {
     await claimBonus(amount);
     updateUserBalance(amount);
   };
-
-  useEffect(() => {
-    const loadedProducts = getProducts();
-    const featuredProducts = loadedProducts.filter(p => p.isFeatured || p.isPopular).slice(0, 8);
-    setRealProducts(featuredProducts);
-  }, []);
-
-  const featuredProducts = realProducts.length > 0 ? realProducts : getFeaturedProducts(8);
 
   return (
     <div className="bg-gradient-light min-h-screen">
@@ -78,21 +86,55 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Mobile Products Section - показываем товары на мобильных вместо категорий */}
-      <div className="block md:hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* All Products Section - показываем все товары с бесконечной прокруткой */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Популярные товары
-          </h2>
-          {featuredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {featuredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
+          {/* Заголовок с счетчиком товаров */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Все товары
+            </h2>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Icon name="Package" size={16} />
+              <span>{totalProducts} товаров</span>
+            </div>
+          </div>
+          
+          {allProducts.length > 0 ? (
+            <div>
+              {/* Сетка товаров */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {allProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                  />
+                ))}
+              </div>
+
+              {/* Индикатор загрузки */}
+              {loading && (
+                <div className="flex justify-center items-center py-8">
+                  <div className="flex items-center space-x-2">
+                    <Icon name="Loader2" size={20} className="animate-spin text-primary" />
+                    <span className="text-gray-600">Загружаем товары...</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Sentinel для бесконечной прокрутки */}
+              <div ref={sentinelRef} className="h-10 w-full" />
+
+              {/* Сообщение об окончании списка */}
+              {!hasMore && !loading && allProducts.length > 12 && (
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center space-x-2 text-gray-500">
+                    <Icon name="CheckCircle2" size={16} />
+                    <span>Все товары загружены</span>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <EmptyState
@@ -240,29 +282,7 @@ export default function Index() {
           </Link>
         </div>
 
-        {/* Popular Products Section - только для десктопа */}
-        <div className="hidden md:block mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Популярные товары
-          </h2>
-          {featuredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon="Package"
-              title="Пока нет товаров"
-              description="Товары появятся здесь после того, как продавцы их добавят"
-            />
-          )}
-        </div>
+        {/* Скрываем старую секцию популярных товаров - теперь все товары показываются в основной секции */}
 
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
