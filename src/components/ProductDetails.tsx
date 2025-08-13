@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductById, Product } from "@/data/products";
-import { useCart } from "@/hooks/useCart";
+import { useMarketplace } from "@/contexts/MarketplaceContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,7 @@ import Icon from "@/components/ui/icon";
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart } = useMarketplace();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -56,13 +56,8 @@ const ProductDetails = () => {
     : 0;
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.images[0] || "/placeholder.svg",
-      });
+    if (product) {
+      addToCart(product, quantity);
     }
   };
 
