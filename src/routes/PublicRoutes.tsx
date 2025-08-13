@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 // Основные страницы
 import Index from "@/pages/Index";
 import Category from "@/pages/Category";
+import ProductDetails from "@/components/ProductDetails";
 
 // Категории товаров
 import Electronics from "@/pages/Electronics";
@@ -64,6 +65,7 @@ const publicRoutes = [
   { path: "/", component: Index, exact: true },
   { path: "/category/:categorySlug", component: Category },
   { path: "/category/:categoryId", component: Category },
+  { path: "/product/:id", component: ProductDetails },
 
   // Категории товаров
   { path: "/electronics", component: Electronics },

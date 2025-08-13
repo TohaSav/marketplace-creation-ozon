@@ -833,6 +833,12 @@ export const searchProducts = (query: string): Product[] => {
   );
 };
 
+// Функция для получения товара по ID
+export const getProductById = (id: number): Product | undefined => {
+  const products = getProducts();
+  return products.find(product => product.id === id);
+};
+
 // Совместимость со старым форматом
 export const productsByCategory: Record<string, any[]> = {
   electronics: products.filter(p => p.category === "Электроника"),
