@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 import { Product } from "@/store/productStore";
+import { Product as RealProduct } from "@/data/products";
 
 interface ProductCardProps {
-  product: Product;
-  onAddToCart?: (product: Product) => void;
+  product: Product | RealProduct;
+  onAddToCart?: (product: Product | RealProduct) => void;
 }
 
 const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
@@ -21,7 +22,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         <Link to={`/product/${product.id}`}>
           <div className="aspect-[4/3] bg-gray-50 overflow-hidden">
             <img
-              src={product.image}
+              src={('image' in product ? product.image : product.images[0]) || '/placeholder.svg'}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -75,7 +76,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
             {product.rating}
           </span>
           <span className="text-xs text-gray-400">
-            ({product.reviewCount})
+            ({('reviewCount' in product ? product.reviewCount : product.reviewsCount)})
           </span>
         </div>
 

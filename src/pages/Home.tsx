@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useProductStore } from "@/store/productStore";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
@@ -8,10 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { Link } from "react-router-dom";
+import { getProducts, Product } from "@/data/products";
 
 const Home: React.FC = () => {
   const { getFeaturedProducts } = useProductStore();
-  const products = getFeaturedProducts(8);
+  const [realProducts, setRealProducts] = useState<Product[]>([]);
+  
+  useEffect(() => {
+    const loadedProducts = getProducts();
+    const featuredProducts = loadedProducts.filter(p => p.isFeatured || p.isPopular).slice(0, 8);
+    setRealProducts(featuredProducts);
+  }, []);
+  
+  const products = realProducts.length > 0 ? realProducts : getFeaturedProducts(8);
 
   const categories = [
     {
