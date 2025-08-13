@@ -14,15 +14,11 @@ const Home: React.FC = () => {
   const { getFeaturedProducts } = useProductStore();
   const [realProducts, setRealProducts] = useState<Product[]>([]);
   
-  useEffect(() => {
-    const loadedProducts = getProducts();
-    const featuredProducts = loadedProducts.filter(p => p.isFeatured || p.isPopular).slice(0, 8);
-    setRealProducts(featuredProducts);
-  }, []);
+
   
   const products = realProducts.length > 0 ? realProducts : getFeaturedProducts(8);
 
-  const categories = [
+  const [categories, setCategories] = useState([
     {
       name: "Электроника",
       icon: "Smartphone",
@@ -30,13 +26,30 @@ const Home: React.FC = () => {
       slug: "electronics",
     },
     { name: "Одежда", icon: "Shirt", count: 0, slug: "clothing" },
-    { name: "Дом и сад", icon: "Home", count: 0, slug: "home-garden" },
+    { name: "Дом и интерьер", icon: "Home", count: 0, slug: "home-garden" },
     { name: "Красота", icon: "Sparkles", count: 0, slug: "beauty" },
     { name: "Спорт", icon: "Dumbbell", count: 0, slug: "sport" },
-    { name: "Авто", icon: "Car", count: 0, slug: "auto" },
+    { name: "Автотовары", icon: "Car", count: 0, slug: "auto" },
     { name: "Книги", icon: "Book", count: 0, slug: "books" },
-    { name: "Игрушки", icon: "GameController2", count: 0, slug: "toys" },
-  ];
+    { name: "Детские товары", icon: "Baby", count: 0, slug: "toys" },
+  ]);
+
+  useEffect(() => {
+    const loadedProducts = getProducts();
+    const categoryCounts = categories.map(cat => {
+      let categoryName = cat.name;
+      if (cat.name === "Дом и интерьер") categoryName = "Дом и интерьер";
+      if (cat.name === "Детские товары") categoryName = "Детские товары";
+      if (cat.name === "Автотовары") categoryName = "Автотовары";
+      
+      const count = loadedProducts.filter(p => p.category === categoryName).length;
+      return { ...cat, count };
+    });
+    setCategories(categoryCounts);
+    
+    const featuredProducts = loadedProducts.filter(p => p.isFeatured || p.isPopular).slice(0, 8);
+    setRealProducts(featuredProducts);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
