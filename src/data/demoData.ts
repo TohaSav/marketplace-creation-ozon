@@ -375,128 +375,23 @@ export interface DemoBuyerProfile {
   }>;
 }
 
-export const demoBuyerOrders: DemoBuyerOrder[] = [
-  {
-    id: "ORD-101",
-    date: "2024-03-10T14:30:00Z",
-    items: [
-      {
-        id: 23,
-        name: "Apple Watch Series 9",
-        price: 39990,
-        quantity: 1,
-        image: "/img/apple-watch-9.jpg"
-      }
-    ],
-    total: 39990,
-    status: "shipped",
-    trackingNumber: "RU123456789",
-    estimatedDelivery: "2024-03-12"
-  },
-  {
-    id: "ORD-102",
-    date: "2024-03-08T16:45:00Z",
-    items: [
-      {
-        id: 24,
-        name: "Наушники Sony WH-1000XM5",
-        price: 29990,
-        quantity: 1,
-        image: "/img/sony-wh1000xm5.jpg"
-      },
-      {
-        id: 32,
-        name: "Тональный крем Estée Lauder",
-        price: 4990,
-        quantity: 1,
-        image: "/img/estee-lauder-foundation.jpg"
-      }
-    ],
-    total: 34980,
-    status: "delivered",
-    trackingNumber: "RU987654321"
-  },
-  {
-    id: "ORD-103",
-    date: "2024-03-05T12:20:00Z",
-    items: [
-      {
-        id: 26,
-        name: "Женские джинсы Zara Mom Fit",
-        price: 4990,
-        quantity: 1,
-        image: "/img/zara-mom-jeans.jpg"
-      }
-    ],
-    total: 5390,
-    status: "delivered",
-    trackingNumber: "RU456789123"
-  },
-  {
-    id: "ORD-104",
-    date: "2024-03-01T09:15:00Z",
-    items: [
-      {
-        id: 35,
-        name: "Протеин Optimum Nutrition",
-        price: 5990,
-        quantity: 2,
-        image: "/img/optimum-nutrition-protein.jpg"
-      }
-    ],
-    total: 12380,
-    status: "processing",
-    estimatedDelivery: "2024-03-14"
-  }
-];
+// Пустой список заказов для демо покупателя
+export const demoBuyerOrders: DemoBuyerOrder[] = [];
 
+// Пустой профиль покупателя для демо Юкассы
 export const demoBuyerProfile: DemoBuyerProfile = {
   id: "BUYER-001",
   name: "Анна Иванова",
-  email: "anna.ivanova@email.com",
-  phone: "+7 (999) 123-45-67",
-  birthDate: "1992-06-15",
-  joinDate: "2023-01-20",
-  totalOrders: 23,
-  totalSpent: 156780,
-  bonusPoints: 1567,
-  favoriteCategories: ["Электроника", "Красота", "Одежда"],
-  addresses: [
-    {
-      id: "ADDR-001",
-      name: "Дом",
-      address: "ул. Пушкина, д. 10, кв. 25",
-      city: "Москва",
-      region: "Московская область",
-      postalCode: "119234",
-      phone: "+7 (999) 123-45-67",
-      isDefault: true
-    },
-    {
-      id: "ADDR-002",
-      name: "Работа",
-      address: "Красная площадь, д. 1, офис 101",
-      city: "Москва",
-      region: "Московская область",
-      postalCode: "109012",
-      phone: "+7 (495) 123-45-67",
-      isDefault: false
-    }
-  ],
-  paymentMethods: [
-    {
-      id: "CARD-001",
-      type: "card",
-      lastFour: "1234",
-      expiryDate: "12/26",
-      isDefault: true
-    },
-    {
-      id: "SBP-001",
-      type: "sbp",
-      isDefault: false
-    }
-  ]
+  email: "demo-buyer@yukassa.ru",
+  phone: "",
+  birthDate: "",
+  joinDate: "2024-03-10T00:00:00Z",
+  totalOrders: 0,
+  totalSpent: 0,
+  bonusPoints: 0,
+  favoriteCategories: [],
+  addresses: [],
+  paymentMethods: []
 };
 
 // Демо-аналитика для отчетов
