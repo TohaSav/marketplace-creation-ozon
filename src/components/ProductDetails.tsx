@@ -57,7 +57,12 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      addToCart(product, quantity);
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0] || "/placeholder.svg",
+      }, quantity);
     }
   };
 

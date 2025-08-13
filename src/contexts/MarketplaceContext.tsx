@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   price: number;
   image: string;
-  seller: string;
+  seller?: string;
 }
 
 interface CartItem extends Product {
@@ -16,14 +16,14 @@ interface MarketplaceContextType {
   favorites: Product[];
   cart: CartItem[];
   addToFavorites: (product: Product) => void;
-  removeFromFavorites: (productId: string) => void;
+  removeFromFavorites: (productId: number) => void;
   addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateCartQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: number) => void;
+  updateCartQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
-  isFavorite: (productId: string) => boolean;
+  isFavorite: (productId: number) => boolean;
 }
 
 const MarketplaceContext = createContext<MarketplaceContextType | undefined>(
@@ -89,7 +89,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const removeFromFavorites = (productId: string) => {
+  const removeFromFavorites = (productId: number) => {
     setFavorites((prev) => prev.filter((item) => item.id !== productId));
   };
 
@@ -109,11 +109,11 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = (productId: number) => {
     setCart((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  const updateCartQuantity = (productId: string, quantity: number) => {
+  const updateCartQuantity = (productId: number, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -138,7 +138,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  const isFavorite = (productId: string) => {
+  const isFavorite = (productId: number) => {
     return favorites.some((item) => item.id === productId);
   };
 
