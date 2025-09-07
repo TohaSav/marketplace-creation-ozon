@@ -92,6 +92,20 @@ export default function SellerPricing() {
         throw new Error("Тариф не найден");
       }
 
+      // Для пробного периода - сразу активируем независимо от способа оплаты
+      if (tariff.id === "trial") {
+        // Активируем подписку
+        activateSubscription(user.id, tariff.id);
+
+        toast({
+          title: "Пробный период активирован! 🎉",
+          description: `Тариф "${tariff.name}" успешно активирован`,
+        });
+
+        navigate("/seller/dashboard");
+        return;
+      }
+
       if (paymentMethod === "wallet") {
         // Оплата с кошелька
         if (walletBalance < tariff.price) {

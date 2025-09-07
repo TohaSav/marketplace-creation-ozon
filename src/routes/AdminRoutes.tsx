@@ -18,6 +18,7 @@ import ShopVerification from "@/pages/admin/ShopVerification";
 import DatingModerationPage from "@/pages/admin/DatingModerationPage";
 import GiftsPage from "@/pages/admin/GiftsPage";
 import PayoutsManagement from "@/pages/admin/PayoutsManagement";
+import PaymentSettings from "@/pages/admin/PaymentSettings";
 import AdminSettings from "@/pages/AdminSettings";
 
 const AdminRoutes = () => {
@@ -154,6 +155,14 @@ const AdminRoutes = () => {
           element={
             <AdminProtectedRoute>
               <PayoutsManagement />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payment-settings"
+          element={
+            <AdminProtectedRoute>
+              <PaymentSettings />
             </AdminProtectedRoute>
           }
         />

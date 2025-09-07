@@ -71,6 +71,22 @@ export default function PaymentSettings() {
       // Сохраняем настройки
       localStorage.setItem("yookassa_settings", JSON.stringify(settings));
 
+      // Обновляем активность ЮКассы для использования на сайте
+      if (settings.enabled && settings.shopId && settings.secretKey) {
+        localStorage.setItem(
+          "yookassa-active",
+          JSON.stringify({
+            enabled: true,
+            shopId: settings.shopId,
+            testMode: settings.testMode,
+            webhookUrl: settings.webhookUrl,
+            activatedAt: new Date().toISOString(),
+          }),
+        );
+      } else {
+        localStorage.removeItem("yookassa-active");
+      }
+
       toast({
         title: "Настройки сохранены",
         description: "Настройки ЮKassa успешно обновлены",

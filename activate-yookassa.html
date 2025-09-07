@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Активация ЮКассы</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
+        .error { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
+        .info { background-color: #d9edf7; color: #31708f; border: 1px solid #bce8f1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Активация ЮКассы для тестирования</h1>
+        
+        <div id="currentStatus" class="status info">
+            Проверяем текущий статус...
+        </div>
+        
+        <h3>Быстрая активация с тестовыми данными:</h3>
+        <button class="button" onclick="activateYookassa()">Активировать ЮКассу</button>
+        <button class="button" onclick="deactivateYookassa()" style="background-color: #f44336;">Деактивировать ЮКассу</button>
+        
+        <h3>Ручная настройка:</h3>
+        <div>
+            <label for="shopId">Shop ID:</label><br>
+            <input type="text" id="shopId" value="123456" style="width: 100%; padding: 8px; margin: 5px 0;"><br>
+            
+            <label for="secretKey">Secret Key:</label><br>
+            <input type="password" id="secretKey" value="live_test_key_123" style="width: 100%; padding: 8px; margin: 5px 0;"><br>
+            
+            <label>
+                <input type="checkbox" id="testMode" checked> Тестовый режим
+            </label><br><br>
+            
+            <button class="button" onclick="activateWithCustomData()">Активировать с указанными данными</button>
+        </div>
+    </div>
+
+    <script>
+        function checkCurrentStatus() {
+            const active = localStorage.getItem('yookassa-active');
+            const settings = localStorage.getItem('yookassa_settings');
+            const statusDiv = document.getElementById('currentStatus');
+            
+            if (active) {
+                const config = JSON.parse(active);
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `✅ ЮКасса активна<br>Shop ID: ${config.shopId}<br>Режим: ${config.testMode ? 'Тестовый' : 'Боевой'}<br>Активирована: ${new Date(config.activatedAt).toLocaleString()}`;
+            } else if (settings) {
+                const config = JSON.parse(settings);
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `⚠️ ЮКасса настроена, но не активна<br>Включена: ${config.enabled}<br>Shop ID: ${config.shopId || 'Не указан'}`;
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '❌ ЮКасса не настроена';
+            }
+        }
+        
+        function activateYookassa() {
+            const yookassaSettings = {
+                shopId: "123456",
+                secretKey: "live_test_key_123",
+                enabled: true,
+                testMode: true,
+                webhookUrl: window.location.origin + "/api/yookassa/webhook",
+                returnUrl: window.location.origin + "/payment-success",
+                description: "Оплата заказа"
+            };
+            
+            const yookassaActive = {
+                enabled: true,
+                shopId: "123456",
+                testMode: true,
+                webhookUrl: window.location.origin + "/api/yookassa/webhook",
+                activatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('yookassa_settings', JSON.stringify(yookassaSettings));
+            localStorage.setItem('yookassa-active', JSON.stringify(yookassaActive));
+            
+            alert('✅ ЮКасса успешно активирована!');
+            checkCurrentStatus();
+        }
+        
+        function deactivateYookassa() {
+            localStorage.removeItem('yookassa-active');
+            localStorage.removeItem('yookassa_settings');
+            
+            alert('❌ ЮКасса деактивирована');
+            checkCurrentStatus();
+        }
+        
+        function activateWithCustomData() {
+            const shopId = document.getElementById('shopId').value;
+            const secretKey = document.getElementById('secretKey').value;
+            const testMode = document.getElementById('testMode').checked;
+            
+            if (!shopId || !secretKey) {
+                alert('Заполните Shop ID и Secret Key');
+                return;
+            }
+            
+            const yookassaSettings = {
+                shopId,
+                secretKey,
+                enabled: true,
+                testMode,
+                webhookUrl: window.location.origin + "/api/yookassa/webhook",
+                returnUrl: window.location.origin + "/payment-success",
+                description: "Оплата заказа"
+            };
+            
+            const yookassaActive = {
+                enabled: true,
+                shopId,
+                testMode,
+                webhookUrl: window.location.origin + "/api/yookassa/webhook",
+                activatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('yookassa_settings', JSON.stringify(yookassaSettings));
+            localStorage.setItem('yookassa-active', JSON.stringify(yookassaActive));
+            
+            alert('✅ ЮКасса успешно активирована с вашими данными!');
+            checkCurrentStatus();
+        }
+        
+        // Проверяем статус при загрузке страницы
+        checkCurrentStatus();
+    </script>
+</body>
+</html>

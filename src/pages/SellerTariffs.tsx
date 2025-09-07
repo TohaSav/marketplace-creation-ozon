@@ -82,6 +82,20 @@ export default function SellerTariffs() {
         throw new Error("Тариф не найден");
       }
 
+      // Для пробного периода - сразу активируем независимо от способа оплаты
+      if (tariff.id === "trial") {
+        // Активируем подписку
+        activateSubscription(user.id, tariff.id);
+
+        toast({
+          title: "Пробный период активирован! 🎉",
+          description: `Тариф "${tariff.name}" успешно активирован`,
+        });
+
+        navigate("/seller/dashboard");
+        return;
+      }
+
       if (paymentMethod === "wallet") {
         // Оплата с кошелька
         if (walletBalance < tariff.price) {
@@ -375,11 +389,11 @@ export default function SellerTariffs() {
                   onClick={() => handlePayment(tariff.id)}
                   disabled={
                     loading ||
-                    (paymentMethod === "yukassa" && !yookassaActive) ||
+                    (paymentMethod === "yukassa" && !yookassaActive && tariff.id !== "trial") ||
                     (paymentMethod === "wallet" && walletBalance < tariff.price)
                   }
                   className={`w-full ${
-                    (paymentMethod === "yukassa" && !yookassaActive) ||
+                    (paymentMethod === "yukassa" && !yookassaActive && tariff.id !== "trial") ||
                     (paymentMethod === "wallet" && walletBalance < tariff.price)
                       ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
                       : tariff.id === "trial"
@@ -398,7 +412,7 @@ export default function SellerTariffs() {
                       />
                       Обработка...
                     </>
-                  ) : paymentMethod === "yukassa" && !yookassaActive ? (
+                  ) : paymentMethod === "yukassa" && !yookassaActive && tariff.id !== "trial" ? (
                     <>
                       <Icon name="Lock" size={16} className="mr-2" />
                       Платежи недоступны
@@ -408,6 +422,11 @@ export default function SellerTariffs() {
                     <>
                       <Icon name="AlertCircle" size={16} className="mr-2" />
                       Недостаточно средств
+                    </>
+                  ) : tariff.id === "trial" ? (
+                    <>
+                      <Icon name="Gift" size={16} className="mr-2" />
+                      Активировать бесплатно
                     </>
                   ) : paymentMethod === "wallet" ? (
                     <>

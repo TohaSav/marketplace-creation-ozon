@@ -34,7 +34,7 @@ export default function TariffPlanCard({
 }: TariffPlanCardProps) {
   const isDisabled = 
     loading ||
-    (paymentMethod === "yukassa" && !yookassaActive) ||
+    (paymentMethod === "yukassa" && !yookassaActive && tariff.id !== "trial") ||
     (paymentMethod === "wallet" && walletBalance < tariff.price);
 
   const getButtonVariant = () => {
@@ -53,7 +53,7 @@ export default function TariffPlanCard({
         </>
       );
     }
-    if (paymentMethod === "yukassa" && !yookassaActive) {
+    if (paymentMethod === "yukassa" && !yookassaActive && tariff.id !== "trial") {
       return (
         <>
           <Icon name="Lock" size={20} className="mr-2" />
@@ -66,6 +66,14 @@ export default function TariffPlanCard({
         <>
           <Icon name="AlertCircle" size={20} className="mr-2" />
           Недостаточно средств
+        </>
+      );
+    }
+    if (tariff.id === "trial") {
+      return (
+        <>
+          <Icon name="Gift" size={20} className="mr-2" />
+          Активировать бесплатно
         </>
       );
     }
