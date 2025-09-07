@@ -71,7 +71,7 @@ export default function SubscriptionModal({
           variant: "default",
         });
         
-        onClose();
+        onClose(); // Закрываем модалку сразу после активации
         return;
       }
 

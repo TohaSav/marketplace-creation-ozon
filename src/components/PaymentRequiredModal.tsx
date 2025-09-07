@@ -131,6 +131,7 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
           variant: "default",
         });
         
+        // Модалка автоматически закроется благодаря обновлению hasActiveSubscription
         return;
       }
 
@@ -216,6 +217,8 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
           description: `Тариф "${selectedTariff.name}" успешно оплачен из кошелька.`,
           variant: "default",
         });
+        
+        // Модалка автоматически закроется благодаря обновлению hasActiveSubscription
       }
     } catch (error) {
       console.error("Ошибка оплаты:", error);

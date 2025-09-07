@@ -200,6 +200,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateUser = (userData: User) => {
+    // Проверяем истечение подписки перед обновлением
+    if (userData.subscription && userData.subscription.isActive) {
+      const now = new Date();
+      const endDate = new Date(userData.subscription.endDate);
+      
+      if (endDate <= now) {
+        // Деактивируем истекшую подписку
+        userData.subscription.isActive = false;
+      }
+    }
+    
     setUser(userData);
 
     // Обновляем в localStorage

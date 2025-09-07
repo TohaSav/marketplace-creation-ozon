@@ -61,6 +61,16 @@ export const useSubscription = () => {
       ),
     );
 
+    // Если подписка истекла, деактивируем её
+    if (sub.endDate <= now && sub.isActive) {
+      const updatedSubscription = {
+        ...sub,
+        isActive: false,
+      };
+      localStorage.setItem(getStorageKey(), JSON.stringify(updatedSubscription));
+      setSubscription(updatedSubscription);
+    }
+
     // Подсчитываем количество используемых товаров
     const productsUsed = getProductsCount();
     const canAddProducts =
@@ -179,7 +189,14 @@ export const useSubscription = () => {
 
   // Проверка необходимости показа модального окна с тарифами
   const shouldShowSubscriptionModal = (): boolean => {
-    return !subscription || !subscriptionStatus?.isActive;
+    if (!subscription || !subscriptionStatus) return true;
+    
+    // Проверяем истекла ли подписка по времени
+    const now = new Date();
+    const endDate = subscription.endDate;
+    const isExpired = now > endDate;
+    
+    return !subscriptionStatus.isActive || isExpired;
   };
 
   // Отмена подписки

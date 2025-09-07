@@ -26,7 +26,7 @@ import SellerStatusAlert from "@/components/SellerStatusAlert";
 import RevisionModal from "@/components/RevisionModal";
 
 export default function SellerDashboard() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const { shouldShowSubscriptionModal, activateSubscription } =
@@ -55,6 +55,38 @@ export default function SellerDashboard() {
       }
     }
   }, [user, shouldShowSubscriptionModal, navigate]);
+
+  // Периодическая проверка истечения подписки
+  useEffect(() => {
+    if (!user?.subscription) return;
+
+    const checkSubscription = () => {
+      if (user.subscription && user.subscription.isActive) {
+        const now = new Date();
+        const endDate = new Date(user.subscription.endDate);
+        
+        if (endDate <= now) {
+          // Подписка истекла - обновляем пользователя
+          const updatedUser = {
+            ...user,
+            subscription: {
+              ...user.subscription,
+              isActive: false
+            }
+          };
+          updateUser(updatedUser);
+        }
+      }
+    };
+
+    // Проверяем сразу при загрузке
+    checkSubscription();
+
+    // Устанавливаем интервал проверки каждую минуту
+    const interval = setInterval(checkSubscription, 60000);
+
+    return () => clearInterval(interval);
+  }, [user, updateUser]);
 
   // Подписываемся на изменения статуса продавца
   useEffect(() => {
@@ -128,7 +160,9 @@ export default function SellerDashboard() {
   };
 
   // Проверяем есть ли активная подписка у продавца
-  const hasActiveSubscription = user?.subscription?.isActive === true;
+  const hasActiveSubscription = user?.subscription?.isActive === true && 
+    user?.subscription?.endDate && 
+    new Date(user.subscription.endDate) > new Date();
   
   // Проверяем статус продавца - блокируем все кроме уведомлений
   if (user?.userType === "seller" && user?.status !== "active") {
