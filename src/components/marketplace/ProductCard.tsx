@@ -59,8 +59,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Icon name="Heart" size={16} className="text-gray-600 hover:text-red-500 transition-colors" />
         </button>
 
+        {/* Secure Deal Badge */}
+        {product.secureDeal && (
+          <div className="absolute top-3 left-3 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+            <Icon name="Shield" size={12} />
+            Безопасная сделка
+          </div>
+        )}
+
         {/* Stock Badge */}
-        {product.stock < 10 && product.stock > 0 && (
+        {product.stock < 10 && product.stock > 0 && !product.secureDeal && (
           <div className="absolute top-3 left-3 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-md">
             Осталось {product.stock}
           </div>

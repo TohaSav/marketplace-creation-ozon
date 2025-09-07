@@ -183,6 +183,20 @@ const ProductDetails = () => {
                   Экономия: {discountPrice.toLocaleString("ru-RU")} ₽
                 </p>
               )}
+
+              {/* Secure Deal Info */}
+              {product.secureDeal && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Icon name="Shield" size={20} className="text-blue-600" />
+                    <span className="font-semibold text-blue-900">Безопасная сделка</span>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    Ваши деньги будут удержаны до получения и проверки товара. 
+                    Полная защита покупателя от мошенничества.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Статус в наличии */}

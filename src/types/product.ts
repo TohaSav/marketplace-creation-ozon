@@ -7,6 +7,7 @@ export interface ProductFormData {
   stock: string;
   article: string;
   barcode: string;
+  secureDeal: boolean;
 }
 
 export interface NewProduct {
@@ -25,6 +26,7 @@ export interface NewProduct {
   article: string;
   barcode: string;
   qrCode: string;
+  secureDeal: boolean;
 }
 
 export const PRODUCT_CATEGORIES = [

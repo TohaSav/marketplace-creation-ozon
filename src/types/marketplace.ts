@@ -11,6 +11,7 @@ export interface Product {
   reviews: number;
   createdAt: Date;
   updatedAt: Date;
+  secureDeal?: boolean;
 }
 
 export interface CartItem {

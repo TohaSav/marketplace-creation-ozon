@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -9,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProductFormData, PRODUCT_CATEGORIES } from "@/types/product";
+import Icon from "@/components/ui/icon";
 
 interface BasicInfoFieldsProps {
   product: ProductFormData;
@@ -89,6 +91,27 @@ export default function BasicInfoFields({
           rows={4}
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <Checkbox
+            id="secure-deal"
+            checked={product.secureDeal}
+            onCheckedChange={(checked) => onUpdate({ secureDeal: !!checked })}
+          />
+          <div className="flex items-center space-x-2">
+            <Icon name="Shield" size={20} className="text-blue-600" />
+            <div>
+              <Label htmlFor="secure-deal" className="font-medium text-blue-900 cursor-pointer">
+                Безопасная сделка
+              </Label>
+              <p className="text-sm text-blue-700">
+                Деньги удерживаются до получения товара покупателем
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

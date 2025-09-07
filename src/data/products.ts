@@ -26,6 +26,7 @@ export interface Product {
   views: number;
   isPopular: boolean;
   isFeatured: boolean;
+  secureDeal?: boolean;
 }
 
 export const products: Product[] = [
@@ -64,6 +65,7 @@ export const products: Product[] = [
     views: 1234,
     isPopular: true,
     isFeatured: true,
+    secureDeal: true,
   },
   {
     id: 102,
@@ -99,6 +101,7 @@ export const products: Product[] = [
     views: 2156,
     isPopular: true,
     isFeatured: true,
+    secureDeal: false,
   },
   {
     id: 103,
@@ -135,6 +138,7 @@ export const products: Product[] = [
     views: 1567,
     isPopular: true,
     isFeatured: false,
+    secureDeal: true,
   },
   
   // Одежда и обувь

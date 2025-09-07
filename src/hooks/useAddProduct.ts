@@ -25,6 +25,7 @@ export const useAddProduct = () => {
     stock: "",
     article: "",
     barcode: "",
+    secureDeal: false,
   });
 
   // Автоматическая генерация артикула и штрих-кода при изменении названия и категории
@@ -92,6 +93,7 @@ export const useAddProduct = () => {
         article: product.article,
         barcode: product.barcode,
         qrCode: generateProductQRCode(product.article, product.title),
+        secureDeal: product.secureDeal,
       };
 
       // Добавляем к глобальным товарам
