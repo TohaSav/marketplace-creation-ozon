@@ -133,7 +133,7 @@ export function useSellerDashboard(): UseSellerDashboardResult {
     }
 
     // Переходим на страницу добавления товара
-    navigate("/add-product");
+    navigate("/seller/add-product");
   };
 
   const handleEditProduct = (productId: number) => {
