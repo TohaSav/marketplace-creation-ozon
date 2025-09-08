@@ -22,9 +22,13 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         <Link to={`/product/${product.id}`}>
           <div className="aspect-[4/3] bg-gray-50 overflow-hidden">
             <img
-              src={('image' in product ? product.image : product.images[0]) || '/placeholder.svg'}
+              src={('image' in product ? product.image : product.images[0]) || '/img/de7329cc-86ba-41a2-9fcf-4f840951de34.jpg'}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/img/de7329cc-86ba-41a2-9fcf-4f840951de34.jpg';
+              }}
             />
           </div>
         </Link>
