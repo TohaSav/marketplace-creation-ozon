@@ -89,7 +89,7 @@ const MobileBottomMenu = () => {
   return (
     <>
       {/* Фиксированное меню снизу - только для мобильных и планшетов */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 md:hidden pb-safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[60] md:hidden pb-safe-bottom backdrop-blur-md bg-white/95 shadow-lg">
         <div className="grid grid-cols-6 h-16">
           <MenuItem
             icon="Home"
@@ -160,8 +160,8 @@ const MobileBottomMenu = () => {
 
       {/* Модальное меню профиля */}
       {isUserMenuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden">
-          <div className="absolute bottom-16 left-4 right-4 bg-white rounded-t-xl shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[70] md:hidden">
+          <div className="absolute bottom-20 left-4 right-4 bg-white rounded-t-xl shadow-xl">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Профиль</h3>
