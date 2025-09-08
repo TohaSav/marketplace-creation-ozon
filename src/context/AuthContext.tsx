@@ -34,7 +34,7 @@ interface AuthContextType {
   user: User | null;
   users: User[];
   sellers: User[];
-  login: (userData: User) => void;
+  login: (email: string, password: string, userType?: 'buyer' | 'seller') => Promise<void>;
   logout: () => void;
   register: (userData: Omit<User, "id" | "joinDate" | "status">) => void;
   updateUser: (userData: User) => void;

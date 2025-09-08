@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 import { useAuth } from "@/context/AuthContext";
+import UserTypeModal from "@/components/UserTypeModal";
 
 interface NavigationProps {
   isLoggedIn: boolean;
@@ -15,6 +16,7 @@ const Navigation = ({
   setIsMenuOpen,
 }: NavigationProps) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isUserTypeModalOpen, setIsUserTypeModalOpen] = useState(false);
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
@@ -243,34 +245,27 @@ const Navigation = ({
         ) : (
           <>
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => setIsUserTypeModalOpen(true)}
               className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
             >
               <Icon name="User" size={20} className="mb-1" />
               <span className="text-xs">Войти</span>
             </button>
-
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
-                <div className="p-4">
-                  <Link
-                    to="/login"
-                    className="block w-full mb-2 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Войти
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block w-full px-4 py-2 border border-gray-300 text-gray-700 text-center rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Зарегистрироваться
-                  </Link>
-                </div>
-              </div>
-            )}
           </>
         )}
       </div>
+
+      <UserTypeModal
+        isOpen={isUserTypeModalOpen}
+        onClose={() => setIsUserTypeModalOpen(false)}
+        onSelectUserType={(type) => {
+          if (type === 'buyer') {
+            window.location.href = '/buyer-login';
+          } else {
+            window.location.href = '/seller-login';
+          }
+        }}
+      />
     </div>
   );
 };

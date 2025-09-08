@@ -5,6 +5,8 @@ import Layout from "@/components/Layout";
 import UserLogin from "@/pages/UserLogin";
 import UserRegister from "@/pages/UserRegister";
 import SellerLogin from "@/pages/SellerLogin";
+import BuyerLogin from "@/pages/BuyerLogin";
+import BuyerDashboard from "@/pages/BuyerDashboard";
 
 const AuthRoutes = () => {
   try {
@@ -28,7 +30,29 @@ const AuthRoutes = () => {
           }
         />
 
+        {/* Вход покупателей */}
+        <Route
+          path="/buyer-login"
+          element={
+            <BuyerLogin />
+          }
+        />
+        
+        {/* Кабинет покупателя */}
+        <Route
+          path="/buyer-dashboard"
+          element={
+            <BuyerDashboard />
+          }
+        />
+
         {/* Вход/регистрация продавцов */}
+        <Route
+          path="/seller-login"
+          element={
+            <SellerLogin />
+          }
+        />
         <Route
           path="/seller"
           element={
