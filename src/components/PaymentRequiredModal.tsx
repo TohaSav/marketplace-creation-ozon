@@ -80,9 +80,10 @@ const tariffPlans: TariffPlan[] = [
 
 interface PaymentRequiredModalProps {
   isOpen: boolean;
+  onClose?: () => void;
 }
 
-export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalProps) {
+export default function PaymentRequiredModal({ isOpen, onClose }: PaymentRequiredModalProps) {
   const [selectedPlan, setSelectedPlan] = useState<string>("trial");
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "yookassa">("yookassa");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -238,15 +239,26 @@ export default function PaymentRequiredModal({ isOpen }: PaymentRequiredModalPro
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="sticky top-0 bg-white border-b p-6 z-10">
-          <div className="text-center">
-            <Icon name="CreditCard" size={48} className="mx-auto text-blue-600 mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Выберите тарифный план
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Для продолжения работы в личном кабинете необходимо выбрать и оплатить тарифный план. 
-              Это даст доступ ко всем функциям платформы.
-            </p>
+          <div className="relative">
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="absolute right-0 top-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                title="Закрыть"
+              >
+                <Icon name="X" size={24} />
+              </button>
+            )}
+            <div className="text-center">
+              <Icon name="CreditCard" size={48} className="mx-auto text-blue-600 mb-4" />
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Выберите тарифный план
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Для продолжения работы в личном кабинете необходимо выбрать и оплатить тарифный план. 
+                Это даст доступ ко всем функциям платформы.
+              </p>
+            </div>
           </div>
         </div>
 

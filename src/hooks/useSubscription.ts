@@ -97,6 +97,12 @@ export const useSubscription = () => {
     }
   };
 
+  // Отметка показа модального окна
+  const markSubscriptionModalShown = () => {
+    const modalShownKey = `subscription-modal-shown-${user?.id || "guest"}`;
+    sessionStorage.setItem(modalShownKey, "true");
+  };
+
   // Активация подписки
   const activateSubscription = (planId: string) => {
     const plan = SUBSCRIPTION_PLANS.find((p) => p.id === planId);
@@ -127,6 +133,9 @@ export const useSubscription = () => {
     localStorage.setItem(getStorageKey(), JSON.stringify(newSubscription));
     setSubscription(newSubscription);
     updateSubscriptionStatus(newSubscription);
+
+    // Отмечаем что модальное окно уже показано и выбор сделан
+    markSubscriptionModalShown();
 
     // Создаем запись о платеже
     const transaction = {
@@ -189,7 +198,15 @@ export const useSubscription = () => {
 
   // Проверка необходимости показа модального окна с тарифами
   const shouldShowSubscriptionModal = (): boolean => {
-    if (!subscription || !subscriptionStatus) return true;
+    if (!subscription || !subscriptionStatus) {
+      // Проверяем, показывали ли уже модальное окно в этой сессии
+      const modalShownKey = `subscription-modal-shown-${user?.id || "guest"}`;
+      const modalShown = sessionStorage.getItem(modalShownKey);
+      if (modalShown) {
+        return false;
+      }
+      return true;
+    }
     
     // Проверяем истекла ли подписка по времени
     const now = new Date();
@@ -247,6 +264,7 @@ export const useSubscription = () => {
     canAddProduct,
     getCurrentPlan,
     shouldShowSubscriptionModal,
+    markSubscriptionModalShown,
     cancelSubscription,
     resumeSubscription,
     refreshSubscription: loadSubscription,

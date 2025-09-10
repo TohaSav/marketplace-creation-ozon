@@ -29,7 +29,7 @@ export default function SellerDashboard() {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showRevisionModal, setShowRevisionModal] = useState(false);
-  const { shouldShowSubscriptionModal, activateSubscription } =
+  const { shouldShowSubscriptionModal, activateSubscription, markSubscriptionModalShown } =
     useSubscription();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
@@ -159,6 +159,12 @@ export default function SellerDashboard() {
     }
   };
 
+  // Обработка закрытия модального окна выбора тарифа
+  const handleCloseSubscriptionModal = () => {
+    markSubscriptionModalShown();
+    setShowSubscriptionModal(false);
+  };
+
   // Проверяем есть ли активная подписка у продавца
   const hasActiveSubscription = user?.subscription?.isActive === true && 
     user?.subscription?.endDate && 
@@ -260,7 +266,10 @@ export default function SellerDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Модальное окно оплаты - показывается если нет активной подписки */}
-      <PaymentRequiredModal isOpen={!hasActiveSubscription} />
+      <PaymentRequiredModal 
+        isOpen={!hasActiveSubscription && !sessionStorage.getItem(`subscription-modal-shown-${user?.id || "guest"}`)} 
+        onClose={handleCloseSubscriptionModal}
+      />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
@@ -353,7 +362,7 @@ export default function SellerDashboard() {
       {/* Subscription Modal */}
       <SubscriptionModal
         isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
+        onClose={handleCloseSubscriptionModal}
         onSubscribe={handleSubscribe}
       />
     </div>
